@@ -1,3 +1,4 @@
+
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -8,26 +9,33 @@ const app = express();
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 // Serve uploaded images and audio files
-app.use(
-  '/uploads',
-  express.static(path.join(__dirname, 'uploads'))
-);
+const uploadDir = path.join(__dirname, 'uploads');
+app.use('/uploads', express.static(uploadDir));
 
 // API routes
 app.use('/api/events', require('./routes/events'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/upload', require('./routes/upload'));
 
-
+// Health check
 app.get('/', (req, res) => {
   res.json({
     message: 'Rhythmic Dance Court API is running!',
-    database: mongoose.connection.readyState === 1
-      ? 'Connected'
-      : 'Not connected'
+    database:
+      mongoose.connection.readyState === 1
+        ? 'Connected'
+        : 'Not connected'
+  });
+});
+
+// Handle unknown routes
+app.use((req, res) => {
+  res.status(404).json({
+    message: 'Route not found',
+    path: req.originalUrl
   });
 });
 
@@ -38,11 +46,12 @@ async function startServer() {
     await mongoose.connect(process.env.MONGODB_URI);
     console.log('MongoDB connected successfully!');
 
-    app.listen(PORT, () => {
-      console.log(`Server running at http://localhost:${PORT}`);
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Server listening on port ${PORT}`);
     });
   } catch (error) {
-    console.error('MongoDB connection failed:', error.message);
+    console.error('Server startup failed:', error.message);
+    process.exit(1);
   }
 }
 
