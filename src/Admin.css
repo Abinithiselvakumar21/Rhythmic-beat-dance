@@ -1,0 +1,90 @@
+
+.admin-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #f7f1e8;
+  color: #321c25;
+  font-family: Arial, sans-serif;
+}
+
+.admin-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 38px;
+  background: #fffdf9;
+  border: 1px solid #eaded4;
+  border-radius: 20px;
+  box-shadow: 0 18px 50px #321c2512;
+}
+
+.admin-back {
+  color: #783247;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.admin-eyebrow {
+  margin-top: 34px;
+  color: #963f56;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.admin-card h1 {
+  margin-bottom: 8px;
+  font-size: 32px;
+}
+
+.admin-description {
+  margin-bottom: 28px;
+  color: #76666b;
+  line-height: 1.6;
+}
+
+.admin-card label {
+  display: block;
+  margin: 18px 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.admin-card input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid #ddcfc8;
+  border-radius: 9px;
+  background: white;
+  font-size: 15px;
+}
+
+.admin-card input:focus {
+  outline: 2px solid #a45a6c;
+  outline-offset: 2px;
+}
+
+.admin-card button {
+  width: 100%;
+  margin-top: 24px;
+  padding: 14px;
+  border: 0;
+  border-radius: 9px;
+  background: #702b42;
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-card button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.admin-message {
+  color: #702b42;
+  font-size: 14px;
+}
