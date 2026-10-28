@@ -186,7 +186,9 @@ function App() {
                   {event.image ? (
                     <div className="event-art">
                       <img
-                        src={`${SERVER}${event.image}`}
+                        src={event.image?.startsWith('http')
+  ? event.image
+  : `${SERVER}${event.image?.startsWith('/') ? '' : '/'}${event.image || ''}`}
                         alt={event.title}
                         className="dynamic-event-image"
                       />
@@ -247,7 +249,9 @@ function App() {
                         <p>Listen to the event track</p>
                         <audio controls preload="none">
                           <source
-                            src={`${SERVER}${event.song}`}
+                            src={event.song?.startsWith('http')
+  ? event.song
+  : `${SERVER}${event.song?.startsWith('/') ? '' : '/'}${event.song || ''}`}
                           />
                           Your browser does not support audio
                           playback.
