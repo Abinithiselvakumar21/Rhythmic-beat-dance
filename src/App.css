@@ -1578,3 +1578,22 @@ footer > a:hover {
     font-size: 15px;
   }
 }
+
+
+/* Reduce space between event cards */
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 260px));
+  justify-content: center;
+  gap: 12px !important;
+  column-gap: 12px !important;
+  row-gap: 16px !important;
+  padding: 0 10px;
+  margin: 0 auto;
+}
+
+.event-card {
+  width: 100%;
+  max-width: 260px;
+  margin: 0 !important;
+}
