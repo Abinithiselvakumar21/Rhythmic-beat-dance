@@ -3,8 +3,8 @@ import './App.css';
 import Admin from './Admin';
 import AdminDashboard from './AdminDashboard';
 
-const API = 'http://localhost:5000/api/events';
-const SERVER = 'http://localhost:5000';
+const API = 'https://rhythmic-beat-dance.onrender.com/api/events';
+const SERVER = 'https://rhythmic-beat-dance.onrender.com';
 
 function App() {
   const [events, setEvents] = useState([]);
