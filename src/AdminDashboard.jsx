@@ -2,9 +2,9 @@
 import { useEffect, useState } from 'react';
 import './AdminDashboard.css';
 
-const API = 'http://localhost:5000/api/events';
-const UPLOAD_API = 'http://localhost:5000/api/upload';
-const SERVER = 'http://localhost:5000';
+const SERVER = 'https://rhythmic-beat-dance.onrender.com';
+const API = `${SERVER}/api/events`;
+const UPLOAD_API = `${SERVER}/api/upload`;
 
 const emptyForm = {
   title: '',
@@ -15,7 +15,7 @@ const emptyForm = {
   date: '',
   time: '',
   image: '',
-  song: ''
+  song: '',
 };
 
 function AdminDashboard() {
@@ -23,23 +23,51 @@ function AdminDashboard() {
   const [message, setMessage] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [eventsLoading, setEventsLoading] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   const [songFile, setSongFile] = useState(null);
-
   const [form, setForm] = useState(emptyForm);
 
-  async function loadEvents() {
-    try {
-      const response = await fetch(API);
-      const data = await response.json();
+  const token = () => sessionStorage.getItem('adminToken');
 
-      if (!response.ok) {
-        throw new Error('Unable to load events');
+  function assetUrl(path) {
+    if (!path) return '';
+    if (/^https?:\/\//i.test(path)) return path;
+    return `${SERVER}${path.startsWith('/') ? '' : '/'}${path}`;
+  }
+
+  async function readResponse(response) {
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(
+        data.message || `Request failed (${response.status})`
+      );
+    }
+
+    return data;
+  }
+
+  async function loadEvents() {
+    setEventsLoading(true);
+
+    try {
+      const response = await fetch(API, { cache: 'no-store' });
+      const data = await readResponse(response);
+
+      if (!Array.isArray(data)) {
+        throw new Error('Backend events response format is incorrect.');
       }
 
       setEvents(data);
-    } catch {
-      setMessage('Not Events load .Check a backend running process.');
+      setMessage('');
+    } catch (error) {
+      console.error('Load events error:', error);
+      setMessage(
+        `Events load aagala: ${error.message}. Backend URL/CORS check pannunga.`
+      );
+    } finally {
+      setEventsLoading(false);
     }
   }
 
@@ -48,43 +76,48 @@ function AdminDashboard() {
   }, []);
 
   function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm((previous) => ({ ...previous, [name]: value }));
   }
 
-  async function uploadFile(file, kind, token) {
+  async function uploadFile(file, kind, authToken) {
     const formData = new FormData();
-
-    // kind-ai file-ku munnaadi append pannanum
     formData.append('kind', kind);
     formData.append('file', file);
 
     const response = await fetch(UPLOAD_API, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${authToken}`,
       },
-      body: formData
+      body: formData,
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || `${kind} upload failed`);
-    }
-
+    const data = await readResponse(response);
     return data.url;
+  }
+
+  function clearFileInputs() {
+    const imageInput = document.getElementById('event-image');
+    const songInput = document.getElementById('event-song');
+
+    if (imageInput) imageInput.value = '';
+    if (songInput) songInput.value = '';
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (loading) return;
+
     setLoading(true);
     setMessage('');
 
-    const token = sessionStorage.getItem('adminToken');
+    const authToken = token();
 
-    if (!token) {
+    if (!authToken) {
       setMessage('Session expired. Please login again.');
       setLoading(false);
+      window.location.href = '/admin';
       return;
     }
 
@@ -94,54 +127,49 @@ function AdminDashboard() {
 
       if (imageFile) {
         setMessage('Uploading event image...');
-        image = await uploadFile(imageFile, 'image', token);
+        image = await uploadFile(imageFile, 'image', authToken);
       }
 
       if (songFile) {
         setMessage('Uploading event song...');
-        song = await uploadFile(songFile, 'song', token);
+        song = await uploadFile(songFile, 'song', authToken);
       }
 
       setMessage('Saving event details...');
 
-      const response = await fetch(
-        editingId ? `${API}/${editingId}` : API,
-        {
-          method: editingId ? 'PUT' : 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            ...form,
-            image,
-            song,
-            slots: Number(form.slots)
-          })
-        }
+      const url = editingId ? `${API}/${editingId}` : API;
+      const response = await fetch(url, {
+        method: editingId ? 'PUT' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({
+          ...form,
+          image,
+          song,
+          slots: Number(form.slots),
+        }),
+      });
+
+      await readResponse(response);
+
+      setMessage(
+        editingId
+          ? 'Event updated successfully!'
+          : 'Event created successfully!'
       );
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Unable to save event');
-      }
-
-      setMessage(editingId ? 'Event updated successfully!' : 'Event created successfully!');
       setForm({ ...emptyForm });
       setEditingId(null);
       setImageFile(null);
       setSongFile(null);
-
-      const imageInput = document.getElementById('event-image');
-      const songInput = document.getElementById('event-song');
-
-      if (imageInput) imageInput.value = '';
-      if (songInput) songInput.value = '';
+      clearFileInputs();
 
       await loadEvents();
     } catch (error) {
-      setMessage(error.message || 'Something went wrong.');
+      console.error('Save event error:', error);
+      setMessage(error.message || 'Unable to save event.');
     } finally {
       setLoading(false);
     }
@@ -157,18 +185,12 @@ function AdminDashboard() {
       date: event.date || '',
       time: event.time || '',
       image: event.image || '',
-      song: event.song || ''
+      song: event.song || '',
     });
 
     setImageFile(null);
     setSongFile(null);
-
-    const imageInput = document.getElementById('event-image');
-    const songInput = document.getElementById('event-song');
-
-    if (imageInput) imageInput.value = '';
-    if (songInput) songInput.value = '';
-
+    clearFileInputs();
     setEditingId(event._id);
     setMessage('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -180,38 +202,36 @@ function AdminDashboard() {
     setImageFile(null);
     setSongFile(null);
     setMessage('');
-
-    const imageInput = document.getElementById('event-image');
-    const songInput = document.getElementById('event-song');
-
-    if (imageInput) imageInput.value = '';
-    if (songInput) songInput.value = '';
+    clearFileInputs();
   }
 
   async function deleteEvent(id) {
-if (
-  !window.confirm(
-    'Are you sure you want to delete this event? '
-  )
-) return;
-    const token = sessionStorage.getItem('adminToken');
+    if (!window.confirm('Are you sure you want to delete this event?')) {
+      return;
+    }
+
+    const authToken = token();
+
+    if (!authToken) {
+      setMessage('Session expired. Please login again.');
+      window.location.href = '/admin';
+      return;
+    }
 
     try {
       const response = await fetch(`${API}/${id}`, {
         method: 'DELETE',
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${authToken}`,
+        },
       });
 
-      if (!response.ok) {
-        throw new Error('Delete failed');
-      }
-
+      await readResponse(response);
       setMessage('Event deleted successfully!');
       await loadEvents();
     } catch (error) {
-      setMessage(error.message);
+      console.error('Delete event error:', error);
+      setMessage(error.message || 'Delete failed.');
     }
   }
 
@@ -229,7 +249,11 @@ if (
           <p>Manage your dance events in one place.</p>
         </div>
 
-        <button className="logout-button" onClick={logout}>
+        <button
+          type="button"
+          className="logout-button"
+          onClick={logout}
+        >
           Log Out
         </button>
       </header>
@@ -256,7 +280,7 @@ if (
               value={form.description}
               onChange={handleChange}
               placeholder="Describe your event"
-              rows="3"
+              rows={3}
             />
           </label>
 
@@ -314,33 +338,46 @@ if (
                 onChange={handleChange}
               />
             </label>
-         
 
-          <label>
-            Event Image (JPG, PNG, WEBP — max 15 MB)
-            <input
-              id="event-image"
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              onChange={(e) => setImageFile(e.target.files?.[0] || null)}
-            />
-          </label>
+            <label>
+              Event Image (JPG, PNG, WEBP — max 15 MB)
+              <input
+                id="event-image"
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={(e) =>
+                  setImageFile(e.target.files?.[0] || null)
+                }
+              />
+            </label>
+
+            <label>
+              Event Song (MP3, WAV, OGG — max 15 MB)
+              <input
+                id="event-song"
+                type="file"
+                accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,audio/mp4,audio/x-m4a,.mp3,.wav,.ogg,.m4a"
+                onChange={(e) =>
+                  setSongFile(e.target.files?.[0] || null)
+                }
+              />
+            </label>
+          </div>
 
           {form.image && (
             <div className="upload-preview">
               <p>Current event image:</p>
               <img
-                src={`${SERVER}${form.image}`}
+                src={assetUrl(form.image)}
                 alt="Current event"
                 style={{
-                 display: 'block',
-  width: '100%',
-  maxWidth: '400px',
-  height: 'auto',
-  maxHeight: '400px',
-  objectFit: 'contain',
-  objectPosition: 'center top',
-  borderRadius: '10px'
+                  display: 'block',
+                  width: '100%',
+                  maxWidth: '400px',
+                  maxHeight: '400px',
+                  height: 'auto',
+                  objectFit: 'contain',
+                  borderRadius: '10px',
                 }}
               />
             </div>
@@ -348,32 +385,20 @@ if (
 
           {imageFile && <p>Selected image: {imageFile.name}</p>}
 
-          <label>
-            Event Song (MP3, WAV, OGG or supported audio — max 15 MB)
-            <input
-              id="event-song"
-              type="file"
-              accept="audio/mpeg,audio/mp3,audio/wav,audio/ogg,audio/mp4,audio/x-m4a,.mp3,.wav,.ogg,.m4a"
-              onChange={(e) => setSongFile(e.target.files?.[0] || null)}
-            />
-          </label>
-           </div>
-
           {form.song && (
             <div className="upload-preview">
               <p>Current event song:</p>
-              <audio controls src={`${SERVER}${form.song}`}>
+              <audio controls src={assetUrl(form.song)}>
                 Your browser does not support audio playback.
               </audio>
             </div>
           )}
 
-          {songFile && (
-            <p>Selected song: {songFile.name}</p>
-          )}
+          {songFile && <p>Selected song: {songFile.name}</p>}
 
           <p className="dashboard-message">
-            Select a new file only if you want to replace the existing image or song.
+            Select a new file only if you want to replace the existing
+            image or song.
           </p>
 
           <div className="dashboard-actions">
@@ -407,12 +432,20 @@ if (
       <section className="dashboard-panel">
         <div className="events-heading">
           <h2>Your Events</h2>
-          <button className="refresh-button" onClick={loadEvents}>
-            Refresh
+
+          <button
+            type="button"
+            className="refresh-button"
+            onClick={loadEvents}
+            disabled={eventsLoading}
+          >
+            {eventsLoading ? 'Refreshing...' : 'Refresh'}
           </button>
         </div>
 
-        {events.length === 0 ? (
+        {eventsLoading && events.length === 0 ? (
+          <p>Loading events...</p>
+        ) : events.length === 0 ? (
           <p>No events yet. Create your first event above!</p>
         ) : (
           <div className="admin-event-list">
@@ -424,7 +457,7 @@ if (
 
                   {event.image && (
                     <img
-                      src={`${SERVER}${event.image}`}
+                      src={assetUrl(event.image)}
                       alt={event.title}
                       style={{
                         width: '100%',
@@ -432,16 +465,18 @@ if (
                         maxHeight: '180px',
                         objectFit: 'cover',
                         borderRadius: '10px',
-                        margin: '10px 0'
+                        margin: '10px 0',
                       }}
                     />
                   )}
 
                   <p>{event.description}</p>
+
                   <p>
                     {event.date || 'Date not set'}
                     {event.time ? ` · ${event.time}` : ''}
                   </p>
+
                   <p>
                     Slots: {event.slots} · Prize: {event.prize || 'Not set'}
                   </p>
@@ -449,7 +484,7 @@ if (
                   {event.song && (
                     <div>
                       <p>Event song</p>
-                      <audio controls src={`${SERVER}${event.song}`}>
+                      <audio controls src={assetUrl(event.song)}>
                         Your browser does not support audio playback.
                       </audio>
                     </div>
@@ -457,8 +492,15 @@ if (
                 </div>
 
                 <div className="event-card-actions">
-                  <button onClick={() => startEdit(event)}>Edit</button>
                   <button
+                    type="button"
+                    onClick={() => startEdit(event)}
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    type="button"
                     className="delete-button"
                     onClick={() => deleteEvent(event._id)}
                   >
