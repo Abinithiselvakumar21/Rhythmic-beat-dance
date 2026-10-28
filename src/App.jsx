@@ -1,26 +1,35 @@
+
 import { useEffect, useState } from 'react';
 import './App.css';
 import Admin from './Admin';
 import AdminDashboard from './AdminDashboard';
 
-const API = 'https://rhythmic-beat-dance.onrender.com/api/events';
 const SERVER = 'https://rhythmic-beat-dance.onrender.com';
+const API = `${SERVER}/api/events`;
+
+function assetUrl(path) {
+  if (!path) return '';
+  if (/^https?:\/\//i.test(path)) return path;
+  return `${SERVER}/${path.replace(/^\/+/, '')}`;
+}
 
 function App() {
   const [events, setEvents] = useState([]);
   const [eventsLoading, setEventsLoading] = useState(true);
   const [eventsError, setEventsError] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [failedImages, setFailedImages] = useState({});
 
   useEffect(() => {
     async function loadEvents() {
       try {
         const response = await fetch(API);
-        const data = await response.json();
 
         if (!response.ok) {
           throw new Error('Unable to load events');
         }
+
+        const data = await response.json();
 
         if (!Array.isArray(data)) {
           throw new Error('Invalid events response');
@@ -60,7 +69,6 @@ function App() {
 
   return (
     <div className="app">
-      {/* HEADER */}
       <header className="navbar">
         <a
           href="#home"
@@ -88,15 +96,9 @@ function App() {
           className={`nav-links ${menuOpen ? 'nav-links-open' : ''}`}
           aria-label="Main navigation"
         >
-          <a href="#home" onClick={closeMenu}>
-            Home
-          </a>
-          <a href="#events" onClick={closeMenu}>
-            Events
-          </a>
-          <a href="#about" onClick={closeMenu}>
-            About
-          </a>
+          <a href="#home" onClick={closeMenu}>Home</a>
+          <a href="#events" onClick={closeMenu}>Events</a>
+          <a href="#about" onClick={closeMenu}>About</a>
           <a
             className="admin-link"
             href="/admin"
@@ -108,12 +110,9 @@ function App() {
       </header>
 
       <main>
-        {/* HERO SECTION */}
         <section className="hero" id="home">
           <div className="hero-content">
-            <p className="eyebrow">
-              THE STAGE IS YOURS • 2026
-            </p>
+            <p className="eyebrow">THE STAGE IS YOURS • 2026</p>
 
             <h1>
               FEEL THE
@@ -139,21 +138,13 @@ function App() {
           </div>
         </section>
 
-        {/* EVENTS SECTION */}
         <section className="events-section" id="events">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">
-                DON'T MISS YOUR MOMENT
-              </p>
-              <h2>
-                THE <span>EVENTS.</span>
-              </h2>
+              <p className="eyebrow">DON'T MISS YOUR MOMENT</p>
+              <h2>THE <span>EVENTS.</span></h2>
             </div>
-
-            <p className="muted">
-              Your next stage starts here.
-            </p>
+            <p className="muted">Your next stage starts here.</p>
           </div>
 
           {eventsLoading ? (
@@ -178,94 +169,112 @@ function App() {
             </p>
           ) : (
             <div className="event-grid">
-              {events.map((event, index) => (
-                <article
-                  className="event-card"
-                  key={event._id}
-                >
-                  {event.image ? (
-                    <div className="event-art">
-                      <img
-                        src={event.image?.startsWith('http')
-  ? event.image
-  : `${SERVER}${event.image?.startsWith('/') ? '' : '/'}${event.image || ''}`}
-                        alt={event.title}
-                        className="dynamic-event-image"
-                      />
-                      <span className="event-tag">
-                        {event.status || 'UPCOMING'}
-                      </span>
-                    </div>
-                  ) : (
+              {events.map((event, index) => {
+                const image = assetUrl(event.image);
+                const hasImage = image && !failedImages[event._id];
+
+                return (
+                  <article className="event-card" key={event._id}>
                     <div
-                      className={`event-art ${
-                        index % 2 === 0
-                          ? 'art-one'
-                          : 'art-two'
+                      className={`event-art neon-event-art ${
+                        hasImage
+                          ? 'has-event-image'
+                          : index % 2 === 0
+                            ? 'art-one'
+                            : 'art-two'
                       }`}
                     >
+                      {hasImage ? (
+                        <img
+                          src={image}
+                          alt={event.title}
+                          className="dynamic-event-image"
+                          onError={() =>
+                            setFailedImages((previous) => ({
+                              ...previous,
+                              [event._id]: true
+                            }))
+                          }
+                        />
+                      ) : (
+                        <div className="neon-placeholder">
+                          <span className="placeholder-number">
+                            {String(index + 1).padStart(2, '0')}
+                          </span>
+                          <span className="placeholder-dancer">
+                            ✦
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="event-image-shade" />
+
                       <span className="event-tag">
                         {event.status || 'UPCOMING'}
                       </span>
-                      <span className="art-number">
-                        {String(index + 1).padStart(2, '0')}
-                      </span>
-                      <span className="art-title">
-                        {event.title}
-                      </span>
-                    </div>
-                  )}
 
-                  <div className="event-info">
-                    <p className="event-type">
-                      {event.status || 'Dance Event'}
-                    </p>
-
-                    <h3>{event.title}</h3>
-
-                    <p>
-                      {event.description ||
-                        'Get ready to own the stage.'}
-                    </p>
-
-                    <div className="event-meta">
-                      <span>
-                        Prize: {event.prize || 'To be announced'}
-                      </span>
-                      <span>
-                        Slots: {event.slots ?? 'Open'}
-                      </span>
-                    </div>
-
-                    {(event.date || event.time) && (
-                      <p className="dynamic-event-date">
-                        {event.date || 'Date to be announced'}
-                        {event.time ? ` · ${event.time}` : ''}
-                      </p>
-                    )}
-
-                    {event.song && (
-                      <div className="public-event-audio">
-                        <p>Listen to the event track</p>
-                        <audio controls preload="none">
-                          <source
-                            src={event.song?.startsWith('http')
-  ? event.song
-  : `${SERVER}${event.song?.startsWith('/') ? '' : '/'}${event.song || ''}`}
-                          />
-                          Your browser does not support audio
-                          playback.
-                        </audio>
+                      <div className="event-image-content">
+                        <p className="image-kicker">
+                          RHYTHMIC DANCE COURT
+                        </p>
+                        <h3>{event.title}</h3>
+                        <span className="image-explore">
+                          FEEL THE BEAT <span>↗</span>
+                        </span>
                       </div>
-                    )}
-                  </div>
-                </article>
-              ))}
+                    </div>
+
+                    <div className="event-info">
+                      <p className="event-type">
+                        {event.status || 'DANCE EVENT'}
+                      </p>
+
+                      <p className="event-description">
+                        {event.description ||
+                          'Get ready to own the stage.'}
+                      </p>
+
+                      {(event.date || event.time) && (
+                        <p className="dynamic-event-date">
+                          <span aria-hidden="true">◷</span>{' '}
+                          {event.date || 'Date to be announced'}
+                          {event.time ? ` · ${event.time}` : ''}
+                        </p>
+                      )}
+
+                      <div className="event-meta">
+                        <span>
+                          <small>PRIZE</small>
+                          <strong>
+                            {event.prize || 'To be announced'}
+                          </strong>
+                        </span>
+
+                        <span>
+                          <small>AVAILABLE SLOTS</small>
+                          <strong>
+                            {event.slots ?? 'Open'}
+                          </strong>
+                        </span>
+                      </div>
+
+                      {event.song && (
+                        <div className="public-event-audio">
+                          <p>♫ LISTEN TO THE EVENT TRACK</p>
+                          <audio controls preload="none">
+                            <source src={assetUrl(event.song)} />
+                            Your browser does not support audio playback.
+                          </audio>
+                        </div>
+                      )}
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           )}
         </section>
 
-        {/* ABOUT SECTION */}
         <section className="about-section" id="about">
           <p className="eyebrow">THIS IS YOUR SPACE</p>
 
@@ -286,7 +295,6 @@ function App() {
         </section>
       </main>
 
-      {/* FOOTER */}
       <footer className="site-footer">
         <div className="footer-main">
           <a
@@ -315,13 +323,10 @@ function App() {
           </div>
         </div>
 
-       
-         
-
-          <a href="#home">
-            BACK TO TOP <span>↑</span>
-          </a>
-        
+        <div className="footer-bottom">
+          <span>© 2026 RHYTHMIC DANCE COURT</span>
+          <a href="#home">BACK TO TOP ↑</a>
+        </div>
       </footer>
     </div>
   );
