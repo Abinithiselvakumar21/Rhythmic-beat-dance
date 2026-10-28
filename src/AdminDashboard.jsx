@@ -310,7 +310,7 @@ function AdminDashboard() {
             </label>
 
             <label>
-              Prize
+              Price
               <input
                 name="prize"
                 value={form.prize}
@@ -478,7 +478,7 @@ function AdminDashboard() {
                   </p>
 
                   <p>
-                    Slots: {event.slots} · Prize: {event.prize || 'Not set'}
+                    Slots: {event.slots} · Price: {event.prize || 'Not set'}
                   </p>
 
                   {event.song && (

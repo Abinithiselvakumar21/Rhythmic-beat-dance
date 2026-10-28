@@ -244,7 +244,7 @@ function App() {
 
                       <div className="event-meta">
                         <span>
-                          <small>PRIZE</small>
+                          <small>PRICE</small>
                           <strong>
                             {event.prize || 'To be announced'}
                           </strong>
