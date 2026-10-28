@@ -1525,3 +1525,56 @@ footer > a:hover {
     transition: none;
   }
 }
+
+
+
+/* Smaller event cards */
+.events-grid {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 280px));
+  justify-content: center;
+  gap: 20px;
+}
+
+.event-card {
+  max-width: 280px;
+  width: 100%;
+  border-radius: 14px;
+}
+
+.event-card img {
+  height: 170px;
+  object-fit: cover;
+}
+
+.event-card-content {
+  padding: 14px;
+}
+
+.event-card h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.event-card p {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .events-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .event-card img {
+    height: 125px;
+  }
+
+  .event-card-content {
+    padding: 10px;
+  }
+
+  .event-card h3 {
+    font-size: 15px;
+  }
+}
