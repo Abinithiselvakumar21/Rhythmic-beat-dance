@@ -511,8 +511,9 @@ function App() {
                       <span className="spec-icon">📍</span>
                       <div>
                         <small>STUDIO VENUE</small>
-                        <p>Valasaravakkam & Kolapakkam, Chennai</p>
-                      </div>
+<p>
+  {selectedWorkshop.location || 'Location to be announced'}
+</p>                      </div>
                     </div>
                     <div className="spec-item">
                       <span className="spec-icon">⚡</span>
@@ -1054,6 +1055,12 @@ function App() {
                             <h3 className="compact-card-title">{event.title}</h3>
 
                             <div className="compact-card-meta-row">
+{event.location && (
+  <div className="meta-location">
+    📍 {event.location}
+  </div>
+)}
+
                               {(event.date || event.time) && (
                                 <span className="meta-schedule">
                                   📅 {event.date || 'TBA'}
