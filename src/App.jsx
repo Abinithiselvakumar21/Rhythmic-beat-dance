@@ -45,6 +45,7 @@ function App() {
     notes: '',
   });
   const [reserveSuccess, setReserveSuccess] = useState(false);
+  const [ticketId, setTicketId] = useState('');
 
   // Load events from backend
   useEffect(() => {
@@ -159,17 +160,27 @@ function App() {
   // Handle Reservation Submit
   const handleReserveSubmit = (e) => {
     e.preventDefault();
-    if (!reserveForm.name || !reserveForm.phone) {
-      alert('Please enter your Name and WhatsApp phone number.');
+    if (!reserveForm.name.trim() || !reserveForm.phone.trim()) {
+      alert('Please enter your Full Name and WhatsApp phone number.');
       return;
     }
 
+    const genId = `RB-${Math.floor(1000 + Math.random() * 9000)}`;
+    setTicketId(genId);
     setReserveSuccess(true);
 
     // Pre-fill WhatsApp message
-    const message = `Hi Rhythmic Beat Dance Court! 💃🕺\nI would like to reserve a slot for the workshop:\n*${selectedWorkshop?.title}*\n\nName: ${reserveForm.name}\nWhatsApp: ${reserveForm.phone}\nEmail: ${reserveForm.email || 'N/A'}\nSlots: ${reserveForm.slots}\nNotes: ${reserveForm.notes || 'None'}\n\nPlease confirm availability and payment details.`;
-    
-    // Open WhatsApp
+    const message = `*RHYTHMIC BEAT DANCE COURT — WORKSHOP PASS CONFIRMATION*\n\n` +
+      `🎟️ *Pass Code:* ${genId}\n` +
+      `🔥 *Workshop:* ${selectedWorkshop?.title}\n` +
+      `👤 *Dancer Name:* ${reserveForm.name}\n` +
+      `📞 *WhatsApp:* ${reserveForm.phone}\n` +
+      `📧 *Email:* ${reserveForm.email || 'N/A'}\n` +
+      `👥 *Slots Reserved:* ${reserveForm.slots}\n` +
+      `📅 *Date:* ${selectedWorkshop?.date || 'Scheduled Soon'}\n` +
+      `📍 *Location:* Valasaravakkam Studio, Chennai\n\n` +
+      `Please confirm my admission and provide payment link. Thank you!`;
+
     const waUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
     window.open(waUrl, '_blank');
   };
@@ -221,18 +232,17 @@ function App() {
         {/* HERO SECTION */}
         <section className="hero" id="home">
           <div className="hero-content">
-            <p className="eyebrow">RHYTHMIC BEAT DANCE COURT • EST. 2026</p>
+            <span className="eyebrow-badge">THE STAGE IS YOURS • CHENNAI</span>
 
             <h1>
               FEEL THE <span className="accent-red">BEAT.</span>
               <br />
-              <span className="outline">OWN THE STAGE.</span>
+              OWN THE <span className="highlight-text">STAGE.</span>
             </h1>
 
             <p className="hero-text">
-              Chennai's premier dance arena. Learn from top choreographers,
-              experience high-voltage workshops, and elevate your moves in our
-              world-class studios.
+              Welcome to Rhythmic Beat Dance Court. Experience masterclass choreography,
+              high-energy workshops, and professional stage training led by industry-leading dancers.
             </p>
 
             <div className="hero-actions">
@@ -241,7 +251,7 @@ function App() {
               </a>
               <a
                 className="secondary-btn"
-                href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20RB%20Dance%20Court%2C%20I%20want%20to%20join%20a%20dance%20batch.`}
+                href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20RB%20Dance%20Court%2C%20I%20want%20to%20join%20a%20regular%20dance%20batch.`}
                 target="_blank"
                 rel="noreferrer"
               >
@@ -271,21 +281,19 @@ function App() {
         {/* WORKSHOPS & MASTERCLASSES SECTION */}
         <section className="workshops-section" id="workshops">
           <div className="section-header-box">
-            <div>
-              <p className="eyebrow">INTENSIVE MASTERCLASSES & EVENTS</p>
-              <h2>
-                THE <span>WORKSHOPS.</span>
-              </h2>
-            </div>
+            <span className="section-kicker">FEATURED SESSIONS</span>
+            <h2>
+              THE <span>WORKSHOPS.</span>
+            </h2>
             <p className="section-subtitle">
-              Book your slot for upcoming choreography sessions, masterclasses, and intensive dance training.
+              Browse upcoming dance sessions, select your style, and reserve your admission pass directly.
             </p>
           </div>
 
           {eventsLoading ? (
             <div className="state-feedback-card">
               <div className="spinner" />
-              <p>Loading dance workshops from stage...</p>
+              <p>Loading dance workshops...</p>
             </div>
           ) : eventsError ? (
             <div className="state-feedback-card error">
@@ -364,14 +372,14 @@ function App() {
                     <div className="spec-item">
                       <span className="spec-icon">📍</span>
                       <div>
-                        <small>STUDIO LOCATION</small>
+                        <small>STUDIO VENUE</small>
                         <p>Valasaravakkam & Kolapakkam, Chennai</p>
                       </div>
                     </div>
                     <div className="spec-item">
                       <span className="spec-icon">⚡</span>
                       <div>
-                        <small>SLOTS</small>
+                        <small>AVAILABLE SLOTS</small>
                         <p>
                           {selectedWorkshop.slots > 0
                             ? `${selectedWorkshop.slots} Slots Left`
@@ -419,146 +427,172 @@ function App() {
                   </div>
                 </div>
 
-                {/* RIGHT COLUMN: Sticky "Reserve Your Slot" Box */}
+                {/* RIGHT COLUMN: Creative VIP Dance Pass Card */}
                 <aside className="detail-sidebar-col">
-                  <div className="sticky-reserve-card">
-                    <div className="reserve-header">
-                      <h3>Reserve Your Slot</h3>
-                      <div className="price-tag">
-                        <span>FEE</span>
-                        <strong>
+                  <div className="ticket-pass-card">
+                    <div className="ticket-top-notch">
+                      <div className="ticket-brand">
+                        <span>🎟️ ADMISSION PASS</span>
+                        <small>RHYTHMIC BEAT</small>
+                      </div>
+                      <div className="ticket-price-box">
+                        <span className="price-label">FEE</span>
+                        <strong className="price-val">
                           {selectedWorkshop.prize || 'Contact Studio'}
                         </strong>
                       </div>
                     </div>
 
-                    <div className="slots-banner">
-                      <span className="pulse-dot" />
-                      <span>
-                        {selectedWorkshop.slots > 0
-                          ? `Limited Seats: Only ${selectedWorkshop.slots} slots available!`
-                          : 'Admissions Open • Fast Filling!'}
-                      </span>
+                    <div className="ticket-divider">
+                      <span className="notch-left" />
+                      <span className="dashed-line" />
+                      <span className="notch-right" />
                     </div>
 
-                    {reserveSuccess ? (
-                      <div className="reservation-success-box">
-                        <span className="success-icon">✓</span>
-                        <h4>Reservation Initiated!</h4>
-                        <p>
-                          We opened WhatsApp to complete your slot booking. If it
-                          didn't open, click below:
-                        </p>
+                    <div className="ticket-body">
+                      <div className="urgency-banner">
+                        <span className="pulse-dot" />
+                        <span>
+                          {selectedWorkshop.slots > 0
+                            ? `Only ${selectedWorkshop.slots} Passes Remaining!`
+                            : 'Open Admissions • Fast Filling!'}
+                        </span>
+                      </div>
+
+                      {reserveSuccess ? (
+                        <div className="ticket-confirmed-box">
+                          <div className="confirmed-badge">✓ PASS CLAIMED</div>
+                          <h4>You're Registered!</h4>
+                          <p className="confirmed-sub">
+                            Your pass code is <strong>#{ticketId}</strong>. We've
+                            opened WhatsApp to finalize your booking with our team.
+                          </p>
+
+                          <div className="mini-ticket-summary">
+                            <div>
+                              <small>DANCER</small>
+                              <p>{reserveForm.name}</p>
+                            </div>
+                            <div>
+                              <small>PASSES</small>
+                              <p>{reserveForm.slots} Slot(s)</p>
+                            </div>
+                          </div>
+
+                          <a
+                            className="whatsapp-reserve-btn"
+                            href={`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(
+                              `Hi RB Dance Court! I have reserved pass #${ticketId} for: ${selectedWorkshop.title}`
+                            )}`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            💬 Send Pass via WhatsApp
+                          </a>
+
+                          <button
+                            type="button"
+                            className="reset-form-btn"
+                            onClick={() => setReserveSuccess(false)}
+                          >
+                            Book Another Pass
+                          </button>
+                        </div>
+                      ) : (
+                        <form
+                          className="reserve-form"
+                          onSubmit={handleReserveSubmit}
+                        >
+                          {/* Quick Slot Selector */}
+                          <div className="form-group">
+                            <label>Select Quantity of Passes</label>
+                            <div className="slot-quick-selector">
+                              {[1, 2, 3, 4].map((num) => (
+                                <button
+                                  key={num}
+                                  type="button"
+                                  className={`slot-pill-btn ${
+                                    reserveForm.slots === num ? 'active' : ''
+                                  }`}
+                                  onClick={() =>
+                                    setReserveForm({ ...reserveForm, slots: num })
+                                  }
+                                >
+                                  {num} {num === 1 ? 'Pass' : 'Passes'}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          <div className="form-group">
+                            <label htmlFor="res-name">Full Name *</label>
+                            <input
+                              id="res-name"
+                              type="text"
+                              placeholder="e.g. Rahul Sharma"
+                              required
+                              value={reserveForm.name}
+                              onChange={(e) =>
+                                setReserveForm({
+                                  ...reserveForm,
+                                  name: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+
+                          <div className="form-group">
+                            <label htmlFor="res-phone">WhatsApp Number *</label>
+                            <input
+                              id="res-phone"
+                              type="tel"
+                              placeholder="e.g. 9876543210"
+                              required
+                              value={reserveForm.phone}
+                              onChange={(e) =>
+                                setReserveForm({
+                                  ...reserveForm,
+                                  phone: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+
+                          <div className="form-group">
+                            <label htmlFor="res-email">Email (Optional)</label>
+                            <input
+                              id="res-email"
+                              type="email"
+                              placeholder="dancer@gmail.com"
+                              value={reserveForm.email}
+                              onChange={(e) =>
+                                setReserveForm({
+                                  ...reserveForm,
+                                  email: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+
+                          <button type="submit" className="reserve-submit-btn">
+                            CONFIRM & CLAIM PASS <span>🎟️</span>
+                          </button>
+                        </form>
+                      )}
+
+                      <div className="reserve-footer-assistance">
+                        <p>Need assistance or have queries?</p>
                         <a
-                          className="whatsapp-reserve-btn"
-                          href={`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(
-                            `Hi RB Dance Court! I want to confirm my slot for: ${selectedWorkshop.title}`
+                          href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20RB%20Dance%20Court%2C%20I%20have%20questions%20about%20${encodeURIComponent(
+                            selectedWorkshop.title
                           )}`}
                           target="_blank"
                           rel="noreferrer"
+                          className="chat-wa-link"
                         >
-                          Confirm on WhatsApp ↗
+                          💬 Chat With Studio Coordinator
                         </a>
-                        <button
-                          type="button"
-                          className="reset-form-btn"
-                          onClick={() => setReserveSuccess(false)}
-                        >
-                          Book Another Slot
-                        </button>
                       </div>
-                    ) : (
-                      <form
-                        className="reserve-form"
-                        onSubmit={handleReserveSubmit}
-                      >
-                        <div className="form-group">
-                          <label htmlFor="res-name">Your Full Name *</label>
-                          <input
-                            id="res-name"
-                            type="text"
-                            placeholder="e.g. Rahul Sharma"
-                            required
-                            value={reserveForm.name}
-                            onChange={(e) =>
-                              setReserveForm({
-                                ...reserveForm,
-                                name: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-
-                        <div className="form-group">
-                          <label htmlFor="res-phone">WhatsApp Number *</label>
-                          <input
-                            id="res-phone"
-                            type="tel"
-                            placeholder="e.g. 9876543210"
-                            required
-                            value={reserveForm.phone}
-                            onChange={(e) =>
-                              setReserveForm({
-                                ...reserveForm,
-                                phone: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-
-                        <div className="form-group">
-                          <label htmlFor="res-email">Email Address</label>
-                          <input
-                            id="res-email"
-                            type="email"
-                            placeholder="e.g. dancer@gmail.com"
-                            value={reserveForm.email}
-                            onChange={(e) =>
-                              setReserveForm({
-                                ...reserveForm,
-                                email: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-
-                        <div className="form-group">
-                          <label htmlFor="res-slots">Number of Slots</label>
-                          <select
-                            id="res-slots"
-                            value={reserveForm.slots}
-                            onChange={(e) =>
-                              setReserveForm({
-                                ...reserveForm,
-                                slots: Number(e.target.value),
-                              })
-                            }
-                          >
-                            <option value={1}>1 Person</option>
-                            <option value={2}>2 Persons</option>
-                            <option value={3}>3 Persons</option>
-                            <option value={4}>4+ (Group Entry)</option>
-                          </select>
-                        </div>
-
-                        <button type="submit" className="reserve-submit-btn">
-                          RESERVE YOUR SLOT NOW <span>⚡</span>
-                        </button>
-                      </form>
-                    )}
-
-                    <div className="reserve-footer-assistance">
-                      <p>Have questions before booking?</p>
-                      <a
-                        href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20RB%20Dance%20Court%2C%20I%20have%20a%20question%20about%20${encodeURIComponent(
-                          selectedWorkshop.title
-                        )}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="chat-wa-link"
-                      >
-                        💬 Chat with Studio Coordinator
-                      </a>
                     </div>
                   </div>
                 </aside>
@@ -593,7 +627,7 @@ function App() {
                 {/* Search */}
                 <div className="filter-block">
                   <label htmlFor="workshop-search" className="filter-label">
-                    Search
+                    Search Workshop
                   </label>
                   <div className="search-input-wrap">
                     <span className="search-icon">🔍</span>
@@ -657,9 +691,9 @@ function App() {
 
                 {/* Studio Help Box in Sidebar */}
                 <div className="sidebar-help-card">
-                  <p className="sidebar-help-title">Need a Custom Workshop?</p>
+                  <p className="sidebar-help-title">Private Masterclass?</p>
                   <p className="sidebar-help-desc">
-                    We host corporate workshops, college teams & private group masterclasses.
+                    We host college teams, corporate workshops & private groups.
                   </p>
                   <a
                     href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20RB%20Dance%20Court%2C%20I%20am%20looking%20for%20a%20private%20workshop.`}
@@ -667,7 +701,7 @@ function App() {
                     rel="noreferrer"
                     className="sidebar-wa-btn"
                   >
-                    Enquire Now ↗
+                    Enquire on WhatsApp ↗
                   </a>
                 </div>
               </aside>
@@ -835,37 +869,37 @@ function App() {
         {/* WHY CHOOSE RHYTHMIC BEAT */}
         <section className="why-us-section" id="why-us">
           <div className="section-header-box centered">
-            <p className="eyebrow">THE RHYTHMIC BEAT STANDARD</p>
+            <span className="section-kicker">THE RHYTHMIC BEAT STANDARD</span>
             <h2>
               WHY TRAIN WITH <span>US?</span>
             </h2>
             <p className="section-subtitle">
-              Built by passionate dancers for creators, performers, and every beat enthusiast.
+              Built by dancers, for dancers. A creative court designed to elevate your craft.
             </p>
           </div>
 
           <div className="features-grid">
             <div className="feature-card">
               <span className="feature-icon">🏆</span>
-              <h3>Celebrity & Pro Choreographers</h3>
+              <h3>Celebrity & Pro Mentors</h3>
               <p>
-                Learn genuine industry routines, camera styling, and musicality from recognized artists.
+                Learn industry choreography, musicality, and stage confidence directly from top artists.
               </p>
             </div>
 
             <div className="feature-card">
               <span className="feature-icon">✨</span>
-              <h3>Joint-Safe Wooden Dance Floors</h3>
+              <h3>Joint-Safe Wooden Floors</h3>
               <p>
-                High-end sprung wooden floors designed to protect your knees and ankles during intensive jumps and power moves.
+                Professional cushioned sprung wooden floors designed to protect your joints during intensive routines.
               </p>
             </div>
 
             <div className="feature-card">
               <span className="feature-icon">🔥</span>
-              <h3>Stage Exposure & Dance Battles</h3>
+              <h3>Stage & Battle Exposure</h3>
               <p>
-                Get direct access to state tournaments, music video shoots, and studio showcase nights.
+                Direct opportunities for state competitions, studio showcase video shoots, and performance battles.
               </p>
             </div>
 
@@ -873,7 +907,7 @@ function App() {
               <span className="feature-icon">🤝</span>
               <h3>All Skill Levels Welcome</h3>
               <p>
-                From absolute beginners taking their first steps to advanced dancers seeking refinement.
+                Whether you are stepping onto the floor for the first time or training for pro performances.
               </p>
             </div>
           </div>
@@ -882,12 +916,12 @@ function App() {
         {/* STUDIO LOCATIONS */}
         <section className="studios-section" id="studios">
           <div className="section-header-box centered">
-            <p className="eyebrow">OUR CHENNAI BRANCHES</p>
+            <span className="section-kicker">OUR CHENNAI BRANCHES</span>
             <h2>
               VISIT OUR <span>STUDIOS.</span>
             </h2>
             <p className="section-subtitle">
-              State-of-the-art facilities equipped with surround audio, acoustics, and air conditioning.
+              Fully air-conditioned facilities with surround sound systems and ample practice spaces.
             </p>
           </div>
 
@@ -1001,7 +1035,7 @@ function App() {
           <div className="footer-col">
             <h4>Dance Disciplines</h4>
             <span>Choreography Masterclasses</span>
-            <span>Hip-Hop & Urban Choreography</span>
+            <span>Hip-Hop & Urban Styles</span>
             <span>Folk & South Indian Kuthu</span>
             <span>Contemporary & Lyrical</span>
             <span>Bollywood & Freestyle</span>
