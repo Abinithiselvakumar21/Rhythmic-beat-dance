@@ -1,5 +1,6 @@
 /* ======================================================
    RHYTHMIC BEAT DANCE COURT — CLEAN LIGHT MODERN STYLESHEET
+   OPTION 1: BOOKMYSHOW / EVENTBRITE PRO STYLE + POPUP MODAL
    ====================================================== */
 
 :root {
@@ -14,7 +15,7 @@
   --primary: #d90429;
   --primary-hover: #ef233c;
   --primary-subtle: #fee2e2;
-  --primary-glow: rgba(217, 4, 41, 0.18);
+  --primary-glow: rgba(217, 4, 41, 0.2);
   
   --accent-amber: #d97706;
   --accent-amber-subtle: #fef3c7;
@@ -61,7 +62,7 @@ body {
 }
 
 /* ======================================================
-   1. NAVBAR (CLEAN WHITE GLASS)
+   1. NAVBAR
    ====================================================== */
 
 .navbar {
@@ -164,7 +165,7 @@ body {
 }
 
 /* ======================================================
-   2. HERO SECTION (BRIGHT & ENERGETIC)
+   2. HERO SECTION
    ====================================================== */
 
 .hero {
@@ -207,11 +208,7 @@ body {
   color: var(--text-heading);
 }
 
-.accent-red {
-  color: var(--primary);
-}
-
-.highlight-text {
+.accent-red, .highlight-text {
   color: var(--primary);
 }
 
@@ -640,7 +637,7 @@ body {
   font-size: 10px;
 }
 
-/* COMPACT CARDS (CLEAN & MODERN) */
+/* COMPACT CARDS IN GRID */
 .compact-workshop-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(270px, 310px));
@@ -673,7 +670,7 @@ body {
   overflow: hidden;
 }
 
-/* Guarantees face is never cropped */
+/* Face is never cropped */
 .compact-card-img {
   width: 100%;
   height: 100%;
@@ -720,18 +717,6 @@ body {
   font-size: 9px;
   font-weight: 800;
   letter-spacing: 0.5px;
-}
-
-.card-has-audio-badge {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  padding: 3px 8px;
-  border-radius: var(--radius-sm);
-  background: rgba(17, 24, 39, 0.85);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
 }
 
 .compact-card-body {
@@ -881,10 +866,10 @@ body {
 }
 
 /* ======================================================
-   5. WORKSHOP DETAIL VIEW (CLEAN & REFINED)
+   5. OPTION 1: BOOKMYSHOW / EVENTBRITE PRO STYLE
    ====================================================== */
 
-.workshop-detail-container {
+.option1-detail-container {
   width: 100%;
 }
 
@@ -925,42 +910,60 @@ body {
   text-transform: uppercase;
 }
 
-.workshop-detail-grid {
+.eventbrite-card-wrapper {
   display: flex;
-  align-items: flex-start;
-  gap: 30px;
-}
-
-/* LEFT COLUMN */
-.detail-main-content {
-  flex: 1;
-  min-width: 0;
+  align-items: stretch;
+  gap: 32px;
   background: #ffffff;
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 26px;
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow-md);
 }
 
-/* Compact Banner with Face Position */
-.detail-banner-wrap {
+/* LEFT: POSTER CARD (Full poster without zoom crop!) */
+.eventbrite-poster-box {
+  width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.poster-frame {
   position: relative;
   width: 100%;
-  height: 260px;
-  border-radius: var(--radius-sm);
+  height: 420px;
+  border-radius: var(--radius-md);
   overflow: hidden;
-  background: #eef1f6;
-  margin-bottom: 22px;
+  background: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-md);
 }
 
-.detail-banner-img {
+.poster-bg-blur {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: top center;
+  filter: blur(20px);
+  opacity: 0.35;
+  transform: scale(1.15);
+  pointer-events: none;
 }
 
-.detail-banner-placeholder {
+/* Guarantees entire poster flyer is visible without any crop */
+.poster-img {
+  position: relative;
+  z-index: 1;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.poster-placeholder {
   width: 100%;
   height: 100%;
   display: flex;
@@ -968,22 +971,23 @@ body {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: linear-gradient(135deg, #fce7f3, #e0e7ff);
+  background: linear-gradient(135deg, #fee2e2, #e0e7ff);
   color: var(--primary);
-  font-size: 34px;
+  font-size: 36px;
 }
 
-.detail-banner-placeholder p {
-  font-size: 12px;
-  color: var(--text-muted);
+.poster-placeholder p {
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 1.5px;
+  color: var(--text-muted);
 }
 
-.banner-tag {
+.poster-tag {
   position: absolute;
-  top: 14px;
-  left: 14px;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
   padding: 5px 11px;
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.95);
@@ -994,8 +998,16 @@ body {
   box-shadow: var(--shadow-sm);
 }
 
-.detail-title {
-  margin: 0 0 20px;
+/* RIGHT: WORKSHOP DETAILS */
+.eventbrite-info-col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.eventbrite-title {
+  margin: 0 0 16px;
   font-family: var(--font-heading);
   font-size: clamp(24px, 3.2vw, 34px);
   font-weight: 900;
@@ -1006,9 +1018,9 @@ body {
 .detail-specs-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-  margin-bottom: 26px;
-  padding: 16px;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 14px 16px;
   background: var(--bg-body);
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-subtle);
@@ -1039,14 +1051,45 @@ body {
   color: var(--text-heading);
 }
 
+/* CLEAN "NAME OF THE SONG" BOX */
+.song-detail-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--primary-subtle);
+  border: 1px solid rgba(217, 4, 41, 0.25);
+  margin-bottom: 20px;
+}
+
+.song-badge-icon {
+  font-size: 22px;
+}
+
+.song-badge-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: 0.8px;
+}
+
+.song-badge-title {
+  margin: 2px 0 0;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-heading);
+}
+
 .detail-info-block {
-  margin-bottom: 26px;
+  margin-bottom: 20px;
 }
 
 .detail-info-block h3 {
-  margin: 0 0 10px;
+  margin: 0 0 8px;
   font-family: var(--font-heading);
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 800;
   color: var(--text-heading);
 }
@@ -1054,57 +1097,21 @@ body {
 .detail-description {
   margin: 0;
   color: var(--text-body);
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.7;
   white-space: pre-line;
 }
 
-.detail-audio-box {
-  margin-bottom: 26px;
-  padding: 18px;
-  border-radius: var(--radius-sm);
-  background: var(--bg-body);
-  border: 1px solid var(--border-subtle);
-}
-
-.audio-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-.audio-icon {
-  font-size: 22px;
-  color: var(--primary);
-}
-
-.audio-header strong {
-  display: block;
-  font-size: 13px;
-  color: var(--text-heading);
-}
-
-.audio-header p {
-  margin: 2px 0 0;
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-.detail-audio-box audio {
-  width: 100%;
-  accent-color: var(--primary);
-}
-
 .detail-guidelines-box {
-  padding: 18px;
+  padding: 16px;
   border-radius: var(--radius-sm);
   background: var(--bg-body);
   border: 1px solid var(--border-subtle);
+  margin-bottom: 24px;
 }
 
 .detail-guidelines-box h4 {
-  margin: 0 0 10px;
+  margin: 0 0 8px;
   font-size: 13px;
   font-weight: 800;
   color: var(--text-heading);
@@ -1114,126 +1121,164 @@ body {
   margin: 0;
   padding-left: 18px;
   color: var(--text-body);
-  font-size: 13px;
-  line-height: 1.7;
+  font-size: 12px;
+  line-height: 1.6;
 }
 
-/* RIGHT COLUMN: CREATIVE VIP DANCE PASS CARD */
-.detail-sidebar-col {
-  width: 370px;
-  flex-shrink: 0;
-  position: sticky;
-  top: 90px;
-}
-
-.ticket-pass-card {
-  background: #ffffff;
-  border: 1.5px solid #fecaca;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
-  overflow: hidden;
-}
-
-.ticket-top-notch {
-  padding: 20px 22px 14px;
+/* BOOKING CTA BAR */
+.booking-cta-bar {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  background: #fff;
+  gap: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: auto;
 }
 
-.ticket-brand span {
-  display: block;
-  font-family: var(--font-heading);
-  font-size: 14px;
-  font-weight: 900;
-  color: var(--primary);
+.fee-summary-box {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fee-summary-box small {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text-muted);
   letter-spacing: 0.5px;
 }
 
-.ticket-brand small {
+.fee-summary-box strong {
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--primary);
+}
+
+.open-booking-modal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  border: none;
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 16px var(--primary-glow);
+}
+
+.open-booking-modal-btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(217, 4, 41, 0.35);
+}
+
+/* ======================================================
+   6. BOOKING POPUP MODAL
+   ====================================================== */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+
+.booking-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: 30px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+  animation: modalScale 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalScale {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-body);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-heading);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-close-btn:hover {
+  background: var(--primary-subtle);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.modal-header {
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.modal-tag {
+  display: inline-block;
   font-size: 10px;
-  color: var(--text-muted);
-  font-weight: 700;
-}
-
-.ticket-price-box {
-  text-align: right;
-}
-
-.price-label {
-  display: block;
-  font-size: 9px;
   font-weight: 800;
-  color: var(--text-muted);
+  color: var(--primary);
+  letter-spacing: 1px;
+  margin-bottom: 4px;
 }
 
-.price-val {
+.modal-header h3 {
+  margin: 0 0 4px;
+  font-family: var(--font-heading);
   font-size: 20px;
   font-weight: 900;
-  font-family: var(--font-heading);
   color: var(--text-heading);
 }
 
-/* Perforated ticket line */
-.ticket-divider {
-  position: relative;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  background: #fff;
+.modal-workshop-name {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
 }
 
-.notch-left, .notch-right {
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--bg-subtle);
-  border: 1.5px solid #fecaca;
-  top: 2px;
-}
-
-.notch-left {
-  left: -8px;
-}
-
-.notch-right {
-  right: -8px;
-}
-
-.dashed-line {
-  width: 100%;
-  border-top: 1.5px dashed #fca5a5;
-  margin: 0 16px;
-}
-
-.ticket-body {
-  padding: 6px 22px 22px;
-  background: #fff;
-}
-
-.urgency-banner {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-  background: var(--accent-amber-subtle);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-  color: var(--accent-amber);
-  font-size: 11px;
+.modal-workshop-name span {
+  color: var(--primary);
   font-weight: 800;
-  margin-bottom: 18px;
 }
 
-.pulse-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--accent-amber);
-}
-
+/* Modal Form */
 .slot-quick-selector {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -1242,12 +1287,12 @@ body {
 }
 
 .slot-pill-btn {
-  padding: 7px 0;
+  padding: 8px 0;
   border-radius: var(--radius-sm);
   background: var(--bg-body);
   border: 1px solid var(--border-subtle);
   color: var(--text-body);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -1264,26 +1309,26 @@ body {
 }
 
 .reserve-form .form-group {
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .reserve-form label {
   display: block;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   color: var(--text-heading);
-  margin-bottom: 4px;
+  margin-bottom: 5px;
 }
 
 .reserve-form input {
   width: 100%;
-  padding: 10px 12px;
+  padding: 11px 14px;
   background: var(--bg-body);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   color: var(--text-heading);
   font-family: var(--font-body);
-  font-size: 13px;
+  font-size: 14px;
   outline: none;
   transition: border-color 0.2s ease, background 0.2s ease;
 }
@@ -1295,14 +1340,14 @@ body {
 
 .reserve-submit-btn {
   width: 100%;
-  padding: 13px 0;
-  margin-top: 6px;
+  padding: 14px 0;
+  margin-top: 8px;
   border-radius: var(--radius-sm);
   background: var(--primary);
   border: none;
   color: #fff;
   font-family: var(--font-heading);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 900;
   letter-spacing: 0.8px;
   cursor: pointer;
@@ -1315,109 +1360,117 @@ body {
   transform: translateY(-1px);
 }
 
-.reserve-footer-assistance {
+.modal-footer-help {
   margin-top: 18px;
   padding-top: 14px;
   border-top: 1px solid var(--border-subtle);
   text-align: center;
 }
 
-.reserve-footer-assistance p {
-  margin: 0 0 6px;
-  font-size: 11px;
+.modal-footer-help p {
+  margin: 0;
+  font-size: 12px;
   color: var(--text-muted);
 }
 
-.chat-wa-link {
+.modal-footer-help a {
   color: #25d366;
-  font-size: 12px;
   font-weight: 800;
   text-decoration: none;
 }
 
-.chat-wa-link:hover {
+.modal-footer-help a:hover {
   text-decoration: underline;
 }
 
-/* Ticket Confirmation Card */
-.ticket-confirmed-box {
+/* Modal Confirmation Screen */
+.modal-confirmed-content {
   text-align: center;
   padding: 10px 0;
 }
 
 .confirmed-badge {
   display: inline-block;
-  padding: 4px 12px;
+  padding: 5px 14px;
   border-radius: var(--radius-full);
   background: #dcfce7;
   color: #15803d;
   font-size: 11px;
   font-weight: 800;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
-.ticket-confirmed-box h4 {
+.modal-confirmed-content h3 {
   margin: 0 0 6px;
-  font-size: 18px;
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 900;
   color: var(--text-heading);
 }
 
-.confirmed-sub {
-  margin: 0 0 16px;
-  font-size: 12px;
+.confirmed-desc {
+  margin: 0 0 18px;
+  font-size: 13px;
   color: var(--text-muted);
   line-height: 1.5;
 }
 
-.mini-ticket-summary {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  padding: 10px;
+.ticket-voucher {
   background: var(--bg-body);
-  border-radius: var(--radius-sm);
-  margin-bottom: 16px;
+  border: 1.5px dashed #fca5a5;
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 18px;
   text-align: left;
 }
 
-.mini-ticket-summary small {
-  font-size: 9px;
-  font-weight: 800;
-  color: var(--text-muted);
+.voucher-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 12px;
 }
 
-.mini-ticket-summary p {
-  margin: 2px 0 0;
-  font-size: 12px;
+.voucher-row:last-child {
+  margin-bottom: 0;
+}
+
+.voucher-row span {
+  color: var(--text-muted);
   font-weight: 700;
+  font-size: 11px;
+}
+
+.voucher-row strong {
   color: var(--text-heading);
+  font-weight: 800;
 }
 
 .whatsapp-reserve-btn {
   display: block;
   width: 100%;
-  padding: 11px 0;
+  padding: 13px 0;
   background: #25d366;
   color: #fff;
   font-weight: 800;
   border-radius: var(--radius-sm);
   text-decoration: none;
-  font-size: 12px;
-  margin-bottom: 8px;
-  box-shadow: 0 2px 8px rgba(37, 211, 102, 0.3);
+  font-size: 13px;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
 }
 
 .reset-form-btn {
   background: transparent;
   border: none;
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 12px;
   cursor: pointer;
   text-decoration: underline;
 }
 
 /* ======================================================
-   6. WHY CHOOSE US
+   7. WHY CHOOSE US
    ====================================================== */
 
 .why-us-section {
@@ -1468,7 +1521,7 @@ body {
 }
 
 /* ======================================================
-   7. STUDIOS SECTION
+   8. STUDIOS SECTION
    ====================================================== */
 
 .studios-section {
@@ -1555,7 +1608,7 @@ body {
 }
 
 /* ======================================================
-   8. FOOTER (RICH CHARCOAL CONTRAST)
+   9. FOOTER
    ====================================================== */
 
 .site-footer {
@@ -1658,7 +1711,7 @@ body {
 }
 
 /* ======================================================
-   9. RESPONSIVE BREAKPOINTS
+   10. RESPONSIVE BREAKPOINTS
    ====================================================== */
 
 @media (max-width: 1100px) {
@@ -1671,13 +1724,16 @@ body {
     position: static;
   }
 
-  .workshop-detail-grid {
+  .eventbrite-card-wrapper {
     flex-direction: column;
   }
 
-  .detail-sidebar-col {
+  .eventbrite-poster-box {
     width: 100%;
-    position: static;
+  }
+
+  .poster-frame {
+    height: 360px;
   }
 
   .features-grid {
@@ -1716,6 +1772,21 @@ body {
 
   .nav-links-open {
     display: flex;
+  }
+
+  .poster-frame {
+    height: 300px;
+  }
+
+  .booking-cta-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+  }
+
+  .open-booking-modal-btn {
+    width: 100%;
+    justify-content: center;
   }
 
   .detail-specs-grid {

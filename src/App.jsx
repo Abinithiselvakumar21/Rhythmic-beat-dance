@@ -13,6 +13,18 @@ function assetUrl(path) {
   return `${SERVER}/${path.replace(/^\/+/, '')}`;
 }
 
+function formatSongName(songPath) {
+  if (!songPath || songPath.trim() === '') {
+    return 'Special Event Choreography Track';
+  }
+  // Extract filename if it is a path/url
+  const clean = songPath.split('/').pop().replace(/\.[^/.]+$/, '');
+  const formatted = clean.replace(/^\d+[-_]?/, '').replace(/[-_]+/g, ' ').trim();
+  return formatted
+    ? formatted.replace(/\b\w/g, (c) => c.toUpperCase())
+    : 'Special Event Choreography Track';
+}
+
 const CATEGORIES = [
   'All Styles',
   'Choreography',
@@ -36,7 +48,8 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
 
-  // Slot Reservation State
+  // Booking Modal & Reservation State
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [reserveForm, setReserveForm] = useState({
     name: '',
     phone: '',
@@ -143,6 +156,7 @@ function App() {
   const handleOpenWorkshop = (ev) => {
     setSelectedWorkshop(ev);
     setReserveSuccess(false);
+    setIsBookingModalOpen(false);
     window.location.hash = `ws-${ev._id}`;
     const el = document.getElementById('workshops');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -152,12 +166,13 @@ function App() {
   const handleCloseWorkshop = () => {
     setSelectedWorkshop(null);
     setReserveSuccess(false);
+    setIsBookingModalOpen(false);
     window.location.hash = 'workshops';
     const el = document.getElementById('workshops');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Handle Reservation Submit
+  // Handle Reservation Submit in Popup
   const handleReserveSubmit = (e) => {
     e.preventDefault();
     if (!reserveForm.name.trim() || !reserveForm.phone.trim()) {
@@ -170,16 +185,16 @@ function App() {
     setReserveSuccess(true);
 
     // Pre-fill WhatsApp message
-    const message = `*RHYTHMIC BEAT DANCE COURT — WORKSHOP PASS CONFIRMATION*\n\n` +
+    const message = `*RHYTHMIC BEAT DANCE COURT — WORKSHOP ADMISSION REQUEST*\n\n` +
       `🎟️ *Pass Code:* ${genId}\n` +
       `🔥 *Workshop:* ${selectedWorkshop?.title}\n` +
       `👤 *Dancer Name:* ${reserveForm.name}\n` +
       `📞 *WhatsApp:* ${reserveForm.phone}\n` +
       `📧 *Email:* ${reserveForm.email || 'N/A'}\n` +
-      `👥 *Slots Reserved:* ${reserveForm.slots}\n` +
+      `👥 *Passes Reserved:* ${reserveForm.slots}\n` +
       `📅 *Date:* ${selectedWorkshop?.date || 'Scheduled Soon'}\n` +
       `📍 *Location:* Valasaravakkam Studio, Chennai\n\n` +
-      `Please confirm my admission and provide payment link. Thank you!`;
+      `Please confirm my registration and share UPI/Payment instructions. Thank you!`;
 
     const waUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
     window.open(waUrl, '_blank');
@@ -308,9 +323,10 @@ function App() {
             </div>
           ) : selectedWorkshop ? (
             /* =========================================
-               WORKSHOP DETAIL VIEW (like rbdancecourt.com/#ws-...)
+               OPTION 1: BOOKMYSHOW / EVENTBRITE PRO STYLE
+               Poster card on left (No zoom crop!) + details on right + Popup Modal
                ========================================= */
-            <div className="workshop-detail-container">
+            <div className="option1-detail-container">
               <div className="detail-top-nav">
                 <button
                   type="button"
@@ -324,34 +340,45 @@ function App() {
                 </span>
               </div>
 
-              <div className="workshop-detail-grid">
-                {/* LEFT COLUMN: Workshop In-depth Info */}
-                <div className="detail-main-content">
-                  <div className="detail-banner-wrap">
+              <div className="eventbrite-card-wrapper">
+                {/* LEFT: POSTER CARD (Full poster without zoom crop!) */}
+                <div className="eventbrite-poster-box">
+                  <div className="poster-frame">
                     {assetUrl(selectedWorkshop.image) && !failedImages[selectedWorkshop._id] ? (
-                      <img
-                        src={assetUrl(selectedWorkshop.image)}
-                        alt={selectedWorkshop.title}
-                        className="detail-banner-img"
-                        onError={() =>
-                          setFailedImages((prev) => ({
-                            ...prev,
-                            [selectedWorkshop._id]: true,
-                          }))
-                        }
-                      />
+                      <>
+                        <img
+                          src={assetUrl(selectedWorkshop.image)}
+                          alt={selectedWorkshop.title}
+                          className="poster-bg-blur"
+                          aria-hidden="true"
+                        />
+                        <img
+                          src={assetUrl(selectedWorkshop.image)}
+                          alt={selectedWorkshop.title}
+                          className="poster-img"
+                          onError={() =>
+                            setFailedImages((prev) => ({
+                              ...prev,
+                              [selectedWorkshop._id]: true,
+                            }))
+                          }
+                        />
+                      </>
                     ) : (
-                      <div className="detail-banner-placeholder">
+                      <div className="poster-placeholder">
                         <span>✦</span>
                         <p>RHYTHMIC BEAT DANCE COURT</p>
                       </div>
                     )}
-                    <span className="banner-tag">
+                    <span className="poster-tag">
                       {selectedWorkshop.status || 'OPEN FOR BOOKING'}
                     </span>
                   </div>
+                </div>
 
-                  <h1 className="detail-title">{selectedWorkshop.title}</h1>
+                {/* RIGHT: WORKSHOP DETAILS */}
+                <div className="eventbrite-info-col">
+                  <h1 className="eventbrite-title">{selectedWorkshop.title}</h1>
 
                   {/* Highlights Grid */}
                   <div className="detail-specs-grid">
@@ -389,6 +416,17 @@ function App() {
                     </div>
                   </div>
 
+                  {/* Clean "Name of the Song" display instead of audio player */}
+                  <div className="song-detail-box">
+                    <span className="song-badge-icon">🎵</span>
+                    <div>
+                      <small className="song-badge-label">NAME OF THE SONG</small>
+                      <p className="song-badge-title">
+                        {formatSongName(selectedWorkshop.song)}
+                      </p>
+                    </div>
+                  </div>
+
                   {/* Description */}
                   <div className="detail-info-block">
                     <h3>About The Workshop</h3>
@@ -397,23 +435,6 @@ function App() {
                         'Get ready to learn an explosive choreography piece with master techniques, musicality, dynamic body control, and stage presence.'}
                     </p>
                   </div>
-
-                  {/* Audio track preview */}
-                  {selectedWorkshop.song && (
-                    <div className="detail-audio-box">
-                      <div className="audio-header">
-                        <span className="audio-icon">♫</span>
-                        <div>
-                          <strong>Official Workshop Track</strong>
-                          <p>Listen to the track you will be dancing to</p>
-                        </div>
-                      </div>
-                      <audio controls preload="none">
-                        <source src={assetUrl(selectedWorkshop.song)} />
-                        Your browser does not support audio playback.
-                      </audio>
-                    </div>
-                  )}
 
                   {/* What to Bring */}
                   <div className="detail-guidelines-box">
@@ -425,87 +446,117 @@ function App() {
                       <li>Please arrive 15 minutes prior to warm-up.</li>
                     </ul>
                   </div>
+
+                  {/* Booking CTA Bar */}
+                  <div className="booking-cta-bar">
+                    <div className="fee-summary-box">
+                      <small>REGISTRATION FEE</small>
+                      <strong>{selectedWorkshop.prize || 'Contact Studio'}</strong>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="open-booking-modal-btn"
+                      onClick={() => {
+                        setReserveSuccess(false);
+                        setIsBookingModalOpen(true);
+                      }}
+                    >
+                      BOOK YOUR SLOT NOW <span>🎟️</span>
+                    </button>
+                  </div>
                 </div>
+              </div>
 
-                {/* RIGHT COLUMN: Creative VIP Dance Pass Card */}
-                <aside className="detail-sidebar-col">
-                  <div className="ticket-pass-card">
-                    <div className="ticket-top-notch">
-                      <div className="ticket-brand">
-                        <span>🎟️ ADMISSION PASS</span>
-                        <small>RHYTHMIC BEAT</small>
-                      </div>
-                      <div className="ticket-price-box">
-                        <span className="price-label">FEE</span>
-                        <strong className="price-val">
-                          {selectedWorkshop.prize || 'Contact Studio'}
-                        </strong>
-                      </div>
-                    </div>
+              {/* =========================================
+                 BOOKING POPUP MODAL (Clean Interactive Popup)
+                 ========================================= */}
+              {isBookingModalOpen && (
+                <div
+                  className="modal-overlay"
+                  onClick={() => setIsBookingModalOpen(false)}
+                >
+                  <div
+                    className="booking-modal-card"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      type="button"
+                      className="modal-close-btn"
+                      aria-label="Close booking popup"
+                      onClick={() => setIsBookingModalOpen(false)}
+                    >
+                      ✕
+                    </button>
 
-                    <div className="ticket-divider">
-                      <span className="notch-left" />
-                      <span className="dashed-line" />
-                      <span className="notch-right" />
-                    </div>
+                    {reserveSuccess ? (
+                      <div className="modal-confirmed-content">
+                        <div className="confirmed-badge">✓ SLOT RESERVED</div>
+                        <h3>Pass Claimed Successfully!</h3>
+                        <p className="confirmed-desc">
+                          Your pass code is <strong>#{ticketId}</strong>. We've
+                          opened WhatsApp to finalize your booking with our team.
+                        </p>
 
-                    <div className="ticket-body">
-                      <div className="urgency-banner">
-                        <span className="pulse-dot" />
-                        <span>
-                          {selectedWorkshop.slots > 0
-                            ? `Only ${selectedWorkshop.slots} Passes Remaining!`
-                            : 'Open Admissions • Fast Filling!'}
-                        </span>
-                      </div>
-
-                      {reserveSuccess ? (
-                        <div className="ticket-confirmed-box">
-                          <div className="confirmed-badge">✓ PASS CLAIMED</div>
-                          <h4>You're Registered!</h4>
-                          <p className="confirmed-sub">
-                            Your pass code is <strong>#{ticketId}</strong>. We've
-                            opened WhatsApp to finalize your booking with our team.
-                          </p>
-
-                          <div className="mini-ticket-summary">
-                            <div>
-                              <small>DANCER</small>
-                              <p>{reserveForm.name}</p>
-                            </div>
-                            <div>
-                              <small>PASSES</small>
-                              <p>{reserveForm.slots} Slot(s)</p>
-                            </div>
+                        <div className="ticket-voucher">
+                          <div className="voucher-row">
+                            <span>WORKSHOP:</span>
+                            <strong>{selectedWorkshop.title}</strong>
                           </div>
-
-                          <a
-                            className="whatsapp-reserve-btn"
-                            href={`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(
-                              `Hi RB Dance Court! I have reserved pass #${ticketId} for: ${selectedWorkshop.title}`
-                            )}`}
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            💬 Send Pass via WhatsApp
-                          </a>
-
-                          <button
-                            type="button"
-                            className="reset-form-btn"
-                            onClick={() => setReserveSuccess(false)}
-                          >
-                            Book Another Pass
-                          </button>
+                          <div className="voucher-row">
+                            <span>DANCER:</span>
+                            <strong>{reserveForm.name}</strong>
+                          </div>
+                          <div className="voucher-row">
+                            <span>PASSES:</span>
+                            <strong>{reserveForm.slots} Slot(s)</strong>
+                          </div>
+                          <div className="voucher-row">
+                            <span>LOCATION:</span>
+                            <strong>Valasaravakkam, Chennai</strong>
+                          </div>
                         </div>
-                      ) : (
+
+                        <a
+                          className="whatsapp-reserve-btn"
+                          href={`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(
+                            `Hi RB Dance Court! I have reserved pass #${ticketId} for: ${selectedWorkshop.title}`
+                          )}`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          💬 Send Pass via WhatsApp
+                        </a>
+
+                        <button
+                          type="button"
+                          className="reset-form-btn"
+                          onClick={() => {
+                            setReserveSuccess(false);
+                            setIsBookingModalOpen(false);
+                          }}
+                        >
+                          Close Window
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="modal-header">
+                          <span className="modal-tag">ADMISSION PASS</span>
+                          <h3>Reserve Your Slot</h3>
+                          <p className="modal-workshop-name">
+                            {selectedWorkshop.title} •{' '}
+                            <span>{selectedWorkshop.prize || 'Fee on Request'}</span>
+                          </p>
+                        </div>
+
                         <form
                           className="reserve-form"
                           onSubmit={handleReserveSubmit}
                         >
                           {/* Quick Slot Selector */}
                           <div className="form-group">
-                            <label>Select Quantity of Passes</label>
+                            <label>Quantity of Passes</label>
                             <div className="slot-quick-selector">
                               {[1, 2, 3, 4].map((num) => (
                                 <button
@@ -515,7 +566,10 @@ function App() {
                                     reserveForm.slots === num ? 'active' : ''
                                   }`}
                                   onClick={() =>
-                                    setReserveForm({ ...reserveForm, slots: num })
+                                    setReserveForm({
+                                      ...reserveForm,
+                                      slots: num,
+                                    })
                                   }
                                 >
                                   {num} {num === 1 ? 'Pass' : 'Passes'}
@@ -525,9 +579,9 @@ function App() {
                           </div>
 
                           <div className="form-group">
-                            <label htmlFor="res-name">Full Name *</label>
+                            <label htmlFor="modal-name">Full Name *</label>
                             <input
-                              id="res-name"
+                              id="modal-name"
                               type="text"
                               placeholder="e.g. Rahul Sharma"
                               required
@@ -542,9 +596,9 @@ function App() {
                           </div>
 
                           <div className="form-group">
-                            <label htmlFor="res-phone">WhatsApp Number *</label>
+                            <label htmlFor="modal-phone">WhatsApp Number *</label>
                             <input
-                              id="res-phone"
+                              id="modal-phone"
                               type="tel"
                               placeholder="e.g. 9876543210"
                               required
@@ -559,9 +613,9 @@ function App() {
                           </div>
 
                           <div className="form-group">
-                            <label htmlFor="res-email">Email (Optional)</label>
+                            <label htmlFor="modal-email">Email (Optional)</label>
                             <input
-                              id="res-email"
+                              id="modal-email"
                               type="email"
                               placeholder="dancer@gmail.com"
                               value={reserveForm.email}
@@ -575,28 +629,29 @@ function App() {
                           </div>
 
                           <button type="submit" className="reserve-submit-btn">
-                            CONFIRM & CLAIM PASS <span>🎟️</span>
+                            CONFIRM & CLAIM TICKET <span>🎟️</span>
                           </button>
                         </form>
-                      )}
 
-                      <div className="reserve-footer-assistance">
-                        <p>Need assistance or have queries?</p>
-                        <a
-                          href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20RB%20Dance%20Court%2C%20I%20have%20questions%20about%20${encodeURIComponent(
-                            selectedWorkshop.title
-                          )}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="chat-wa-link"
-                        >
-                          💬 Chat With Studio Coordinator
-                        </a>
-                      </div>
-                    </div>
+                        <div className="modal-footer-help">
+                          <p>
+                            Have queries?{' '}
+                            <a
+                              href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20RB%20Dance%20Court%2C%20I%20have%20questions%20about%20${encodeURIComponent(
+                                selectedWorkshop.title
+                              )}`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              Chat on WhatsApp
+                            </a>
+                          </p>
+                        </div>
+                      </>
+                    )}
                   </div>
-                </aside>
-              </div>
+                </div>
+              )}
             </div>
           ) : (
             /* =========================================
@@ -805,12 +860,6 @@ function App() {
                             <span className="card-status-badge">
                               {event.status || 'UPCOMING'}
                             </span>
-
-                            {event.song && (
-                              <span className="card-has-audio-badge" title="Has Audio Track">
-                                ♫ Track
-                              </span>
-                            )}
                           </div>
 
                           {/* Info Body */}
@@ -853,7 +902,7 @@ function App() {
                                 handleOpenWorkshop(event);
                               }}
                             >
-                              Reserve Your Slot <span>↗</span>
+                              View Details & Book <span>↗</span>
                             </button>
                           </div>
                         </article>
