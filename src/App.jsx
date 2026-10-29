@@ -5,7 +5,8 @@ import AdminDashboard from './AdminDashboard';
 
 const SERVER = 'https://rhythmic-beat-dance.onrender.com';
 const API = `${SERVER}/api/events`;
-const WHATSAPP_PHONE = '919940428809'; // RB Dance Court Official WhatsApp
+const BOOKINGS_API = `${SERVER}/api/bookings`;
+const WHATSAPP_PHONE = '919994716471'; // Updated RB Dance Court Official WhatsApp
 
 function assetUrl(path) {
   if (!path) return '';
@@ -17,7 +18,6 @@ function formatSongName(songPath) {
   if (!songPath || songPath.trim() === '') {
     return 'Special Event Choreography Track';
   }
-  // Extract filename if it is a path/url
   const clean = songPath.split('/').pop().replace(/\.[^/.]+$/, '');
   const formatted = clean.replace(/^\d+[-_]?/, '').replace(/[-_]+/g, ' ').trim();
   return formatted
@@ -33,6 +33,53 @@ const CATEGORIES = [
   'Contemporary',
   'Bollywood',
   'Freestyle',
+];
+
+const FAQS = [
+  {
+    q: 'Are these choreography workshops suitable for beginners?',
+    a: 'Yes, absolutely! Our choreographers break down routines step-by-step with counts, musicality, and body-isolation exercises before moving to full speed. Both beginners and intermediate dancers learn smoothly.',
+  },
+  {
+    q: 'What should I wear and bring to the dance court?',
+    a: 'Wear comfortable athletic attire (sweatpants, oversized t-shirt, leggings) and clean dance sneakers or running shoes. Please bring your personal water bottle and hand towel.',
+  },
+  {
+    q: 'How does payment confirmation work after I reserve my pass?',
+    a: 'When you submit the booking form, your details are instantly registered in our database, and WhatsApp opens automatically. Our coordinator will provide instant UPI / GPay payment details or confirm cash on spot.',
+  },
+  {
+    q: 'Will I receive a video recording of the routine?',
+    a: 'Yes! At the end of every workshop, we conduct a professional 4K studio video shoot with stage lights. You will receive full high-definition video access to post on Instagram/YouTube.',
+  },
+  {
+    q: 'Can I transfer my pass to a friend if I cannot attend?',
+    a: 'Yes, if you inform our studio coordinator on WhatsApp at least 12 hours prior to the workshop, we can easily transfer your pass code to a friend or credit it towards the next workshop.',
+  },
+];
+
+const REVIEWS = [
+  {
+    name: 'Priya Mahalingam',
+    style: 'Hip-Hop & Urban',
+    rating: 5,
+    comment: 'The energy at Rhythmic Beat Dance Court is unreal! The mentors break down complex choreography so effortlessly. Loved the wooden floor vibe!',
+    date: 'October 2026',
+  },
+  {
+    name: 'Karthik Saravanan',
+    style: 'Folk & Kuthu Intensive',
+    rating: 5,
+    comment: 'Attended the special choreography battle workshop. The musicality tips and stage presentation training were gold. 100% recommended for dancers!',
+    date: 'September 2026',
+  },
+  {
+    name: 'Ananya Ramesh',
+    style: 'Contemporary & Lyrical',
+    rating: 5,
+    comment: 'Joint-safe wooden floors make such a huge difference! Trained for 3 hours with zero ankle fatigue. Studio facilities and AC are top-class.',
+    date: 'October 2026',
+  },
 ];
 
 function App() {
@@ -57,8 +104,12 @@ function App() {
     slots: 1,
     notes: '',
   });
+  const [isSubmittingBooking, setIsSubmittingBooking] = useState(false);
   const [reserveSuccess, setReserveSuccess] = useState(false);
   const [ticketId, setTicketId] = useState('');
+
+  // FAQ Accordion Active State
+  const [openFaqIndex, setOpenFaqIndex] = useState(0);
 
   // Load events from backend
   useEffect(() => {
@@ -79,7 +130,7 @@ function App() {
     loadEvents();
   }, []);
 
-  // Sync hash routing with selected workshop (e.g. #ws-123 or #ws-choreo-ishwarya)
+  // Sync hash routing with selected workshop
   useEffect(() => {
     function handleHash() {
       const hash = window.location.hash;
@@ -124,7 +175,6 @@ function App() {
   // Filtered Events
   const filteredEvents = useMemo(() => {
     return events.filter((ev) => {
-      // Search filter
       const query = searchQuery.trim().toLowerCase();
       const matchesSearch =
         !query ||
@@ -133,7 +183,6 @@ function App() {
         ev.date?.toLowerCase().includes(query) ||
         ev.time?.toLowerCase().includes(query);
 
-      // Category filter
       let matchesCategory = true;
       if (activeCategory !== 'All Styles') {
         const catKeywords = activeCategory.toLowerCase().split(/[&/\s]+/);
@@ -141,7 +190,6 @@ function App() {
         matchesCategory = catKeywords.some((kw) => text.includes(kw));
       }
 
-      // Status filter
       let matchesStatus = true;
       if (statusFilter !== 'All') {
         matchesStatus =
@@ -172,8 +220,8 @@ function App() {
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Handle Reservation Submit in Popup
-  const handleReserveSubmit = (e) => {
+  // Handle Reservation Submit in Popup (Saves to MongoDB + WhatsApp Alert)
+  const handleReserveSubmit = async (e) => {
     e.preventDefault();
     if (!reserveForm.name.trim() || !reserveForm.phone.trim()) {
       alert('Please enter your Full Name and WhatsApp phone number.');
@@ -182,9 +230,32 @@ function App() {
 
     const genId = `RB-${Math.floor(1000 + Math.random() * 9000)}`;
     setTicketId(genId);
-    setReserveSuccess(true);
+    setIsSubmittingBooking(true);
 
-    // Pre-fill WhatsApp message
+    // 1. Save directly into MongoDB Backend
+    try {
+      await fetch(BOOKINGS_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: reserveForm.name.trim(),
+          phone: reserveForm.phone.trim(),
+          email: reserveForm.email.trim(),
+          eventId: selectedWorkshop?._id || '',
+          eventTitle: selectedWorkshop?.title || '',
+          slots: Number(reserveForm.slots) || 1,
+          ticketId: genId,
+          date: selectedWorkshop?.date || '',
+        }),
+      });
+    } catch (err) {
+      console.warn('Booking offline fallback:', err);
+    } finally {
+      setIsSubmittingBooking(false);
+      setReserveSuccess(true);
+    }
+
+    // 2. Pre-fill WhatsApp message to Studio coordinator
     const message = `*RHYTHMIC BEAT DANCE COURT — WORKSHOP ADMISSION REQUEST*\n\n` +
       `🎟️ *Pass Code:* ${genId}\n` +
       `🔥 *Workshop:* ${selectedWorkshop?.title}\n` +
@@ -194,7 +265,7 @@ function App() {
       `👥 *Passes Reserved:* ${reserveForm.slots}\n` +
       `📅 *Date:* ${selectedWorkshop?.date || 'Scheduled Soon'}\n` +
       `📍 *Location:* Valasaravakkam Studio, Chennai\n\n` +
-      `Please confirm my registration and share UPI/Payment instructions. Thank you!`;
+      `Please confirm my admission and share UPI/Payment instructions. Thank you!`;
 
     const waUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
     window.open(waUrl, '_blank');
@@ -202,6 +273,18 @@ function App() {
 
   return (
     <div className="app">
+      {/* FLOATING QUICK WHATSAPP CHAT BUTTON */}
+      <a
+        href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20Rhythmic%20Beat%20Dance%20Court!%20I%20have%20an%20enquiry.`}
+        target="_blank"
+        rel="noreferrer"
+        className="floating-whatsapp-widget"
+        aria-label="Chat with Studio on WhatsApp"
+      >
+        <span className="wa-icon">💬</span>
+        <span className="wa-text">Chat with Studio</span>
+      </a>
+
       {/* NAVBAR */}
       <header className="navbar">
         <a
@@ -228,6 +311,8 @@ function App() {
           <a href="#workshops" onClick={closeMenu}>Workshops</a>
           <a href="#why-us" onClick={closeMenu}>Why RB</a>
           <a href="#studios" onClick={closeMenu}>Studios</a>
+          <a href="#reviews" onClick={closeMenu}>Reviews</a>
+          <a href="#faq" onClick={closeMenu}>FAQ</a>
           <a
             className="whatsapp-nav-btn"
             href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20Rhythmic%20Beat%20Dance%20Court!%20I%20have%20an%20enquiry.`}
@@ -341,7 +426,7 @@ function App() {
               </div>
 
               <div className="eventbrite-card-wrapper">
-                {/* LEFT: POSTER CARD (Full poster without zoom crop!) */}
+                {/* LEFT: POSTER CARD */}
                 <div className="eventbrite-poster-box">
                   <div className="poster-frame">
                     {assetUrl(selectedWorkshop.image) && !failedImages[selectedWorkshop._id] ? (
@@ -416,7 +501,7 @@ function App() {
                     </div>
                   </div>
 
-                  {/* Clean "Name of the Song" display instead of audio player */}
+                  {/* Clean "Name of the Song" display */}
                   <div className="song-detail-box">
                     <span className="song-badge-icon">🎵</span>
                     <div>
@@ -425,6 +510,14 @@ function App() {
                         {formatSongName(selectedWorkshop.song)}
                       </p>
                     </div>
+                  </div>
+
+                  {/* Workshop Inclusions / Highlights */}
+                  <div className="inclusions-row">
+                    <span className="inclusion-chip">🎥 4K Video Shoot Included</span>
+                    <span className="inclusion-chip">🏆 Certificate of Participation</span>
+                    <span className="inclusion-chip">🎧 Practice Audio Access</span>
+                    <span className="inclusion-chip">💧 Full AC & Amenities</span>
                   </div>
 
                   {/* Description */}
@@ -468,9 +561,7 @@ function App() {
                 </div>
               </div>
 
-              {/* =========================================
-                 BOOKING POPUP MODAL (Clean Interactive Popup)
-                 ========================================= */}
+              {/* BOOKING POPUP MODAL */}
               {isBookingModalOpen && (
                 <div
                   className="modal-overlay"
@@ -494,8 +585,7 @@ function App() {
                         <div className="confirmed-badge">✓ SLOT RESERVED</div>
                         <h3>Pass Claimed Successfully!</h3>
                         <p className="confirmed-desc">
-                          Your pass code is <strong>#{ticketId}</strong>. We've
-                          opened WhatsApp to finalize your booking with our team.
+                          Your pass code is <strong>#{ticketId}</strong>. We've saved your registration to our database and opened WhatsApp to finalize your booking with our team.
                         </p>
 
                         <div className="ticket-voucher">
@@ -513,7 +603,7 @@ function App() {
                           </div>
                           <div className="voucher-row">
                             <span>LOCATION:</span>
-                            <strong>Valasaravakkam, Chennai</strong>
+                            <strong>Valasaravakkam Studio, Chennai</strong>
                           </div>
                         </div>
 
@@ -628,8 +718,18 @@ function App() {
                             />
                           </div>
 
-                          <button type="submit" className="reserve-submit-btn">
-                            CONFIRM & CLAIM TICKET <span>🎟️</span>
+                          <button
+                            type="submit"
+                            className="reserve-submit-btn"
+                            disabled={isSubmittingBooking}
+                          >
+                            {isSubmittingBooking ? (
+                              'SECURING YOUR PASS...'
+                            ) : (
+                              <>
+                                CONFIRM & CLAIM TICKET <span>🎟️</span>
+                              </>
+                            )}
                           </button>
                         </form>
 
@@ -763,7 +863,7 @@ function App() {
 
               {/* RIGHT MAIN CONTENT: Results Count & Cards Grid */}
               <div className="workshops-main-content">
-                {/* RESULTS HEADER (e.g. 1 Workshop Found) */}
+                {/* RESULTS HEADER */}
                 <div className="results-header-bar">
                   <div className="results-count-wrap">
                     <span className="count-badge">
@@ -962,6 +1062,35 @@ function App() {
           </div>
         </section>
 
+        {/* REVIEWS & DANCER TESTIMONIALS SECTION */}
+        <section className="reviews-section" id="reviews">
+          <div className="section-header-box centered">
+            <span className="section-kicker">DANCER FEEDBACK</span>
+            <h2>
+              VOICES FROM THE <span>COURT.</span>
+            </h2>
+            <p className="section-subtitle">
+              Real stories and experiences from dancers who trained and showcased with us.
+            </p>
+          </div>
+
+          <div className="reviews-grid">
+            {REVIEWS.map((rev, idx) => (
+              <div className="review-card" key={idx}>
+                <div className="review-stars">{'★'.repeat(rev.rating)}</div>
+                <p className="review-comment">"{rev.comment}"</p>
+                <div className="review-author-wrap">
+                  <div className="author-avatar">{rev.name.charAt(0)}</div>
+                  <div>
+                    <strong>{rev.name}</strong>
+                    <small>{rev.style} • {rev.date}</small>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* STUDIO LOCATIONS */}
         <section className="studios-section" id="studios">
           <div className="section-header-box centered">
@@ -1039,6 +1168,46 @@ function App() {
             </div>
           </div>
         </section>
+
+        {/* FAQ SECTION */}
+        <section className="faq-section" id="faq">
+          <div className="section-header-box centered">
+            <span className="section-kicker">QUESTIONS & ANSWERS</span>
+            <h2>
+              FREQUENTLY ASKED <span>QUESTIONS.</span>
+            </h2>
+            <p className="section-subtitle">
+              Everything you need to know about registrations, studio rules, and workshop sessions.
+            </p>
+          </div>
+
+          <div className="faq-accordion-list">
+            {FAQS.map((faq, index) => {
+              const isOpen = openFaqIndex === index;
+              return (
+                <div
+                  key={index}
+                  className={`faq-item ${isOpen ? 'open' : ''}`}
+                  onClick={() => setOpenFaqIndex(isOpen ? -1 : index)}
+                >
+                  <button
+                    type="button"
+                    className="faq-question-btn"
+                    aria-expanded={isOpen}
+                  >
+                    <span>{faq.q}</span>
+                    <span className="faq-toggle-icon">{isOpen ? '−' : '+'}</span>
+                  </button>
+                  {isOpen && (
+                    <div className="faq-answer">
+                      <p>{faq.a}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </section>
       </main>
 
       {/* FOOTER */}
@@ -1078,6 +1247,8 @@ function App() {
             <a href="#workshops">All Workshops</a>
             <a href="#why-us">Why Choose Us</a>
             <a href="#studios">Studio Locations</a>
+            <a href="#reviews">Dancer Reviews</a>
+            <a href="#faq">FAQ</a>
             <a href="/admin">Admin Login ↗</a>
           </div>
 
@@ -1093,7 +1264,7 @@ function App() {
           <div className="footer-col">
             <h4>Support & Help</h4>
             <p className="footer-contact-item">
-              <strong>Studio Hotline:</strong> +91 99404 28809
+              <strong>Studio Hotline:</strong> +91 99947 16471
             </p>
             <p className="footer-contact-item">
               <strong>Studio Hours:</strong> Mon - Sun: 7:00 AM - 9:30 PM

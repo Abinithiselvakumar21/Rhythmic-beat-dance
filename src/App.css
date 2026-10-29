@@ -62,6 +62,50 @@ body {
 }
 
 /* ======================================================
+   0. FLOATING QUICK WHATSAPP CHAT BUTTON
+   ====================================================== */
+
+.floating-whatsapp-widget {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1500;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border-radius: var(--radius-full);
+  background: #25d366;
+  color: #ffffff;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+  transition: all 0.25s ease;
+  animation: pulseFloat 3s infinite ease-in-out;
+}
+
+.floating-whatsapp-widget:hover {
+  background: #20ba59;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 10px 28px rgba(37, 211, 102, 0.5);
+}
+
+.wa-icon {
+  font-size: 20px;
+}
+
+@keyframes pulseFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+/* ======================================================
    1. NAVBAR
    ====================================================== */
 
@@ -101,7 +145,7 @@ body {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 24px;
 }
 
 .nav-links a {
@@ -670,7 +714,6 @@ body {
   overflow: hidden;
 }
 
-/* Face is never cropped */
 .compact-card-img {
   width: 100%;
   height: 100%;
@@ -921,7 +964,7 @@ body {
   box-shadow: var(--shadow-md);
 }
 
-/* LEFT: POSTER CARD (Full poster without zoom crop!) */
+/* LEFT: POSTER CARD */
 .eventbrite-poster-box {
   width: 320px;
   flex-shrink: 0;
@@ -932,7 +975,7 @@ body {
 .poster-frame {
   position: relative;
   width: 100%;
-  height: 420px;
+  height: 440px;
   border-radius: var(--radius-md);
   overflow: hidden;
   background: #111827;
@@ -954,7 +997,6 @@ body {
   pointer-events: none;
 }
 
-/* Guarantees entire poster flyer is visible without any crop */
 .poster-img {
   position: relative;
   z-index: 1;
@@ -1019,7 +1061,7 @@ body {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   padding: 14px 16px;
   background: var(--bg-body);
   border-radius: var(--radius-sm);
@@ -1060,7 +1102,7 @@ body {
   border-radius: var(--radius-sm);
   background: var(--primary-subtle);
   border: 1px solid rgba(217, 4, 41, 0.25);
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .song-badge-icon {
@@ -1082,8 +1124,26 @@ body {
   color: var(--text-heading);
 }
 
-.detail-info-block {
+/* Inclusions Row */
+.inclusions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
   margin-bottom: 20px;
+}
+
+.inclusion-chip {
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  background: var(--bg-body);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-heading);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.detail-info-block {
+  margin-bottom: 18px;
 }
 
 .detail-info-block h3 {
@@ -1360,6 +1420,11 @@ body {
   transform: translateY(-1px);
 }
 
+.reserve-submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 .modal-footer-help {
   margin-top: 18px;
   padding-top: 14px;
@@ -1521,12 +1586,91 @@ body {
 }
 
 /* ======================================================
-   8. STUDIOS SECTION
+   8. REVIEWS & TESTIMONIALS SECTION
+   ====================================================== */
+
+.reviews-section {
+  padding: 80px 6%;
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.review-card {
+  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 26px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease;
+}
+
+.review-card:hover {
+  transform: translateY(-4px);
+}
+
+.review-stars {
+  color: #f59e0b;
+  font-size: 18px;
+  letter-spacing: 2px;
+  margin-bottom: 14px;
+}
+
+.review-comment {
+  margin: 0 0 20px;
+  color: var(--text-body);
+  font-size: 14px;
+  line-height: 1.6;
+  font-style: italic;
+  flex: 1;
+}
+
+.review-author-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.author-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary-subtle);
+  color: var(--primary);
+  font-weight: 900;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.review-author-wrap strong {
+  display: block;
+  font-size: 14px;
+  color: var(--text-heading);
+}
+
+.review-author-wrap small {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ======================================================
+   9. STUDIOS SECTION
    ====================================================== */
 
 .studios-section {
   padding: 80px 6%;
-  background: var(--bg-subtle);
+  background: #ffffff;
   border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -1538,7 +1682,7 @@ body {
 
 .studio-card {
   padding: 26px;
-  background: #ffffff;
+  background: var(--bg-body);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
@@ -1592,7 +1736,7 @@ body {
   text-align: center;
   padding: 9px 0;
   border-radius: var(--radius-sm);
-  background: var(--bg-body);
+  background: #ffffff;
   border: 1px solid var(--border-subtle);
   color: var(--text-heading);
   font-size: 12px;
@@ -1608,7 +1752,75 @@ body {
 }
 
 /* ======================================================
-   9. FOOTER
+   10. FAQ SECTION (COLLAPSIBLE ACCORDION)
+   ====================================================== */
+
+.faq-section {
+  padding: 80px 6%;
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.faq-accordion-list {
+  max-width: 820px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faq-item {
+  background: #ffffff;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.faq-item:hover, .faq-item.open {
+  border-color: rgba(217, 4, 41, 0.35);
+  box-shadow: var(--shadow-sm);
+}
+
+.faq-question-btn {
+  width: 100%;
+  padding: 18px 22px;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  text-align: left;
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-heading);
+  cursor: pointer;
+}
+
+.faq-toggle-icon {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.faq-answer {
+  padding: 0 22px 18px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 14px;
+}
+
+.faq-answer p {
+  margin: 0;
+  color: var(--text-body);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* ======================================================
+   11. FOOTER
    ====================================================== */
 
 .site-footer {
@@ -1711,7 +1923,7 @@ body {
 }
 
 /* ======================================================
-   10. RESPONSIVE BREAKPOINTS
+   12. RESPONSIVE BREAKPOINTS
    ====================================================== */
 
 @media (max-width: 1100px) {
@@ -1733,7 +1945,11 @@ body {
   }
 
   .poster-frame {
-    height: 360px;
+    height: 380px;
+  }
+
+  .reviews-grid {
+    grid-template-columns: 1fr;
   }
 
   .features-grid {
@@ -1751,6 +1967,17 @@ body {
 }
 
 @media (max-width: 768px) {
+  .floating-whatsapp-widget .wa-text {
+    display: none;
+  }
+
+  .floating-whatsapp-widget {
+    padding: 12px;
+    border-radius: 50%;
+    bottom: 20px;
+    right: 20px;
+  }
+
   .mobile-menu-toggle {
     display: block;
   }
@@ -1775,7 +2002,7 @@ body {
   }
 
   .poster-frame {
-    height: 300px;
+    height: 320px;
   }
 
   .booking-cta-bar {

@@ -1,4 +1,3 @@
-
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -17,6 +16,7 @@ app.use('/uploads', express.static(uploadDir));
 
 // API routes
 app.use('/api/events', require('./routes/events'));
+app.use('/api/bookings', require('./routes/bookings'));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/upload', require('./routes/upload'));
 
