@@ -531,10 +531,24 @@ function App() {
                   <div className="song-detail-box">
                     <span className="song-badge-icon">🎵</span>
                     <div>
-                      <small className="song-badge-label">NAME OF THE SONG</small>
+                      <small className="song-badge-label">NAME OF THE SONG / CHOREOGRAPHY TRACK</small>
                       <p className="song-badge-title">
                         {formatSongName(selectedWorkshop.song)}
                       </p>
+                    </div>
+                  </div>
+
+                  {/* Lead Choreographer & Level Card */}
+                  <div className="mentor-lead-card">
+                    <div className="mentor-icon-box">💃</div>
+                    <div className="mentor-text">
+                      <span className="mentor-role-label">LEAD CHOREOGRAPHER & FACULTY</span>
+                      <h4 className="mentor-name">
+                        {selectedWorkshop.instructor || 'Master Choreographer Rahul & RB Crew'}
+                      </h4>
+                      <span className="level-badge">
+                        🎯 {selectedWorkshop.level || 'Open Level (Beginner & Intermediate Friendly)'}
+                      </span>
                     </div>
                   </div>
 
@@ -542,8 +556,8 @@ function App() {
                   <div className="inclusions-row">
                     <span className="inclusion-chip">🎥 4K Video Shoot Included</span>
                     <span className="inclusion-chip">🏆 Certificate of Participation</span>
-                    <span className="inclusion-chip">🎧 Practice Audio Access</span>
-                    <span className="inclusion-chip">💧 Full AC & Amenities</span>
+                    <span className="inclusion-chip">⚡ Counts & Musicality Breakdown</span>
+                    <span className="inclusion-chip">💧 Full AC & Wooden Floor</span>
                   </div>
 
                   {/* Description */}
@@ -553,6 +567,53 @@ function App() {
                       {selectedWorkshop.description ||
                         'Get ready to learn an explosive choreography piece with master techniques, musicality, dynamic body control, and stage presence.'}
                     </p>
+                  </div>
+
+                  {/* WHAT HAPPENS IN THIS WORKSHOP (SESSION TIMELINE & BREAKDOWN) */}
+                  <div className="session-agenda-block">
+                    <div className="agenda-block-header">
+                      <div>
+                        <span className="agenda-kicker-tag">SESSION FLOW & CURRICULUM</span>
+                        <h3>What Happens In This Workshop</h3>
+                      </div>
+                      <span className="agenda-total-time">⏱️ 3-Hour Intensive</span>
+                    </div>
+                    <p className="agenda-lead-intro">
+                      Every workshop at Rhythmic Beat Dance Court is structured to take you from basic counts to high-energy stage performance. Here is how your session unfolds:
+                    </p>
+
+                    <div className="session-steps-timeline">
+                      {(selectedWorkshop.agenda || `1. Warm-up & Body Isolations (00:00 - 00:20): Dynamic joint activation, neck/chest/pelvic isolations & rhythm groove.
+2. Step-by-Step Choreography Breakdown (00:20 - 01:15): Detailed counts breakdown, hand precision, footwork angles & weight transitions.
+3. Musicality & Texture Training (01:15 - 01:45): Matching beats, syncopated rhythms, hitting hard accents, and fluid body roll control.
+4. Stage Formations & Group Synchronization (01:45 - 02:15): Camera angle awareness, eye contact, expressions, and clean group synchronization.
+5. Professional 4K Stage Video Shoot (02:15 - 02:45): High-definition cinematic spotlight video recording for your Instagram reels & portfolio!
+6. Mentor Feedback & Certificate Distribution (02:45 - 03:00): One-on-one personal guidance, dancer networking, and official RB certificate.`)
+                        .split('\n')
+                        .filter((l) => l.trim())
+                        .map((line, idx) => {
+                          const cleanLine = line.replace(/^\d+[\.\)]\s*/, '');
+                          const colonIdx = cleanLine.indexOf(':');
+                          const title = colonIdx > -1 ? cleanLine.substring(0, colonIdx) : cleanLine;
+                          const desc = colonIdx > -1 ? cleanLine.substring(colonIdx + 1).trim() : '';
+
+                          const stepIcons = ['⚡', '💃', '🎵', '👥', '🎥', '🏆'];
+                          const icon = stepIcons[idx % stepIcons.length];
+
+                          return (
+                            <div key={idx} className="timeline-step-card">
+                              <div className="step-badge-col">
+                                <div className="step-circle-icon">{icon}</div>
+                                <span className="step-label-pill">Phase 0{idx + 1}</span>
+                              </div>
+                              <div className="step-text-col">
+                                <h4>{title}</h4>
+                                {desc && <p>{desc}</p>}
+                              </div>
+                            </div>
+                          );
+                        })}
+                    </div>
                   </div>
 
                   {/* What to Bring */}

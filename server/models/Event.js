@@ -1,4 +1,3 @@
-
 const mongoose = require('mongoose');
 
 const eventSchema = new mongoose.Schema(
@@ -6,42 +5,56 @@ const eventSchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
     },
     description: {
       type: String,
-      default: ''
+      default: '',
     },
     image: {
       type: String,
-      default: ''
+      default: '',
     },
     song: {
       type: String,
-      default: ''
+      default: '', // Name of the song / choreography track
+    },
+    instructor: {
+      type: String,
+      default: 'Rhythmic Beat Master Choreographer',
+      trim: true,
+    },
+    level: {
+      type: String,
+      default: 'Open Level (Beginner & Intermediate)',
+      trim: true,
+    },
+    agenda: {
+      type: String,
+      default: '', // Detailed workshop flow / what happens in session
     },
     status: {
       type: String,
       enum: ['Upcoming', 'Ongoing', 'Completed'],
-      default: 'Upcoming'
+      default: 'Upcoming',
     },
     slots: {
       type: Number,
       default: 0,
-      min: 0
+      min: 0,
     },
     prize: {
       type: String,
-      default: ''
+      default: '',
     },
     date: {
       type: String,
-      default: ''
+      default: '',
     },
     time: {
       type: String,
-      default: ''
-    }
+      default: '',
+    },
   },
   { timestamps: true }
 );

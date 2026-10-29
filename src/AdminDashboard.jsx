@@ -5,18 +5,28 @@ const SERVER = 'https://rhythmic-beat-dance.onrender.com';
 const API = `${SERVER}/api/events`;
 const BOOKINGS_API = `${SERVER}/api/bookings`;
 const UPLOAD_API = `${SERVER}/api/upload`;
-const STUDIO_PHONE = '919994716471';
+
+const defaultAgenda = `1. Warm-up & Body Isolations (00:00 - 00:20): Full dynamic joint activation, head/chest/pelvic isolations & rhythm groove.
+2. Step-by-Step Choreography Breakdown (00:20 - 01:15): Detailed counts breakdown, hand precision, footwork angles & weight transitions.
+3. Musicality & Texture Training (01:15 - 01:45): Matching beats, syncopated rhythms, hitting hard accents, and fluid body roll control.
+4. Stage Formations & Group Synchronization (01:45 - 02:15): Camera angle awareness, eye contact, expressions, and clean group synchronization.
+5. Professional 4K Stage Video Shoot (02:15 - 02:45): High-definition cinematic spotlight video recording for your Instagram reels & portfolio!
+6. Mentor Feedback & Certificate Distribution (02:45 - 03:00): One-on-one personal guidance, dancer networking, and official RB certificate.`;
 
 const emptyForm = {
   title: '',
   description: '',
+  instructor: 'Master Choreographer Rahul & RB Crew',
+  level: 'Open Level (Beginner & Intermediate Friendly)',
+  song: '',
+  location: '', // NEW
+  agenda: defaultAgenda,
   status: 'Upcoming',
   slots: 20,
   prize: '₹1,000',
   date: '',
   time: '',
   image: '',
-  song: '',
 };
 
 function AdminDashboard() {
@@ -42,8 +52,10 @@ function AdminDashboard() {
   const [formLoading, setFormLoading] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [imageFile, setImageFile] = useState(null);
-  const [songFile, setSongFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
+
+  // Agenda Quick View Modal
+  const [viewingAgendaEvent, setViewingAgendaEvent] = useState(null);
 
   const token = () => sessionStorage.getItem('adminToken');
 
@@ -123,7 +135,7 @@ function AdminDashboard() {
     setForm((prev) => ({ ...prev, [name]: value }));
   }
 
-  // File Upload Helper
+  // File Upload Helper (For Images Only)
   async function uploadFile(file, kind, authToken) {
     const formData = new FormData();
     formData.append('kind', kind);
@@ -145,7 +157,6 @@ function AdminDashboard() {
     setEditingId(null);
     setForm(emptyForm);
     setImageFile(null);
-    setSongFile(null);
     setImagePreview('');
     setIsModalOpen(true);
   }
@@ -155,16 +166,19 @@ function AdminDashboard() {
     setForm({
       title: event.title || '',
       description: event.description || '',
+      instructor: event.instructor || 'Master Choreographer Rahul & RB Crew',
+      level: event.level || 'Open Level (Beginner & Intermediate Friendly)',
+      song: event.song || '',
+      location: event.location || '',
+      agenda: event.agenda || defaultAgenda,
       status: event.status || 'Upcoming',
       slots: event.slots ?? 20,
       prize: event.prize || '',
       date: event.date || '',
       time: event.time || '',
       image: event.image || '',
-      song: event.song || '',
     });
     setImageFile(null);
-    setSongFile(null);
     setImagePreview(event.image ? assetUrl(event.image) : '');
     setIsModalOpen(true);
   }
@@ -174,7 +188,6 @@ function AdminDashboard() {
     setEditingId(null);
     setForm(emptyForm);
     setImageFile(null);
-    setSongFile(null);
     setImagePreview('');
   }
 
@@ -194,16 +207,10 @@ function AdminDashboard() {
 
     try {
       let image = form.image || '';
-      let song = form.song || '';
 
       if (imageFile) {
         showNotice('Uploading poster image...', 'info');
         image = await uploadFile(imageFile, 'image', authToken);
-      }
-
-      if (songFile) {
-        showNotice('Uploading audio track...', 'info');
-        song = await uploadFile(songFile, 'song', authToken);
       }
 
       showNotice('Saving workshop to database...', 'info');
@@ -218,7 +225,6 @@ function AdminDashboard() {
         body: JSON.stringify({
           ...form,
           image,
-          song,
           slots: Number(form.slots) || 0,
         }),
       });
@@ -267,7 +273,7 @@ function AdminDashboard() {
     }
   }
 
-  // Update Booking Status (e.g. Confirmed / Pending)
+  // Update Booking Status
   async function handleToggleBookingStatus(booking) {
     const nextStatus = booking.status === 'Confirmed' ? 'Pending' : 'Confirmed';
     try {
@@ -317,6 +323,8 @@ function AdminDashboard() {
         !q ||
         ev.title?.toLowerCase().includes(q) ||
         ev.description?.toLowerCase().includes(q) ||
+        ev.song?.toLowerCase().includes(q) ||
+        ev.instructor?.toLowerCase().includes(q) ||
         ev.date?.toLowerCase().includes(q);
 
       const matchesStatus =
@@ -375,7 +383,7 @@ function AdminDashboard() {
         />
       )}
 
-      {/* LEFT SIDEBAR (Matching reference image exactly) */}
+      {/* LEFT SIDEBAR */}
       <aside className={`saas-sidebar ${sidebarOpen ? 'open' : ''}`}>
         {/* Brand Header */}
         <div className="sidebar-brand">
@@ -512,7 +520,7 @@ function AdminDashboard() {
               </h1>
               <p className="header-subtitle">
                 {activeTab === 'workshops' &&
-                  'Monitor and manage all studio masterclasses, schedules, and choreographies'}
+                  'Manage workshop choreography, what happens in each session, and dancer capacity'}
                 {activeTab === 'bookings' &&
                   'Review dancer registrations, instant ticket codes, and WhatsApp passes'}
                 {activeTab === 'overview' &&
@@ -532,7 +540,7 @@ function AdminDashboard() {
                 placeholder={
                   activeTab === 'bookings'
                     ? 'Search dancer, phone, ticket...'
-                    : 'Search workshop title, date...'
+                    : 'Search choreo, song, date...'
                 }
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -570,7 +578,7 @@ function AdminDashboard() {
               </select>
             </div>
 
-            {/* Primary Action Button (Matches reference UI dark pill button) */}
+            {/* Primary Action Button */}
             <button
               type="button"
               className="primary-cta-btn"
@@ -589,7 +597,7 @@ function AdminDashboard() {
           </div>
         )}
 
-        {/* METRICS ROW (When on Overview or Workshops) */}
+        {/* METRICS ROW */}
         {(activeTab === 'overview' || activeTab === 'workshops') && (
           <div className="metrics-summary-grid">
             <div className="metric-box">
@@ -626,7 +634,7 @@ function AdminDashboard() {
           </div>
         )}
 
-        {/* MAIN BODY CONTAINER (Matches reference UI clean card table) */}
+        {/* MAIN BODY CONTAINER */}
         <main className="saas-content-card">
           {/* TAB 1: ALL WORKSHOPS TABLE */}
           {activeTab === 'workshops' && (
@@ -635,10 +643,11 @@ function AdminDashboard() {
                 <thead>
                   <tr>
                     <th>WORKSHOP & SONG</th>
-                    <th>VENUE / BRANCH</th>
+                    <th>CHOREOGRAPHER & LEVEL</th>
                     <th>DATE & TIME</th>
                     <th>PRICE / PASS</th>
-                    <th>AVAILABLE SLOTS</th>
+                    <th>SLOTS</th>
+                    <th>SESSION AGENDA</th>
                     <th>STATUS</th>
                     <th className="text-right">ACTIONS</th>
                   </tr>
@@ -646,14 +655,14 @@ function AdminDashboard() {
                 <tbody>
                   {loadingEvents ? (
                     <tr>
-                      <td colSpan="7" className="table-loading-cell">
+                      <td colSpan="8" className="table-loading-cell">
                         <div className="table-spinner" />
                         <p>Loading workshops from database...</p>
                       </td>
                     </tr>
                   ) : filteredEvents.length === 0 ? (
                     <tr>
-                      <td colSpan="7" className="table-empty-cell">
+                      <td colSpan="8" className="table-empty-cell">
                         <p>No workshops found matching your search.</p>
                         <button
                           type="button"
@@ -684,15 +693,18 @@ function AdminDashboard() {
                                 {event.title}
                               </strong>
                               <span className="song-subtitle-text">
-                                🎵 {formatSongName(event.song)}
+                                🎵 Song: {formatSongName(event.song)}
                               </span>
                             </div>
                           </div>
                         </td>
 
-                        {/* Venue */}
+                        {/* Choreographer & Level */}
                         <td>
-                          <span className="venue-tag">Valasaravakkam, Chennai</span>
+                          <div className="instructor-cell">
+                            <strong>{event.instructor || 'Master Choreographer'}</strong>
+                            <small>{event.level || 'Open Level'}</small>
+                          </div>
                         </td>
 
                         {/* Date & Time */}
@@ -712,8 +724,20 @@ function AdminDashboard() {
                         <td>
                           <div className="slots-cell">
                             <span className="slot-num">{event.slots ?? 0}</span>
-                            <small>Slots Left</small>
+                            <small>Left</small>
                           </div>
+                        </td>
+
+                        {/* What Happens in Workshop (Agenda Preview) */}
+                        <td>
+                          <button
+                            type="button"
+                            className="agenda-view-btn"
+                            onClick={() => setViewingAgendaEvent(event)}
+                            title="Click to view full workshop session flow"
+                          >
+                            📋 View Session Flow
+                          </button>
                         </td>
 
                         {/* Status */}
@@ -802,7 +826,7 @@ function AdminDashboard() {
                   ) : (
                     filteredBookings.map((b) => (
                       <tr key={b._id} className="table-row">
-                        {/* Dancer Info with Avatar Circle (Like Reference UI) */}
+                        {/* Dancer Info */}
                         <td>
                           <div className="dancer-info-cell">
                             <div className="dancer-initial-avatar">
@@ -858,7 +882,7 @@ function AdminDashboard() {
                           </small>
                         </td>
 
-                        {/* Status (Mint Green for Confirmed / Amber for Pending) */}
+                        {/* Status */}
                         <td>
                           <span
                             className={`booking-status-chip ${
@@ -913,7 +937,7 @@ function AdminDashboard() {
                         <div className="mini-title-box">
                           <strong>{ev.title}</strong>
                           <small>
-                            {ev.date || 'TBA'} • {ev.slots} Slots Available
+                            {ev.date || 'TBA'} • 🎵 {formatSongName(ev.song)}
                           </small>
                         </div>
                         <span className={`status-chip ${(ev.status || 'upcoming').toLowerCase()}`}>
@@ -1003,7 +1027,7 @@ function AdminDashboard() {
         </main>
       </div>
 
-      {/* CREATE / EDIT WORKSHOP MODAL OVERLAY */}
+      {/* CREATE / EDIT WORKSHOP MODAL */}
       {isModalOpen && (
         <div className="saas-modal-backdrop" onClick={closeModal}>
           <div
@@ -1013,7 +1037,7 @@ function AdminDashboard() {
             <div className="modal-top-bar">
               <div>
                 <h2>{editingId ? 'Edit Workshop' : 'Create New Workshop'}</h2>
-                <p>Fill in workshop details to publish to the live dance website.</p>
+                <p>Configure workshop schedule, choreography song, and session curriculum.</p>
               </div>
               <button
                 type="button"
@@ -1026,7 +1050,7 @@ function AdminDashboard() {
 
             <form onSubmit={handleFormSubmit} className="saas-modal-form">
               <div className="modal-form-grid">
-                {/* Title */}
+                {/* Workshop Title */}
                 <div className="form-field full-width">
                   <label htmlFor="form-title">Workshop Title *</label>
                   <input
@@ -1039,19 +1063,60 @@ function AdminDashboard() {
                   />
                 </div>
 
-                {/* Name of Song */}
+                {/* Name of the Song */}
                 <div className="form-field full-width">
-                  <label htmlFor="form-song">Name of the Song / Track</label>
+                  <label htmlFor="form-song">Name of the Song / Track *</label>
                   <input
                     id="form-song"
                     name="song"
-                    placeholder="e.g. Arabic Kuthu - Anirudh Choreography"
+                    placeholder="e.g. Arabic Kuthu / Kaavaalaa / Master Beats"
                     value={form.song}
                     onChange={handleFormChange}
                   />
                   <small className="field-hint">
-                    Song name will be displayed cleanly on the workshop page badge.
+                    🎵 Audio upload removed as requested. Song name will display cleanly on the workshop page badge.
                   </small>
+                </div>
+
+ {/* Location */}
+                <div className="form-field full-width">
+  <label htmlFor="form-location">📍 Workshop Location *</label>
+  <input
+    id="form-location"
+    name="location"
+    type="text"
+    required
+    placeholder="e.g. Valasaravakkam Studio, Chennai"
+    value={form.location}
+    onChange={handleFormChange}
+  />
+  <small className="field-hint">
+    Enter the venue where this workshop will take place.
+  </small>
+</div>
+
+                {/* Lead Choreographer */}
+                <div className="form-field">
+                  <label htmlFor="form-instructor">Lead Choreographer / Instructor</label>
+                  <input
+                    id="form-instructor"
+                    name="instructor"
+                    placeholder="e.g. Master Choreographer Rahul & RB Crew"
+                    value={form.instructor}
+                    onChange={handleFormChange}
+                  />
+                </div>
+
+                {/* Dancer Level */}
+                <div className="form-field">
+                  <label htmlFor="form-level">Dancer Level / Difficulty</label>
+                  <input
+                    id="form-level"
+                    name="level"
+                    placeholder="e.g. Open Level (Beginner & Intermediate)"
+                    value={form.level}
+                    onChange={handleFormChange}
+                  />
                 </div>
 
                 {/* Status */}
@@ -1119,23 +1184,41 @@ function AdminDashboard() {
                   />
                 </div>
 
-                {/* Description */}
+                {/* Workshop Description */}
                 <div className="form-field full-width">
-                  <label htmlFor="form-description">Workshop Description</label>
+                  <label htmlFor="form-description">Short Workshop Description</label>
                   <textarea
                     id="form-description"
                     name="description"
-                    rows="3"
-                    placeholder="Describe choreography style, counts breakdown, and guidelines..."
+                    rows="2"
+                    placeholder="Overview of the workshop style, musicality, and key dance skills..."
                     value={form.description}
                     onChange={handleFormChange}
                   />
                 </div>
 
+                {/* WHAT HAPPENS IN THIS WORKSHOP (AGENDA & SCHEDULE) */}
+                <div className="form-field full-width">
+                  <label htmlFor="form-agenda" className="highlight-label">
+                    ✨ What Happens in This Workshop (Session Flow / Agenda) *
+                  </label>
+                  <textarea
+                    id="form-agenda"
+                    name="agenda"
+                    rows="6"
+                    placeholder="Step-by-step breakdown of the session timeline..."
+                    value={form.agenda}
+                    onChange={handleFormChange}
+                  />
+                  <small className="field-hint">
+                    This step-by-step timeline is displayed directly to dancers on the website so they know exactly what will be taught!
+                  </small>
+                </div>
+
                 {/* Poster Image File */}
-                <div className="form-field">
+                <div className="form-field full-width">
                   <label htmlFor="form-image-file">
-                    Workshop Poster (JPG, PNG, WEBP)
+                    Workshop Poster Image (JPG, PNG, WEBP)
                   </label>
                   <input
                     id="form-image-file"
@@ -1153,22 +1236,6 @@ function AdminDashboard() {
                     <div className="image-preview-thumb">
                       <img src={imagePreview} alt="Workshop preview" />
                     </div>
-                  )}
-                </div>
-
-                {/* Audio File */}
-                <div className="form-field">
-                  <label htmlFor="form-song-file">
-                    Audio / Track File (Optional MP3/WAV)
-                  </label>
-                  <input
-                    id="form-song-file"
-                    type="file"
-                    accept="audio/*"
-                    onChange={(e) => setSongFile(e.target.files?.[0] || null)}
-                  />
-                  {songFile && (
-                    <small className="field-hint">Selected: {songFile.name}</small>
                   )}
                 </div>
               </div>
@@ -1196,6 +1263,74 @@ function AdminDashboard() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* QUICK AGENDA VIEW MODAL */}
+      {viewingAgendaEvent && (
+        <div
+          className="saas-modal-backdrop"
+          onClick={() => setViewingAgendaEvent(null)}
+        >
+          <div
+            className="saas-modal-window agenda-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-top-bar">
+              <div>
+                <h2>{viewingAgendaEvent.title}</h2>
+                <p>📋 What Happens In This Workshop (Session Timeline)</p>
+              </div>
+              <button
+                type="button"
+                className="modal-close-icon"
+                onClick={() => setViewingAgendaEvent(null)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="agenda-preview-content">
+              <div className="agenda-meta-row">
+                <span>🎵 <strong>Song:</strong> {formatSongName(viewingAgendaEvent.song)}</span>
+                <span>👤 <strong>Choreographer:</strong> {viewingAgendaEvent.instructor || 'Master Faculty'}</span>
+                <span>⚡ <strong>Level:</strong> {viewingAgendaEvent.level || 'Open Level'}</span>
+              </div>
+
+              <div className="agenda-steps-list">
+                {(viewingAgendaEvent.agenda || defaultAgenda)
+                  .split('\n')
+                  .filter((line) => line.trim())
+                  .map((step, idx) => (
+                    <div key={idx} className="agenda-step-card">
+                      <span className="step-num">{idx + 1}</span>
+                      <p>{step.replace(/^\d+[\.\)]\s*/, '')}</p>
+                    </div>
+                  ))}
+              </div>
+            </div>
+
+            <div className="modal-actions-bar">
+              <button
+                type="button"
+                className="modal-cancel-btn"
+                onClick={() => setViewingAgendaEvent(null)}
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                className="modal-submit-btn"
+                onClick={() => {
+                  const ev = viewingAgendaEvent;
+                  setViewingAgendaEvent(null);
+                  openEditModal(ev);
+                }}
+              >
+                ✏️ Edit This Workshop
+              </button>
+            </div>
           </div>
         </div>
       )}
