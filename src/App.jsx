@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import './App.css';
 import Admin from './Admin';
 import AdminDashboard from './AdminDashboard';
+import heroImg from './assets/hero.png';
 
 const SERVER = 'https://rhythmic-beat-dance.onrender.com';
 const API = `${SERVER}/api/events`;
@@ -220,7 +221,7 @@ function App() {
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Handle Reservation Submit in Popup (Saves to MongoDB + WhatsApp Alert)
+  // Handle Reservation Submit in Popup
   const handleReserveSubmit = async (e) => {
     e.preventDefault();
     if (!reserveForm.name.trim() || !reserveForm.phone.trim()) {
@@ -232,7 +233,7 @@ function App() {
     setTicketId(genId);
     setIsSubmittingBooking(true);
 
-    // 1. Save directly into MongoDB Backend
+    // Save directly into MongoDB Backend
     try {
       await fetch(BOOKINGS_API, {
         method: 'POST',
@@ -255,7 +256,7 @@ function App() {
       setReserveSuccess(true);
     }
 
-    // 2. Pre-fill WhatsApp message to Studio coordinator
+    // Pre-fill WhatsApp message to Studio coordinator
     const message = `*RHYTHMIC BEAT DANCE COURT — WORKSHOP ADMISSION REQUEST*\n\n` +
       `🎟️ *Pass Code:* ${genId}\n` +
       `🔥 *Workshop:* ${selectedWorkshop?.title}\n` +
@@ -264,7 +265,7 @@ function App() {
       `📧 *Email:* ${reserveForm.email || 'N/A'}\n` +
       `👥 *Passes Reserved:* ${reserveForm.slots}\n` +
       `📅 *Date:* ${selectedWorkshop?.date || 'Scheduled Soon'}\n` +
-      `📍 *Location:* Valasaravakkam Studio, Chennai\n\n` +
+      `📍 *Location:* Valasaravakkam Branch, Chennai\n\n` +
       `Please confirm my admission and share UPI/Payment instructions. Thank you!`;
 
     const waUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
@@ -282,7 +283,7 @@ function App() {
         aria-label="Chat with Studio on WhatsApp"
       >
         <span className="wa-icon">💬</span>
-        <span className="wa-text">Chat with Studio</span>
+        <span className="wa-text">Chat on WhatsApp</span>
       </a>
 
       {/* NAVBAR */}
@@ -309,8 +310,8 @@ function App() {
         <nav className={`nav-links ${menuOpen ? 'nav-links-open' : ''}`}>
           <a href="#home" onClick={closeMenu}>Home</a>
           <a href="#workshops" onClick={closeMenu}>Workshops</a>
-          <a href="#why-us" onClick={closeMenu}>Why RB</a>
-          <a href="#studios" onClick={closeMenu}>Studios</a>
+          <a href="#about" onClick={closeMenu}>About Us</a>
+          <a href="#branches" onClick={closeMenu}>Branches</a>
           <a href="#reviews" onClick={closeMenu}>Reviews</a>
           <a href="#faq" onClick={closeMenu}>FAQ</a>
           <a
@@ -329,7 +330,7 @@ function App() {
       </header>
 
       <main>
-        {/* HERO SECTION */}
+        {/* HERO SECTION WITH DYNAMIC RIGHT-SIDE VISUAL */}
         <section className="hero" id="home">
           <div className="hero-content">
             <span className="eyebrow-badge">THE STAGE IS YOURS • CHENNAI</span>
@@ -342,7 +343,7 @@ function App() {
 
             <p className="hero-text">
               Welcome to Rhythmic Beat Dance Court. Experience masterclass choreography,
-              high-energy workshops, and professional stage training led by industry-leading dancers.
+              high-voltage workshops, and professional stage training led by industry-leading dancers.
             </p>
 
             <div className="hero-actions">
@@ -367,12 +368,38 @@ function App() {
               <div className="stat-separator" />
               <div className="stat-item">
                 <strong>3</strong>
-                <span>Chennai Studios</span>
+                <span>Chennai Branches</span>
               </div>
               <div className="stat-separator" />
               <div className="stat-item">
                 <strong>50+</strong>
                 <span>Workshops Conducted</span>
+              </div>
+            </div>
+          </div>
+
+          {/* RIGHT-SIDE HERO VISUAL SHOWCASE */}
+          <div className="hero-visual-wrap">
+            <div className="hero-visual-card">
+              <div className="hero-dancer-glow" />
+              <img
+                src={heroImg}
+                alt="Dance masterclass at Rhythmic Beat Dance Court"
+                className="hero-dancer-img"
+              />
+
+              {/* Floating Glass Badges */}
+              <div className="floating-hero-pill top-pill">
+                <span className="pulse-red-dot" />
+                <span>LIVE BATCHES & WORKSHOPS</span>
+              </div>
+
+              <div className="floating-hero-card bottom-card">
+                <div className="card-badge-icon">🏆</div>
+                <div>
+                  <strong>Official RB Dance Pass</strong>
+                  <small>Valasaravakkam • Kolapakkam • Ambattur</small>
+                </div>
               </div>
             </div>
           </div>
@@ -409,7 +436,6 @@ function App() {
           ) : selectedWorkshop ? (
             /* =========================================
                OPTION 1: BOOKMYSHOW / EVENTBRITE PRO STYLE
-               Poster card on left (No zoom crop!) + details on right + Popup Modal
                ========================================= */
             <div className="option1-detail-container">
               <div className="detail-top-nav">
@@ -603,7 +629,7 @@ function App() {
                           </div>
                           <div className="voucher-row">
                             <span>LOCATION:</span>
-                            <strong>Valasaravakkam Studio, Chennai</strong>
+                            <strong>Valasaravakkam Branch, Chennai</strong>
                           </div>
                         </div>
 
@@ -844,11 +870,11 @@ function App() {
                   </div>
                 </div>
 
-                {/* Studio Help Box in Sidebar */}
+                {/* Help Box in Sidebar */}
                 <div className="sidebar-help-card">
                   <p className="sidebar-help-title">Private Masterclass?</p>
                   <p className="sidebar-help-desc">
-                    We host college teams, corporate workshops & private groups.
+                    We host college teams, corporate workshops & private groups across Chennai.
                   </p>
                   <a
                     href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20RB%20Dance%20Court%2C%20I%20am%20looking%20for%20a%20private%20workshop.`}
@@ -1015,15 +1041,15 @@ function App() {
           )}
         </section>
 
-        {/* WHY CHOOSE RHYTHMIC BEAT */}
-        <section className="why-us-section" id="why-us">
+        {/* ABOUT US SECTION */}
+        <section className="why-us-section" id="about">
           <div className="section-header-box centered">
             <span className="section-kicker">THE RHYTHMIC BEAT STANDARD</span>
             <h2>
-              WHY TRAIN WITH <span>US?</span>
+              ABOUT <span>US.</span>
             </h2>
             <p className="section-subtitle">
-              Built by dancers, for dancers. A creative court designed to elevate your craft.
+              Built by dancers, for dancers. A creative court designed to elevate your craft across Chennai.
             </p>
           </div>
 
@@ -1091,77 +1117,77 @@ function App() {
           </div>
         </section>
 
-        {/* STUDIO LOCATIONS */}
-        <section className="studios-section" id="studios">
+        {/* OUR BRANCHES */}
+        <section className="branches-section" id="branches">
           <div className="section-header-box centered">
-            <span className="section-kicker">OUR CHENNAI BRANCHES</span>
+            <span className="section-kicker">CONVENIENT CHENNAI LOCATIONS</span>
             <h2>
-              VISIT OUR <span>STUDIOS.</span>
+              OUR <span>BRANCHES.</span>
             </h2>
             <p className="section-subtitle">
-              Fully air-conditioned facilities with surround sound systems and ample practice spaces.
+              Fully air-conditioned facilities with sprung wooden floors and professional surround acoustics.
             </p>
           </div>
 
-          <div className="studios-grid">
-            <div className="studio-card">
-              <div className="studio-badge">MAIN BRANCH</div>
-              <h3>Valasaravakkam Studio</h3>
-              <p className="studio-address">
+          <div className="branches-grid">
+            <div className="branch-card">
+              <div className="branch-badge">MAIN BRANCH</div>
+              <h3>Valasaravakkam Branch</h3>
+              <p className="branch-address">
                 No. 12, Arcot Road, Valasaravakkam, Chennai - 600087
               </p>
-              <div className="studio-features">
+              <div className="branch-features">
                 <span>✓ Sprung Wooden Floor</span>
                 <span>✓ Pro Acoustics</span>
                 <span>✓ Full AC</span>
               </div>
               <a
-                href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20RB%20Dance%20Court%2C%20I%20want%20to%20visit%20Valasaravakkam%20Studio.`}
+                href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20RB%20Dance%20Court%2C%20I%20want%20to%20visit%20Valasaravakkam%20Branch.`}
                 target="_blank"
                 rel="noreferrer"
-                className="studio-btn"
+                className="branch-btn"
               >
                 Contact Valasaravakkam ↗
               </a>
             </div>
 
-            <div className="studio-card">
-              <div className="studio-badge">BRANCH 2</div>
-              <h3>Kolapakkam Studio</h3>
-              <p className="studio-address">
+            <div className="branch-card">
+              <div className="branch-badge">BRANCH 2</div>
+              <h3>Kolapakkam Branch</h3>
+              <p className="branch-address">
                 Main Road, Near Max Hospital, Kolapakkam, Chennai - 600122
               </p>
-              <div className="studio-features">
+              <div className="branch-features">
                 <span>✓ Spacious Practice Hall</span>
                 <span>✓ Mirror Wall</span>
                 <span>✓ Parking Available</span>
               </div>
               <a
-                href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20RB%20Dance%20Court%2C%20I%20want%20to%20visit%20Kolapakkam%20Studio.`}
+                href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20RB%20Dance%20Court%2C%20I%20want%20to%20visit%20Kolapakkam%20Branch.`}
                 target="_blank"
                 rel="noreferrer"
-                className="studio-btn"
+                className="branch-btn"
               >
                 Contact Kolapakkam ↗
               </a>
             </div>
 
-            <div className="studio-card">
-              <div className="studio-badge">BRANCH 3</div>
-              <h3>Ambattur Studio</h3>
-              <p className="studio-address">
+            <div className="branch-card">
+              <div className="branch-badge">BRANCH 3</div>
+              <h3>Ambattur Branch</h3>
+              <p className="branch-address">
                 MTH Road, Opp. Bus Terminus, Ambattur, Chennai - 600053
               </p>
-              <div className="studio-features">
+              <div className="branch-features">
                 <span>✓ Battle Court Area</span>
                 <span>✓ Changing Rooms</span>
                 <span>✓ Full AC</span>
               </div>
               <a
-                href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20RB%20Dance%20Court%2C%20I%20want%20to%20visit%20Ambattur%20Studio.`}
+                href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20RB%20Dance%20Court%2C%20I%20want%20to%20visit%20Ambattur%20Branch.`}
                 target="_blank"
                 rel="noreferrer"
-                className="studio-btn"
+                className="branch-btn"
               >
                 Contact Ambattur ↗
               </a>
@@ -1245,8 +1271,8 @@ function App() {
             <h4>Quick Links</h4>
             <a href="#home">Home</a>
             <a href="#workshops">All Workshops</a>
-            <a href="#why-us">Why Choose Us</a>
-            <a href="#studios">Studio Locations</a>
+            <a href="#about">About Us</a>
+            <a href="#branches">Our Branches</a>
             <a href="#reviews">Dancer Reviews</a>
             <a href="#faq">FAQ</a>
             <a href="/admin">Admin Login ↗</a>
