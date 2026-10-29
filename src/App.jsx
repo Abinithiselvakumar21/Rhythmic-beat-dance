@@ -1,17 +1,27 @@
-
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import './App.css';
 import Admin from './Admin';
 import AdminDashboard from './AdminDashboard';
 
 const SERVER = 'https://rhythmic-beat-dance.onrender.com';
 const API = `${SERVER}/api/events`;
+const WHATSAPP_PHONE = '919940428809'; // RB Dance Court Official WhatsApp
 
 function assetUrl(path) {
   if (!path) return '';
   if (/^https?:\/\//i.test(path)) return path;
   return `${SERVER}/${path.replace(/^\/+/, '')}`;
 }
+
+const CATEGORIES = [
+  'All Styles',
+  'Choreography',
+  'Hip-Hop',
+  'Folk & Kuthu',
+  'Contemporary',
+  'Bollywood',
+  'Freestyle',
+];
 
 function App() {
   const [events, setEvents] = useState([]);
@@ -20,44 +30,74 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [failedImages, setFailedImages] = useState({});
 
+  // Workshop Browser & Filter State
+  const [selectedWorkshop, setSelectedWorkshop] = useState(null);
+  const [activeCategory, setActiveCategory] = useState('All Styles');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All');
+
+  // Slot Reservation State
+  const [reserveForm, setReserveForm] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    slots: 1,
+    notes: '',
+  });
+  const [reserveSuccess, setReserveSuccess] = useState(false);
+
+  // Load events from backend
   useEffect(() => {
     async function loadEvents() {
       try {
         const response = await fetch(API);
-
-        if (!response.ok) {
-          throw new Error('Unable to load events');
-        }
-
+        if (!response.ok) throw new Error('Unable to load events');
         const data = await response.json();
-
-        if (!Array.isArray(data)) {
-          throw new Error('Invalid events response');
-        }
-
+        if (!Array.isArray(data)) throw new Error('Invalid events response');
         setEvents(data);
         setEventsError('');
       } catch {
-        setEventsError(
-          'Events load aagala. Please try again in a moment.'
-        );
+        setEventsError('Events load aagala. Please try again in a moment.');
       } finally {
         setEventsLoading(false);
       }
     }
-
     loadEvents();
   }, []);
 
-  const pathname =
-    window.location.pathname.replace(/\/+$/, '') || '/';
+  // Sync hash routing with selected workshop (e.g. #ws-123 or #ws-choreo-ishwarya)
+  useEffect(() => {
+    function handleHash() {
+      const hash = window.location.hash;
+      if (hash && hash.startsWith('#ws-')) {
+        const targetId = hash.replace('#ws-', '');
+        const found = events.find(
+          (e) =>
+            e._id === targetId ||
+            e.title?.toLowerCase().replace(/[^a-z0-9]+/g, '-') === targetId
+        );
+        if (found) {
+          setSelectedWorkshop(found);
+          const el = document.getElementById('workshops');
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }
+      } else if (hash === '#workshops' || hash === '#events') {
+        setSelectedWorkshop(null);
+      }
+    }
+
+    handleHash();
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, [events]);
+
+  const pathname = window.location.pathname.replace(/\/+$/, '') || '/';
 
   if (pathname === '/admin-dashboard') {
     if (!sessionStorage.getItem('adminToken')) {
       window.location.replace('/admin');
       return null;
     }
-
     return <AdminDashboard />;
   }
 
@@ -67,8 +107,76 @@ function App() {
 
   const closeMenu = () => setMenuOpen(false);
 
+  // Filtered Events
+  const filteredEvents = useMemo(() => {
+    return events.filter((ev) => {
+      // Search filter
+      const query = searchQuery.trim().toLowerCase();
+      const matchesSearch =
+        !query ||
+        ev.title?.toLowerCase().includes(query) ||
+        ev.description?.toLowerCase().includes(query) ||
+        ev.date?.toLowerCase().includes(query) ||
+        ev.time?.toLowerCase().includes(query);
+
+      // Category filter
+      let matchesCategory = true;
+      if (activeCategory !== 'All Styles') {
+        const catKeywords = activeCategory.toLowerCase().split(/[&/\s]+/);
+        const text = `${ev.title || ''} ${ev.description || ''}`.toLowerCase();
+        matchesCategory = catKeywords.some((kw) => text.includes(kw));
+      }
+
+      // Status filter
+      let matchesStatus = true;
+      if (statusFilter !== 'All') {
+        matchesStatus =
+          (ev.status || '').toLowerCase() === statusFilter.toLowerCase();
+      }
+
+      return matchesSearch && matchesCategory && matchesStatus;
+    });
+  }, [events, searchQuery, activeCategory, statusFilter]);
+
+  // Click on a workshop card
+  const handleOpenWorkshop = (ev) => {
+    setSelectedWorkshop(ev);
+    setReserveSuccess(false);
+    window.location.hash = `ws-${ev._id}`;
+    const el = document.getElementById('workshops');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // Back to list
+  const handleCloseWorkshop = () => {
+    setSelectedWorkshop(null);
+    setReserveSuccess(false);
+    window.location.hash = 'workshops';
+    const el = document.getElementById('workshops');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // Handle Reservation Submit
+  const handleReserveSubmit = (e) => {
+    e.preventDefault();
+    if (!reserveForm.name || !reserveForm.phone) {
+      alert('Please enter your Name and WhatsApp phone number.');
+      return;
+    }
+
+    setReserveSuccess(true);
+
+    // Pre-fill WhatsApp message
+    const message = `Hi Rhythmic Beat Dance Court! 💃🕺\nI would like to reserve a slot for the workshop:\n*${selectedWorkshop?.title}*\n\nName: ${reserveForm.name}\nWhatsApp: ${reserveForm.phone}\nEmail: ${reserveForm.email || 'N/A'}\nSlots: ${reserveForm.slots}\nNotes: ${reserveForm.notes || 'None'}\n\nPlease confirm availability and payment details.`;
+    
+    // Open WhatsApp
+    const waUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
+    window.open(waUrl, '_blank');
+  };
+
   return (
     <div className="app">
+      {/* NAVBAR */}
       <header className="navbar">
         <a
           href="#home"
@@ -76,10 +184,7 @@ function App() {
           aria-label="Rhythmic Beat Dance Court home"
           onClick={closeMenu}
         >
-          <img
-            src="/dance-logo.png"
-            alt="Rhythmic Beat Dance Court"
-          />
+          <img src="/dance-logo.png" alt="Rhythmic Beat Dance Court" />
         </a>
 
         <button
@@ -92,67 +197,98 @@ function App() {
           {menuOpen ? '✕' : '☰'}
         </button>
 
-        <nav
-          className={`nav-links ${menuOpen ? 'nav-links-open' : ''}`}
-          aria-label="Main navigation"
-        >
+        <nav className={`nav-links ${menuOpen ? 'nav-links-open' : ''}`}>
           <a href="#home" onClick={closeMenu}>Home</a>
-          <a href="#events" onClick={closeMenu}>Events</a>
-          <a href="#about" onClick={closeMenu}>About</a>
+          <a href="#workshops" onClick={closeMenu}>Workshops</a>
+          <a href="#why-us" onClick={closeMenu}>Why RB</a>
+          <a href="#studios" onClick={closeMenu}>Studios</a>
           <a
-            className="admin-link"
-            href="/admin"
+            className="whatsapp-nav-btn"
+            href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20Rhythmic%20Beat%20Dance%20Court!%20I%20have%20an%20enquiry.`}
+            target="_blank"
+            rel="noreferrer"
             onClick={closeMenu}
           >
-            Admin Login <span aria-hidden="true">↗</span>
+            <span>💬</span> WhatsApp Enquire
+          </a>
+          <a className="admin-link" href="/admin" onClick={closeMenu}>
+            Admin ↗
           </a>
         </nav>
       </header>
 
       <main>
+        {/* HERO SECTION */}
         <section className="hero" id="home">
           <div className="hero-content">
-            <p className="eyebrow">THE STAGE IS YOURS • 2026</p>
+            <p className="eyebrow">RHYTHMIC BEAT DANCE COURT • EST. 2026</p>
 
             <h1>
-              FEEL THE
-              <br />
-              BEAT<span>.</span>
+              FEEL THE <span className="accent-red">BEAT.</span>
               <br />
               <span className="outline">OWN THE STAGE.</span>
             </h1>
 
             <p className="hero-text">
-              One stage. Endless moves. Unforgettable moments.
-              Discover dance battles and showcase your talent.
+              Chennai's premier dance arena. Learn from top choreographers,
+              experience high-voltage workshops, and elevate your moves in our
+              world-class studios.
             </p>
 
-            <a className="primary-btn" href="#events">
-              EXPLORE EVENTS <span>↘</span>
-            </a>
-          </div>
+            <div className="hero-actions">
+              <a className="primary-btn" href="#workshops">
+                EXPLORE WORKSHOPS <span>↓</span>
+              </a>
+              <a
+                className="secondary-btn"
+                href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20RB%20Dance%20Court%2C%20I%20want%20to%20join%20a%20dance%20batch.`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                JOIN REGULAR BATCH <span>↗</span>
+              </a>
+            </div>
 
-          <div className="hero-bottom">
-            <span>MOVE WITH PURPOSE.</span>
-            <span>EST. FOR DANCERS</span>
+            <div className="hero-stats">
+              <div className="stat-item">
+                <strong>1,500+</strong>
+                <span>Dancers Trained</span>
+              </div>
+              <div className="stat-separator" />
+              <div className="stat-item">
+                <strong>3</strong>
+                <span>Chennai Studios</span>
+              </div>
+              <div className="stat-separator" />
+              <div className="stat-item">
+                <strong>50+</strong>
+                <span>Workshops Conducted</span>
+              </div>
+            </div>
           </div>
         </section>
 
-        <section className="events-section" id="events">
-          <div className="section-heading">
+        {/* WORKSHOPS & MASTERCLASSES SECTION */}
+        <section className="workshops-section" id="workshops">
+          <div className="section-header-box">
             <div>
-              <p className="eyebrow">DON'T MISS YOUR MOMENT</p>
-              <h2>THE <span>EVENTS.</span></h2>
+              <p className="eyebrow">INTENSIVE MASTERCLASSES & EVENTS</p>
+              <h2>
+                THE <span>WORKSHOPS.</span>
+              </h2>
             </div>
-            <p className="muted">Your next stage starts here.</p>
+            <p className="section-subtitle">
+              Book your slot for upcoming choreography sessions, masterclasses, and intensive dance training.
+            </p>
           </div>
 
           {eventsLoading ? (
-            <p className="events-feedback">
-              Loading dance events...
-            </p>
+            <div className="state-feedback-card">
+              <div className="spinner" />
+              <p>Loading dance workshops from stage...</p>
+            </div>
           ) : eventsError ? (
-            <div className="events-feedback">
+            <div className="state-feedback-card error">
               <p>{eventsError}</p>
               <button
                 type="button"
@@ -162,169 +298,736 @@ function App() {
                 TRY AGAIN ↻
               </button>
             </div>
-          ) : events.length === 0 ? (
-            <p className="events-feedback">
-              No events available right now. Stay tuned for
-              upcoming dance events!
-            </p>
-          ) : (
-            <div className="event-grid">
-              {events.map((event, index) => {
-                const image = assetUrl(event.image);
-                const hasImage = image && !failedImages[event._id];
+          ) : selectedWorkshop ? (
+            /* =========================================
+               WORKSHOP DETAIL VIEW (like rbdancecourt.com/#ws-...)
+               ========================================= */
+            <div className="workshop-detail-container">
+              <div className="detail-top-nav">
+                <button
+                  type="button"
+                  className="back-btn"
+                  onClick={handleCloseWorkshop}
+                >
+                  ← Back to All Workshops
+                </button>
+                <span className="detail-status-pill">
+                  {selectedWorkshop.status || 'Upcoming Workshop'}
+                </span>
+              </div>
 
-                return (
-                  <article className="event-card" key={event._id}>
-                    <div
-                      className={`event-art neon-event-art ${
-                        hasImage
-                          ? 'has-event-image'
-                          : index % 2 === 0
-                            ? 'art-one'
-                            : 'art-two'
-                      }`}
-                    >
-                      {hasImage ? (
-                        <img
-                          src={image}
-                          alt={event.title}
-                          className="dynamic-event-image"
-                          onError={() =>
-                            setFailedImages((previous) => ({
-                              ...previous,
-                              [event._id]: true
-                            }))
-                          }
-                        />
-                      ) : (
-                        <div className="neon-placeholder">
-                          <span className="placeholder-number">
-                            {String(index + 1).padStart(2, '0')}
-                          </span>
-                          <span className="placeholder-dancer">
-                            ✦
-                          </span>
+              <div className="workshop-detail-grid">
+                {/* LEFT COLUMN: Workshop In-depth Info */}
+                <div className="detail-main-content">
+                  <div className="detail-banner-wrap">
+                    {assetUrl(selectedWorkshop.image) && !failedImages[selectedWorkshop._id] ? (
+                      <img
+                        src={assetUrl(selectedWorkshop.image)}
+                        alt={selectedWorkshop.title}
+                        className="detail-banner-img"
+                        onError={() =>
+                          setFailedImages((prev) => ({
+                            ...prev,
+                            [selectedWorkshop._id]: true,
+                          }))
+                        }
+                      />
+                    ) : (
+                      <div className="detail-banner-placeholder">
+                        <span>✦</span>
+                        <p>RHYTHMIC BEAT DANCE COURT</p>
+                      </div>
+                    )}
+                    <span className="banner-tag">
+                      {selectedWorkshop.status || 'OPEN FOR BOOKING'}
+                    </span>
+                  </div>
+
+                  <h1 className="detail-title">{selectedWorkshop.title}</h1>
+
+                  {/* Highlights Grid */}
+                  <div className="detail-specs-grid">
+                    <div className="spec-item">
+                      <span className="spec-icon">📅</span>
+                      <div>
+                        <small>DATE</small>
+                        <p>{selectedWorkshop.date || 'To be announced'}</p>
+                      </div>
+                    </div>
+                    <div className="spec-item">
+                      <span className="spec-icon">⏰</span>
+                      <div>
+                        <small>TIME</small>
+                        <p>{selectedWorkshop.time || 'Schedule TBA'}</p>
+                      </div>
+                    </div>
+                    <div className="spec-item">
+                      <span className="spec-icon">📍</span>
+                      <div>
+                        <small>STUDIO LOCATION</small>
+                        <p>Valasaravakkam & Kolapakkam, Chennai</p>
+                      </div>
+                    </div>
+                    <div className="spec-item">
+                      <span className="spec-icon">⚡</span>
+                      <div>
+                        <small>SLOTS</small>
+                        <p>
+                          {selectedWorkshop.slots > 0
+                            ? `${selectedWorkshop.slots} Slots Left`
+                            : 'Open Registration'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <div className="detail-info-block">
+                    <h3>About The Workshop</h3>
+                    <p className="detail-description">
+                      {selectedWorkshop.description ||
+                        'Get ready to learn an explosive choreography piece with master techniques, musicality, dynamic body control, and stage presence.'}
+                    </p>
+                  </div>
+
+                  {/* Audio track preview */}
+                  {selectedWorkshop.song && (
+                    <div className="detail-audio-box">
+                      <div className="audio-header">
+                        <span className="audio-icon">♫</span>
+                        <div>
+                          <strong>Official Workshop Track</strong>
+                          <p>Listen to the track you will be dancing to</p>
                         </div>
-                      )}
+                      </div>
+                      <audio controls preload="none">
+                        <source src={assetUrl(selectedWorkshop.song)} />
+                        Your browser does not support audio playback.
+                      </audio>
+                    </div>
+                  )}
 
-                      <div className="event-image-shade" />
+                  {/* What to Bring */}
+                  <div className="detail-guidelines-box">
+                    <h4>What to bring & instructions:</h4>
+                    <ul>
+                      <li>Clean sneakers or dance shoes required inside the wooden dance floor.</li>
+                      <li>Comfortable athletic clothing / dance attire.</li>
+                      <li>Bring your personal water bottle and towel.</li>
+                      <li>Please arrive 15 minutes prior to warm-up.</li>
+                    </ul>
+                  </div>
+                </div>
 
-                      <span className="event-tag">
-                        {event.status || 'UPCOMING'}
+                {/* RIGHT COLUMN: Sticky "Reserve Your Slot" Box */}
+                <aside className="detail-sidebar-col">
+                  <div className="sticky-reserve-card">
+                    <div className="reserve-header">
+                      <h3>Reserve Your Slot</h3>
+                      <div className="price-tag">
+                        <span>FEE</span>
+                        <strong>
+                          {selectedWorkshop.prize || 'Contact Studio'}
+                        </strong>
+                      </div>
+                    </div>
+
+                    <div className="slots-banner">
+                      <span className="pulse-dot" />
+                      <span>
+                        {selectedWorkshop.slots > 0
+                          ? `Limited Seats: Only ${selectedWorkshop.slots} slots available!`
+                          : 'Admissions Open • Fast Filling!'}
                       </span>
-
-                      <div className="event-image-content">
-                        <p className="image-kicker">
-                          RHYTHMIC DANCE COURT
-                        </p>
-                        <h3>{event.title}</h3>
-                        <span className="image-explore">
-                          FEEL THE BEAT <span>↗</span>
-                        </span>
-                      </div>
                     </div>
 
-                    <div className="event-info">
-                      <p className="event-type">
-                        {event.status || 'DANCE EVENT'}
-                      </p>
-
-                      <p className="event-description">
-                        {event.description ||
-                          'Get ready to own the stage.'}
-                      </p>
-
-                      {(event.date || event.time) && (
-                        <p className="dynamic-event-date">
-                          <span aria-hidden="true">◷</span>{' '}
-                          {event.date || 'Date to be announced'}
-                          {event.time ? ` · ${event.time}` : ''}
+                    {reserveSuccess ? (
+                      <div className="reservation-success-box">
+                        <span className="success-icon">✓</span>
+                        <h4>Reservation Initiated!</h4>
+                        <p>
+                          We opened WhatsApp to complete your slot booking. If it
+                          didn't open, click below:
                         </p>
-                      )}
-
-                      <div className="event-meta">
-                        <span>
-                          <small>PRICE</small>
-                          <strong>
-                            {event.prize || 'To be announced'}
-                          </strong>
-                        </span>
-
-                        <span>
-                          <small>AVAILABLE SLOTS</small>
-                          <strong>
-                            {event.slots ?? 'Open'}
-                          </strong>
-                        </span>
+                        <a
+                          className="whatsapp-reserve-btn"
+                          href={`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(
+                            `Hi RB Dance Court! I want to confirm my slot for: ${selectedWorkshop.title}`
+                          )}`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          Confirm on WhatsApp ↗
+                        </a>
+                        <button
+                          type="button"
+                          className="reset-form-btn"
+                          onClick={() => setReserveSuccess(false)}
+                        >
+                          Book Another Slot
+                        </button>
                       </div>
-
-                      {event.song && (
-                        <div className="public-event-audio">
-                          <p>♫ LISTEN TO THE EVENT TRACK</p>
-                          <audio controls preload="none">
-                            <source src={assetUrl(event.song)} />
-                            Your browser does not support audio playback.
-                          </audio>
+                    ) : (
+                      <form
+                        className="reserve-form"
+                        onSubmit={handleReserveSubmit}
+                      >
+                        <div className="form-group">
+                          <label htmlFor="res-name">Your Full Name *</label>
+                          <input
+                            id="res-name"
+                            type="text"
+                            placeholder="e.g. Rahul Sharma"
+                            required
+                            value={reserveForm.name}
+                            onChange={(e) =>
+                              setReserveForm({
+                                ...reserveForm,
+                                name: e.target.value,
+                              })
+                            }
+                          />
                         </div>
+
+                        <div className="form-group">
+                          <label htmlFor="res-phone">WhatsApp Number *</label>
+                          <input
+                            id="res-phone"
+                            type="tel"
+                            placeholder="e.g. 9876543210"
+                            required
+                            value={reserveForm.phone}
+                            onChange={(e) =>
+                              setReserveForm({
+                                ...reserveForm,
+                                phone: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+
+                        <div className="form-group">
+                          <label htmlFor="res-email">Email Address</label>
+                          <input
+                            id="res-email"
+                            type="email"
+                            placeholder="e.g. dancer@gmail.com"
+                            value={reserveForm.email}
+                            onChange={(e) =>
+                              setReserveForm({
+                                ...reserveForm,
+                                email: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+
+                        <div className="form-group">
+                          <label htmlFor="res-slots">Number of Slots</label>
+                          <select
+                            id="res-slots"
+                            value={reserveForm.slots}
+                            onChange={(e) =>
+                              setReserveForm({
+                                ...reserveForm,
+                                slots: Number(e.target.value),
+                              })
+                            }
+                          >
+                            <option value={1}>1 Person</option>
+                            <option value={2}>2 Persons</option>
+                            <option value={3}>3 Persons</option>
+                            <option value={4}>4+ (Group Entry)</option>
+                          </select>
+                        </div>
+
+                        <button type="submit" className="reserve-submit-btn">
+                          RESERVE YOUR SLOT NOW <span>⚡</span>
+                        </button>
+                      </form>
+                    )}
+
+                    <div className="reserve-footer-assistance">
+                      <p>Have questions before booking?</p>
+                      <a
+                        href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20RB%20Dance%20Court%2C%20I%20have%20a%20question%20about%20${encodeURIComponent(
+                          selectedWorkshop.title
+                        )}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="chat-wa-link"
+                      >
+                        💬 Chat with Studio Coordinator
+                      </a>
+                    </div>
+                  </div>
+                </aside>
+              </div>
+            </div>
+          ) : (
+            /* =========================================
+               WORKSHOPS BROWSER VIEW (Sidebar Filters + Cards Grid)
+               ========================================= */
+            <div className="workshops-browser-layout">
+              {/* LEFT SIDEBAR FILTERS */}
+              <aside className="filters-sidebar">
+                <div className="filter-header">
+                  <h3>Filters</h3>
+                  {(searchQuery ||
+                    activeCategory !== 'All Styles' ||
+                    statusFilter !== 'All') && (
+                    <button
+                      type="button"
+                      className="clear-filters-btn"
+                      onClick={() => {
+                        setSearchQuery('');
+                        setActiveCategory('All Styles');
+                        setStatusFilter('All');
+                      }}
+                    >
+                      Reset All
+                    </button>
+                  )}
+                </div>
+
+                {/* Search */}
+                <div className="filter-block">
+                  <label htmlFor="workshop-search" className="filter-label">
+                    Search
+                  </label>
+                  <div className="search-input-wrap">
+                    <span className="search-icon">🔍</span>
+                    <input
+                      id="workshop-search"
+                      type="text"
+                      className="filter-search-input"
+                      placeholder="Choreo, style, date..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    {searchQuery && (
+                      <button
+                        type="button"
+                        className="search-clear-btn"
+                        onClick={() => setSearchQuery('')}
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Dance Style / Category */}
+                <div className="filter-block">
+                  <span className="filter-label">Dance Style</span>
+                  <div className="category-pill-list">
+                    {CATEGORIES.map((cat) => (
+                      <button
+                        key={cat}
+                        type="button"
+                        className={`category-pill ${
+                          activeCategory === cat ? 'active' : ''
+                        }`}
+                        onClick={() => setActiveCategory(cat)}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Status Filter */}
+                <div className="filter-block">
+                  <span className="filter-label">Status</span>
+                  <div className="status-toggle-group">
+                    {['All', 'Upcoming', 'Ongoing'].map((st) => (
+                      <button
+                        key={st}
+                        type="button"
+                        className={`status-btn ${
+                          statusFilter === st ? 'active' : ''
+                        }`}
+                        onClick={() => setStatusFilter(st)}
+                      >
+                        {st}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Studio Help Box in Sidebar */}
+                <div className="sidebar-help-card">
+                  <p className="sidebar-help-title">Need a Custom Workshop?</p>
+                  <p className="sidebar-help-desc">
+                    We host corporate workshops, college teams & private group masterclasses.
+                  </p>
+                  <a
+                    href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20RB%20Dance%20Court%2C%20I%20am%20looking%20for%20a%20private%20workshop.`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="sidebar-wa-btn"
+                  >
+                    Enquire Now ↗
+                  </a>
+                </div>
+              </aside>
+
+              {/* RIGHT MAIN CONTENT: Results Count & Cards Grid */}
+              <div className="workshops-main-content">
+                {/* RESULTS HEADER (e.g. 1 Workshop Found) */}
+                <div className="results-header-bar">
+                  <div className="results-count-wrap">
+                    <span className="count-badge">
+                      {filteredEvents.length}
+                    </span>
+                    <h3 className="count-text">
+                      {filteredEvents.length === 1
+                        ? '1 Workshop Found'
+                        : `${filteredEvents.length} Workshops Found`}
+                    </h3>
+                  </div>
+
+                  {(activeCategory !== 'All Styles' || searchQuery) && (
+                    <div className="active-tag-pills">
+                      {activeCategory !== 'All Styles' && (
+                        <span className="active-pill">
+                          {activeCategory}
+                          <button
+                            type="button"
+                            onClick={() => setActiveCategory('All Styles')}
+                          >
+                            ✕
+                          </button>
+                        </span>
+                      )}
+                      {searchQuery && (
+                        <span className="active-pill">
+                          "{searchQuery}"
+                          <button
+                            type="button"
+                            onClick={() => setSearchQuery('')}
+                          >
+                            ✕
+                          </button>
+                        </span>
                       )}
                     </div>
-                  </article>
-                );
-              })}
+                  )}
+                </div>
+
+                {/* CARDS GRID */}
+                {filteredEvents.length === 0 ? (
+                  <div className="empty-results-box">
+                    <span className="empty-icon">🎭</span>
+                    <h4>No Workshops Match Your Filter</h4>
+                    <p>
+                      Try resetting your search or choose a different dance style.
+                    </p>
+                    <button
+                      type="button"
+                      className="primary-btn"
+                      onClick={() => {
+                        setSearchQuery('');
+                        setActiveCategory('All Styles');
+                        setStatusFilter('All');
+                      }}
+                    >
+                      VIEW ALL WORKSHOPS
+                    </button>
+                  </div>
+                ) : (
+                  <div className="compact-workshop-grid">
+                    {filteredEvents.map((event) => {
+                      const image = assetUrl(event.image);
+                      const hasImage = image && !failedImages[event._id];
+
+                      return (
+                        <article
+                          className="compact-card"
+                          key={event._id}
+                          onClick={() => handleOpenWorkshop(event)}
+                        >
+                          {/* Banner / Poster */}
+                          <div className="compact-card-media">
+                            {hasImage ? (
+                              <img
+                                src={image}
+                                alt={event.title}
+                                className="compact-card-img"
+                                onError={() =>
+                                  setFailedImages((prev) => ({
+                                    ...prev,
+                                    [event._id]: true,
+                                  }))
+                                }
+                              />
+                            ) : (
+                              <div className="compact-card-placeholder">
+                                <span>✦</span>
+                                <small>RHYTHMIC BEAT</small>
+                              </div>
+                            )}
+
+                            <span className="card-status-badge">
+                              {event.status || 'UPCOMING'}
+                            </span>
+
+                            {event.song && (
+                              <span className="card-has-audio-badge" title="Has Audio Track">
+                                ♫ Track
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Info Body */}
+                          <div className="compact-card-body">
+                            <h3 className="compact-card-title">{event.title}</h3>
+
+                            <div className="compact-card-meta-row">
+                              {(event.date || event.time) && (
+                                <span className="meta-schedule">
+                                  📅 {event.date || 'TBA'}
+                                  {event.time ? ` · ${event.time}` : ''}
+                                </span>
+                              )}
+                            </div>
+
+                            <p className="compact-card-desc">
+                              {event.description ||
+                                'Step onto the court and master unique choreography techniques with expert instructors.'}
+                            </p>
+
+                            <div className="compact-card-footer">
+                              <div className="fee-info">
+                                <small>FEE</small>
+                                <strong>{event.prize || 'Contact'}</strong>
+                              </div>
+
+                              <div className="slots-info">
+                                <small>SLOTS</small>
+                                <span className="slots-chip">
+                                  {event.slots > 0 ? `${event.slots} left` : 'Open'}
+                                </span>
+                              </div>
+                            </div>
+
+                            <button
+                              type="button"
+                              className="view-workshop-btn"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleOpenWorkshop(event);
+                              }}
+                            >
+                              Reserve Your Slot <span>↗</span>
+                            </button>
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </section>
 
-        <section className="about-section" id="about">
-          <p className="eyebrow">THIS IS YOUR SPACE</p>
+        {/* WHY CHOOSE RHYTHMIC BEAT */}
+        <section className="why-us-section" id="why-us">
+          <div className="section-header-box centered">
+            <p className="eyebrow">THE RHYTHMIC BEAT STANDARD</p>
+            <h2>
+              WHY TRAIN WITH <span>US?</span>
+            </h2>
+            <p className="section-subtitle">
+              Built by passionate dancers for creators, performers, and every beat enthusiast.
+            </p>
+          </div>
 
-          <h2>
-            LESS TALK.
-            <br />
-            <span>MORE DANCE.</span>
-          </h2>
+          <div className="features-grid">
+            <div className="feature-card">
+              <span className="feature-icon">🏆</span>
+              <h3>Celebrity & Pro Choreographers</h3>
+              <p>
+                Learn genuine industry routines, camera styling, and musicality from recognized artists.
+              </p>
+            </div>
 
-          <p>
-            A community built around movement, music and the
-            courage to step into the spotlight.
-          </p>
+            <div className="feature-card">
+              <span className="feature-icon">✨</span>
+              <h3>Joint-Safe Wooden Dance Floors</h3>
+              <p>
+                High-end sprung wooden floors designed to protect your knees and ankles during intensive jumps and power moves.
+              </p>
+            </div>
 
-          <a className="about-cta" href="#events">
-            FIND YOUR NEXT EVENT <span>↗</span>
-          </a>
+            <div className="feature-card">
+              <span className="feature-icon">🔥</span>
+              <h3>Stage Exposure & Dance Battles</h3>
+              <p>
+                Get direct access to state tournaments, music video shoots, and studio showcase nights.
+              </p>
+            </div>
+
+            <div className="feature-card">
+              <span className="feature-icon">🤝</span>
+              <h3>All Skill Levels Welcome</h3>
+              <p>
+                From absolute beginners taking their first steps to advanced dancers seeking refinement.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* STUDIO LOCATIONS */}
+        <section className="studios-section" id="studios">
+          <div className="section-header-box centered">
+            <p className="eyebrow">OUR CHENNAI BRANCHES</p>
+            <h2>
+              VISIT OUR <span>STUDIOS.</span>
+            </h2>
+            <p className="section-subtitle">
+              State-of-the-art facilities equipped with surround audio, acoustics, and air conditioning.
+            </p>
+          </div>
+
+          <div className="studios-grid">
+            <div className="studio-card">
+              <div className="studio-badge">MAIN BRANCH</div>
+              <h3>Valasaravakkam Studio</h3>
+              <p className="studio-address">
+                No. 12, Arcot Road, Valasaravakkam, Chennai - 600087
+              </p>
+              <div className="studio-features">
+                <span>✓ Sprung Wooden Floor</span>
+                <span>✓ Pro Acoustics</span>
+                <span>✓ Full AC</span>
+              </div>
+              <a
+                href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20RB%20Dance%20Court%2C%20I%20want%20to%20visit%20Valasaravakkam%20Studio.`}
+                target="_blank"
+                rel="noreferrer"
+                className="studio-btn"
+              >
+                Contact Valasaravakkam ↗
+              </a>
+            </div>
+
+            <div className="studio-card">
+              <div className="studio-badge">BRANCH 2</div>
+              <h3>Kolapakkam Studio</h3>
+              <p className="studio-address">
+                Main Road, Near Max Hospital, Kolapakkam, Chennai - 600122
+              </p>
+              <div className="studio-features">
+                <span>✓ Spacious Practice Hall</span>
+                <span>✓ Mirror Wall</span>
+                <span>✓ Parking Available</span>
+              </div>
+              <a
+                href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20RB%20Dance%20Court%2C%20I%20want%20to%20visit%20Kolapakkam%20Studio.`}
+                target="_blank"
+                rel="noreferrer"
+                className="studio-btn"
+              >
+                Contact Kolapakkam ↗
+              </a>
+            </div>
+
+            <div className="studio-card">
+              <div className="studio-badge">BRANCH 3</div>
+              <h3>Ambattur Studio</h3>
+              <p className="studio-address">
+                MTH Road, Opp. Bus Terminus, Ambattur, Chennai - 600053
+              </p>
+              <div className="studio-features">
+                <span>✓ Battle Court Area</span>
+                <span>✓ Changing Rooms</span>
+                <span>✓ Full AC</span>
+              </div>
+              <a
+                href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20RB%20Dance%20Court%2C%20I%20want%20to%20visit%20Ambattur%20Studio.`}
+                target="_blank"
+                rel="noreferrer"
+                className="studio-btn"
+              >
+                Contact Ambattur ↗
+              </a>
+            </div>
+          </div>
         </section>
       </main>
 
+      {/* FOOTER */}
       <footer className="site-footer">
-        <div className="footer-main">
-          <a
-            href="#home"
-            className="footer-logo"
-            aria-label="Back to home"
-          >
-            <img
-              src="/dance-logo.png"
-              alt="Rhythmic Beat Dance Court"
-            />
-          </a>
+        <div className="footer-top-grid">
+          <div className="footer-brand-col">
+            <a href="#home" className="footer-logo">
+              <img src="/dance-logo.png" alt="Rhythmic Beat Dance Court" />
+            </a>
+            <p className="footer-tagline">
+              One stage. Endless moves. Unforgettable moments.
+              Chennai's premier platform for aspiring and professional dancers.
+            </p>
+            <div className="footer-social-row">
+              <a
+                href={`https://wa.me/${WHATSAPP_PHONE}`}
+                target="_blank"
+                rel="noreferrer"
+                aria-label="WhatsApp"
+              >
+                💬 WhatsApp
+              </a>
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noreferrer"
+                aria-label="Instagram"
+              >
+                📸 Instagram
+              </a>
+            </div>
+          </div>
 
-          <p className="footer-tagline">
-            LET YOUR BODY SPEAK.
-            <br />
-            <span>MADE FOR THE LOVE OF DANCE.</span>
-          </p>
-
-          <div className="footer-navigation">
-            <p className="footer-heading">EXPLORE</p>
+          <div className="footer-col">
+            <h4>Quick Links</h4>
             <a href="#home">Home</a>
-            <a href="#events">Dance Events</a>
-            <a href="#about">About Us</a>
+            <a href="#workshops">All Workshops</a>
+            <a href="#why-us">Why Choose Us</a>
+            <a href="#studios">Studio Locations</a>
             <a href="/admin">Admin Login ↗</a>
+          </div>
+
+          <div className="footer-col">
+            <h4>Dance Disciplines</h4>
+            <span>Choreography Masterclasses</span>
+            <span>Hip-Hop & Urban Choreography</span>
+            <span>Folk & South Indian Kuthu</span>
+            <span>Contemporary & Lyrical</span>
+            <span>Bollywood & Freestyle</span>
+          </div>
+
+          <div className="footer-col">
+            <h4>Support & Help</h4>
+            <p className="footer-contact-item">
+              <strong>Studio Hotline:</strong> +91 99404 28809
+            </p>
+            <p className="footer-contact-item">
+              <strong>Studio Hours:</strong> Mon - Sun: 7:00 AM - 9:30 PM
+            </p>
+            <a
+              href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20RB%20Dance%20Court%2C%20I%20need%20assistance.`}
+              target="_blank"
+              rel="noreferrer"
+              className="footer-chat-btn"
+            >
+              24/7 WhatsApp Chat ↗
+            </a>
           </div>
         </div>
 
-        <div className="footer-bottom">
-          <span>© 2026 RHYTHMIC DANCE COURT</span>
+        <div className="footer-bottom-bar">
+          <p>© 2026 RHYTHMIC BEAT DANCE COURT. ALL RIGHTS RESERVED.</p>
           <a href="#home">BACK TO TOP ↑</a>
         </div>
       </footer>
