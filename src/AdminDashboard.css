@@ -1,15 +1,17 @@
 /* ========================================================
    RHYTHMIC BEAT DANCE COURT — MODERN SAAS ADMIN DASHBOARD
    Design based on Reference UI (Sidebar + Top Bar + Data Table)
+   Typography: Plus Jakarta Sans / Inter / Space Grotesk
    ======================================================== */
 
 .saas-admin-wrapper {
   display: flex;
   min-height: 100vh;
-  background-color: #f3f6f9;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  color: #1e293b;
+  background-color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #0f172a;
   position: relative;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* =========================================
@@ -27,7 +29,7 @@
   top: 0;
   height: 100vh;
   z-index: 50;
-  transition: transform 0.25s ease;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Sidebar Brand */
@@ -40,31 +42,32 @@
 }
 
 .brand-icon-box {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: 10px;
   background: linear-gradient(135deg, #0d9488, #0fa49c);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #ffffff;
-  font-size: 20px;
   box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25);
+  flex-shrink: 0;
 }
 
 .brand-text-box h2 {
   margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 15px;
   font-weight: 800;
-  letter-spacing: 0.5px;
+  letter-spacing: -0.01em;
   color: #0f172a;
 }
 
 .brand-text-box p {
   margin: 2px 0 0;
   font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
   color: #0d9488;
 }
 
@@ -88,7 +91,8 @@
   border: 0;
   background: transparent;
   color: #64748b;
-  font-size: 14px;
+  font-family: inherit;
+  font-size: 13.5px;
   font-weight: 600;
   text-align: left;
   cursor: pointer;
@@ -97,7 +101,7 @@
 }
 
 .menu-item:hover {
-  background: #f8fafc;
+  background: #f1f5f9;
   color: #0f172a;
 }
 
@@ -107,15 +111,16 @@
   box-shadow: 0 4px 14px rgba(15, 164, 156, 0.25);
 }
 
-.menu-item.active .menu-icon {
-  transform: scale(1.05);
+.menu-item.active .menu-icon svg {
+  stroke: #ffffff;
 }
 
 .menu-icon {
-  font-size: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: currentColor;
+  flex-shrink: 0;
 }
 
 .menu-label {
@@ -162,7 +167,7 @@
   opacity: 0.6;
 }
 
-/* Sidebar Footer (Super Admin Profile & Logout) */
+/* Sidebar Footer */
 .sidebar-footer {
   padding: 16px 14px 20px;
   border-top: 1px solid #f1f5f9;
@@ -182,8 +187,8 @@
 }
 
 .avatar-circle {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: #ccfbf1;
   color: #0f766e;
@@ -191,7 +196,8 @@
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  font-size: 15px;
+  font-size: 14px;
+  flex-shrink: 0;
 }
 
 .profile-details strong {
@@ -226,6 +232,11 @@
   background: #ffe4e6;
 }
 
+.logout-icon {
+  display: flex;
+  align-items: center;
+}
+
 /* =========================================
    2. MAIN CONTENT AREA & TOP BAR
    ========================================= */
@@ -237,7 +248,6 @@
   padding: 24px 32px 48px;
 }
 
-/* Top Header */
 .saas-top-header {
   display: flex;
   align-items: center;
@@ -265,9 +275,10 @@
 
 .header-title {
   margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 22px;
   font-weight: 800;
-  letter-spacing: -0.3px;
+  letter-spacing: -0.02em;
   color: #0f172a;
 }
 
@@ -275,9 +286,10 @@
   margin: 4px 0 0;
   font-size: 13px;
   color: #64748b;
+  font-weight: 500;
 }
 
-/* Header Action Controls */
+/* Header Controls */
 .header-actions {
   display: flex;
   align-items: center;
@@ -297,13 +309,20 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
+.search-icon {
+  display: flex;
+  align-items: center;
+  color: #94a3b8;
+}
+
 .search-box input {
   border: 0;
   outline: none;
+  font-family: inherit;
   font-size: 13px;
   color: #0f172a;
   background: transparent;
-  width: 190px;
+  width: 200px;
 }
 
 .search-clear-btn {
@@ -322,6 +341,7 @@
   border-radius: 20px;
   background: #ffffff;
   color: #334155;
+  font-family: inherit;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -330,7 +350,7 @@
 }
 
 .primary-cta-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   height: 40px;
@@ -339,17 +359,23 @@
   color: #ffffff;
   border: 0;
   border-radius: 20px;
-  font-size: 13px;
+  font-family: inherit;
+  font-size: 12.5px;
   font-weight: 700;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.4px;
   cursor: pointer;
   transition: all 0.15s ease;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
 }
 
 .primary-cta-btn:hover {
   background: #1e293b;
   transform: translateY(-1px);
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
 }
 
 /* Status Banner */
@@ -410,7 +436,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
 }
 
 .metric-icon-wrap.mint {
@@ -436,21 +461,22 @@
 .metric-box small {
   display: block;
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
   color: #94a3b8;
   margin-bottom: 4px;
 }
 
 .metric-box h3 {
   margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 24px;
   font-weight: 800;
   color: #0f172a;
 }
 
 /* =========================================
-   4. DATA TABLE (MATCHING REFERENCE UI)
+   4. DATA TABLE (REPLACED IMAGES WITH VECTOR ICONS)
    ========================================= */
 .saas-content-card {
   background: #ffffff;
@@ -477,7 +503,7 @@
   background: #f8fafc;
   color: #64748b;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.6px;
   text-transform: uppercase;
   border-bottom: 1px solid #e2e8f0;
@@ -498,32 +524,72 @@
   text-align: right;
 }
 
-/* Workshop Cell */
+/* Workshop Cell with Vector Icon Badge */
 .workshop-info-cell {
   display: flex;
   align-items: center;
   gap: 14px;
 }
 
-.table-poster-thumb {
+/* Style Icon Badges (Replaces raw images) */
+.style-icon-badge {
   width: 44px;
   height: 44px;
-  border-radius: 8px;
-  object-fit: cover;
-  background: #e2e8f0;
-  flex-shrink: 0;
-}
-
-.table-poster-placeholder {
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
-  background: #f1f5f9;
+  border-radius: 10px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
   flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.style-icon-badge .style-emoji {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.style-icon-badge .style-tag {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.badge-flame {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.badge-lightning {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.badge-grace {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.badge-gold {
+  background: #fefce8;
+  color: #a16207;
+  border: 1px solid #fef08a;
+}
+
+.badge-purple {
+  background: #faf5ff;
+  color: #7e22ce;
+  border: 1px solid #e9d5ff;
+}
+
+.badge-teal {
+  background: #f0fdfa;
+  color: #0f766e;
+  border: 1px solid #99f6e4;
 }
 
 .workshop-title-text {
@@ -534,23 +600,39 @@
 }
 
 .song-subtitle-text {
-  display: block;
-  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
   color: #0d9488;
   font-weight: 600;
   margin-top: 3px;
 }
 
-.venue-tag {
-  display: inline-block;
-  font-size: 12px;
+.song-subtitle-text svg {
+  stroke: #0d9488;
+}
+
+/* Instructor & Level Cell */
+.instructor-cell strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.instructor-cell small {
+  display: block;
+  font-size: 11.5px;
   color: #64748b;
+  margin-top: 2px;
 }
 
 /* Date & Time Cell */
 .datetime-cell strong {
   display: block;
   font-size: 13px;
+  font-weight: 700;
   color: #0f172a;
 }
 
@@ -585,13 +667,35 @@
   font-size: 11px;
 }
 
-/* Status Chips (Matching Reference UI pill style) */
+/* Session Curriculum View Button */
+.agenda-view-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #0f766e;
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.agenda-view-btn:hover {
+  background: #ccfbf1;
+  border-color: #5eead4;
+}
+
+/* Status Chips */
 .status-chip {
   display: inline-block;
   padding: 4px 12px;
   border-radius: 12px;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.3px;
 }
@@ -607,7 +711,7 @@
   color: #64748b;
 }
 
-/* Dancer Booking Cell (Initials Circle like Reference UI) */
+/* Dancer Booking Cell */
 .dancer-info-cell {
   display: flex;
   align-items: center;
@@ -630,7 +734,7 @@
 
 .dancer-name-text {
   display: block;
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 700;
   color: #0f172a;
 }
@@ -734,11 +838,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 4px;
   padding: 6px 12px;
   border-radius: 6px;
   border: 1px solid #cbd5e1;
   background: #ffffff;
   color: #334155;
+  font-family: inherit;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -763,6 +869,7 @@
   padding: 5px 12px;
   border-radius: 6px;
   border: 1px solid transparent;
+  font-family: inherit;
   font-size: 11px;
   font-weight: 700;
   cursor: pointer;
@@ -805,86 +912,66 @@
 }
 
 /* =========================================
-   5. OVERVIEW & BRANCHES TABS
+   5. BRANCHES SECTION WITH FULL CRUD
    ========================================= */
-.overview-tab-content {
+.branches-admin-wrapper {
   padding: 24px;
 }
 
-.overview-cards-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-.overview-panel {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 20px;
-}
-
-.overview-panel h3 {
-  margin: 0 0 16px;
-  font-size: 15px;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.mini-event-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.mini-event-row {
+.branches-section-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 14px;
-  background: #ffffff;
-  border: 1px solid #f1f5f9;
-  border-radius: 8px;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
 }
 
-.mini-title-box strong {
-  display: block;
-  font-size: 13px;
+.branches-section-title {
+  margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
   color: #0f172a;
 }
 
-.mini-title-box small {
-  display: block;
-  font-size: 11px;
-  color: #94a3b8;
-  margin-top: 2px;
-}
-
-.empty-subtext {
+.branches-section-subtitle {
+  margin: 4px 0 0;
   font-size: 13px;
-  color: #94a3b8;
+  color: #64748b;
 }
 
-/* Branches Tab */
 .branches-admin-grid {
-  padding: 24px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
 }
 
 .branch-admin-card {
-  background: #f8fafc;
+  background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 22px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.branch-admin-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+}
+
+.branch-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .branch-header-badge {
-  align-self: flex-start;
   padding: 3px 8px;
   background: #ccfbf1;
   color: #0f766e;
@@ -894,44 +981,144 @@
   letter-spacing: 0.5px;
 }
 
-.branch-header-badge.secondary {
-  background: #e2e8f0;
-  color: #475569;
+.branch-status-toggle {
+  background: transparent;
+  border: 0;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 12px;
 }
 
-.branch-admin-card h3 {
+.branch-status-toggle.active {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.branch-status-toggle.upcoming {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.branch-name {
   margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 17px;
   font-weight: 800;
   color: #0f172a;
 }
 
-.branch-admin-card p {
+.branch-address {
   margin: 0;
   font-size: 13px;
   color: #64748b;
   line-height: 1.5;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.branch-address .icon-wrap {
+  margin-top: 2px;
+  color: #0d9488;
+  flex-shrink: 0;
 }
 
 .branch-specs {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  font-size: 12px;
-  color: #334155;
-  font-weight: 600;
-  padding: 10px 0;
-  border-top: 1px dashed #cbd5e1;
-  border-bottom: 1px dashed #cbd5e1;
+  gap: 8px;
+  padding: 12px 0;
+  border-top: 1px dashed #e2e8f0;
+  border-bottom: 1px dashed #e2e8f0;
 }
 
-.branch-contact {
-  font-size: 12px;
+.spec-tag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: #334155;
+  font-weight: 600;
+}
+
+.spec-check {
+  color: #0d9488;
+  display: flex;
+  align-items: center;
+}
+
+.branch-contact-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12.5px;
+}
+
+.phone-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   color: #0f172a;
 }
 
+.branch-wa-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.branch-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.branch-action-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #334155;
+  transition: all 0.15s ease;
+}
+
+.branch-action-btn:hover {
+  background: #f1f5f9;
+}
+
+.branch-action-btn.delete {
+  flex: 0 0 36px;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
+.branch-action-btn.delete:hover {
+  background: #fee2e2;
+}
+
 /* =========================================
-   6. MODAL WINDOW (CREATE / EDIT WORKSHOP)
+   6. MODAL & CURRICULUM SELECTORS
    ========================================= */
 .saas-modal-backdrop {
   position: fixed;
@@ -959,6 +1146,10 @@
   animation: scaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.branch-modal {
+  max-width: 580px;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -979,6 +1170,7 @@
 
 .modal-top-bar h2 {
   margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
   font-size: 18px;
   font-weight: 800;
   color: #0f172a;
@@ -1061,6 +1253,58 @@
   color: #94a3b8;
 }
 
+/* Curriculum Template Picker Buttons */
+.topic-curriculum-box {
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.curriculum-header-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.template-picker-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.picker-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.topic-pill-btn {
+  padding: 4px 10px;
+  border-radius: 14px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f766e;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.topic-pill-btn:hover {
+  background: #ccfbf1;
+  border-color: #5eead4;
+}
+
+.highlight-label {
+  color: #0f766e !important;
+  font-size: 13px !important;
+  font-weight: 800 !important;
+}
+
 .image-preview-thumb {
   margin-top: 8px;
   width: 100%;
@@ -1091,6 +1335,7 @@
   background: #f1f5f9;
   border: 0;
   border-radius: 8px;
+  font-family: inherit;
   font-size: 13px;
   font-weight: 600;
   color: #475569;
@@ -1107,6 +1352,7 @@
   color: #ffffff;
   border: 0;
   border-radius: 8px;
+  font-family: inherit;
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;
@@ -1123,7 +1369,148 @@
 }
 
 /* =========================================
-   7. RESPONSIVE DESIGN (TABLETS & PHONES)
+   7. AGENDA QUICK VIEW MODAL
+   ========================================= */
+.agenda-modal {
+  max-width: 640px;
+}
+
+.agenda-preview-content {
+  padding: 24px;
+  overflow-y: auto;
+  max-height: 60vh;
+}
+
+.agenda-meta-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 12px 14px;
+  background: #f8fafc;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #334155;
+  margin-bottom: 18px;
+  border: 1px solid #e2e8f0;
+}
+
+.agenda-steps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.agenda-step-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.agenda-step-card .step-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #ccfbf1;
+  color: #0f766e;
+  font-weight: 800;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.agenda-step-card p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #1e293b;
+}
+
+/* Overview Panels */
+.overview-tab-content {
+  padding: 24px;
+}
+
+.overview-cards-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.overview-panel {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.panel-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.panel-title-row h3 {
+  margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.link-subtle-btn {
+  background: transparent;
+  border: 0;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0d9488;
+  cursor: pointer;
+}
+
+.mini-event-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mini-event-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 8px;
+}
+
+.mini-title-box strong {
+  display: block;
+  font-size: 13px;
+  color: #0f172a;
+}
+
+.mini-title-box small {
+  display: block;
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.empty-subtext {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+/* =========================================
+   8. RESPONSIVE DESIGN (TABLETS & PHONES)
    ========================================= */
 @media (max-width: 1024px) {
   .metrics-summary-grid {
@@ -1187,108 +1574,4 @@
   .form-field.full-width {
     grid-column: span 1;
   }
-}
-
-/* ========================================================
-   WORKSHOP SESSION FLOW / AGENDA EXTENSIONS
-   ======================================================== */
-
-.instructor-cell strong {
-  display: block;
-  font-size: 13px;
-  color: #0f172a;
-}
-
-.instructor-cell small {
-  display: block;
-  font-size: 11px;
-  color: #0d9488;
-  font-weight: 600;
-  margin-top: 2px;
-}
-
-.agenda-view-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 10px;
-  border-radius: 6px;
-  border: 1px solid #cbd5e1;
-  background: #f8fafc;
-  color: #0f766e;
-  font-size: 11px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.agenda-view-btn:hover {
-  background: #ccfbf1;
-  border-color: #5eead4;
-}
-
-.highlight-label {
-  color: #0f766e !important;
-  font-size: 13px !important;
-}
-
-.agenda-modal {
-  max-width: 640px;
-}
-
-.agenda-preview-content {
-  padding: 24px;
-  overflow-y: auto;
-  max-height: 60vh;
-}
-
-.agenda-meta-row {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  padding: 12px 14px;
-  background: #f8fafc;
-  border-radius: 8px;
-  font-size: 12px;
-  color: #334155;
-  margin-bottom: 18px;
-  border: 1px solid #e2e8f0;
-}
-
-.agenda-steps-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.agenda-step-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 14px;
-  border-radius: 10px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-}
-
-.agenda-step-card .step-num {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: #ccfbf1;
-  color: #0f766e;
-  font-weight: 800;
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.agenda-step-card p {
-  margin: 0;
-  font-size: 13px;
-  line-height: 1.5;
-  color: #1e293b;
 }

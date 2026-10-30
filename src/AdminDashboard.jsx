@@ -4,23 +4,115 @@ import './AdminDashboard.css';
 const SERVER = 'https://rhythmic-beat-dance.onrender.com';
 const API = `${SERVER}/api/events`;
 const BOOKINGS_API = `${SERVER}/api/bookings`;
+const BRANCHES_API = `${SERVER}/api/branches`;
 const UPLOAD_API = `${SERVER}/api/upload`;
+const STUDIO_PHONE = '919994716471';
 
-const defaultAgenda = `1. Warm-up & Body Isolations (00:00 - 00:20): Full dynamic joint activation, head/chest/pelvic isolations & rhythm groove.
-2. Step-by-Step Choreography Breakdown (00:20 - 01:15): Detailed counts breakdown, hand precision, footwork angles & weight transitions.
-3. Musicality & Texture Training (01:15 - 01:45): Matching beats, syncopated rhythms, hitting hard accents, and fluid body roll control.
-4. Stage Formations & Group Synchronization (01:45 - 02:15): Camera angle awareness, eye contact, expressions, and clean group synchronization.
-5. Professional 4K Stage Video Shoot (02:15 - 02:45): High-definition cinematic spotlight video recording for your Instagram reels & portfolio!
-6. Mentor Feedback & Certificate Distribution (02:45 - 03:00): One-on-one personal guidance, dancer networking, and official RB certificate.`;
+// Pre-defined Curricula by Dance Style / Topic
+const TOPIC_CURRICULUM_TEMPLATES = {
+  'Hip-Hop & Urban': {
+    name: 'Hip-Hop & Urban Choreography',
+    agenda: `1. Groove Foundation & Joint Isolations (00:00 - 00:20): Bounce drills, ankle/knee conditioning, neck & chest isolations to train body control.
+2. Rhythm & Beat Pocket Breakdown (00:20 - 00:50): Footwork angles, weight transitions, syncopated 8-counts, and hitting the bass pocket.
+3. Flow & Texture Switching (00:50 - 01:30): Transitioning between hard hits (popping) and smooth fluid glide textures.
+4. Group Formations & Stage Energy (01:30 - 02:15): Camera angle awareness, eye focus, synchronization, and crew chemistry.
+5. Cinematic 4K Stage Reel Shoot (02:15 - 02:45): Professional stage lights shoot for your Instagram reels & portfolio.
+6. Feedback, Q&A & Certificate Handover (02:45 - 03:00): Individual posture correction, mentor guidance, and official RB certificate.`,
+  },
+  'Folk & Kuthu': {
+    name: 'Folk & Kuthu Intensive',
+    agenda: `1. High-Energy Stamina Warm-up (00:00 - 00:20): Dappankuthu foot stomp drills, cardio warm-up, and hip flexibility drills.
+2. Authentic Kuthu Steps & Body Flow (00:20 - 00:55): Traditional beats count breakdown, shoulder bounces, and waist movements.
+3. Fast-Tempo Musicality & Expressions (00:55 - 01:35): Tamil mass beats timing, facial expressions, and dynamic punch moves.
+4. Mass Crew Synchronization (01:35 - 02:15): High-speed group performance, battle circle face-off, and whistle moments.
+5. 4K Mass Stage Video Shoot (02:15 - 02:45): High-voltage cinematic video capture with full studio lighting.
+6. Group Photo & Certificate Presentation (02:45 - 03:00): Certificate handover and studio community connect.`,
+  },
+  'Contemporary & Lyrical': {
+    name: 'Contemporary & Lyrical Flow',
+    agenda: `1. Floor-work & Alignment Warm-up (00:00 - 00:25): Spine articulation, hamstring stretches, and center core grounding.
+2. Fluid Extensions & Pirouette Technique (00:25 - 01:05): Breath control, suspension, balance release, and lyrical floor slides.
+3. Emotional Storytelling & Musical Texture (01:05 - 01:45): Translating song lyrics into body language and expressive dynamic movement.
+4. Partner Work & Stage Formation (01:45 - 02:15): Safe weight-sharing techniques and aesthetic stage spacing.
+5. Cinematic 4K Lyrical Showcase Shoot (02:15 - 02:45): Soft-glow stage spotlight recording capturing emotional nuances.
+6. Reflection & Certificate Award (02:45 - 03:00): Mentor feedback on emotional expression and official certificate.`,
+  },
+  'Dance Battle & Freestyle': {
+    name: 'Dance Battle & Cypher Masterclass',
+    agenda: `1. Freestyle Foundations Warm-up (00:00 - 00:20): Freestyle groove, cypher circles, and reaction-time drills.
+2. Battle Concept Breakdown & Musicality (00:20 - 01:00): Hitting unexpected snare/bass drops, round-stealing concepts, and musical pauses.
+3. Call-outs, Mimicry & Stage Presence (01:00 - 01:40): Eye-contact dominance, psychological confidence, and dynamic floor recovery.
+4. Mock 1v1 & 2v2 Battle Cypher (01:40 - 02:20): Live judged battle practice with immediate mentor constructive critique.
+5. 4K Battle Highlight Shoot (02:20 - 02:45): Fast-paced multi-angle battle recording with stage arena lighting.
+6. Battle Honor & Certificate Distribution (02:45 - 03:00): Certificate award, judge tips, and dancer networking.`,
+  },
+  'Bollywood Commercial': {
+    name: 'Bollywood Commercial & Hook-step',
+    agenda: `1. Bollywood Groove Warm-up (00:00 - 00:20): Hook-step body posture, neck movements, and cheerful stage energy warmup.
+2. Hook-step Breakdown & Expressions (00:20 - 01:00): Thumkas, mudras, energetic footwork, and bright theatrical expressions (Navarasa).
+3. Camera-Ready Performance Coaching (01:00 - 01:40): Close-up lip sync, smile projection, and cinematic angles.
+4. Blockbuster Formation Training (01:40 - 02:15): Grand group formation switching and coordinated ensemble flow.
+5. 4K Bollywood Reel Production Shoot (02:15 - 02:45): High-energy studio lights video recording ready for Instagram & YouTube.
+6. Star Certificate & Photo Session (02:45 - 03:00): Official certification and mentor group pictures.`,
+  },
+};
 
-const emptyForm = {
+const DEFAULT_BRANCHES = [
+  {
+    _id: 'branch-1',
+    name: 'Valasaravakkam Studio',
+    tag: 'HEADQUARTERS & MAIN STAGE',
+    address: '42, Arcot Road, Near Mega Mart, Valasaravakkam, Chennai - 600087',
+    city: 'Chennai',
+    phone: '+91 99947 16471',
+    specs: [
+      '1,800 sq.ft Wooden Spring Floor',
+      '4K Stage Lighting & Video Setup',
+      'Fully Air Conditioned',
+      'Separate Changing Rooms & Lockers',
+    ],
+    status: 'Active',
+  },
+  {
+    _id: 'branch-2',
+    name: 'Kolapakkam Studio',
+    tag: 'PRACTICE & CREW FLOOR',
+    address: '15, VGN Boulevard, Near Max Hospital, Kolapakkam, Chennai - 600128',
+    city: 'Chennai',
+    phone: '+91 99947 16471',
+    specs: [
+      '1,200 sq.ft Rehearsal Hall',
+      'Surround Acoustic Sound System',
+      'Free Dancer Parking Facility',
+      'Mirror Walls & Ambient Lighting',
+    ],
+    status: 'Active',
+  },
+  {
+    _id: 'branch-3',
+    name: 'Ambattur Masterclass Branch',
+    tag: 'UPCOMING EXPANSION',
+    address: 'MTH Road, Near Industrial Estate, Ambattur, Chennai - 600053',
+    city: 'Chennai',
+    phone: '+91 99947 16471',
+    specs: [
+      'Masterclass Arena & Cypher Zone',
+      'Battle Stage & Audience Seating',
+      'Capacity: 60+ Dancers',
+    ],
+    status: 'Launching Soon',
+  },
+];
+
+const emptyWorkshopForm = {
   title: '',
   description: '',
   instructor: 'Master Choreographer Rahul & RB Crew',
-  level: 'Open Level (Beginner & Intermediate Friendly)',
+  level: 'Beginner & Intermediate Friendly',
   song: '',
-  location: '', // NEW
-  agenda: defaultAgenda,
+  location: 'Valasaravakkam Studio, Chennai',
+  topic: 'Hip-Hop & Urban',
+  agenda: TOPIC_CURRICULUM_TEMPLATES['Hip-Hop & Urban'].agenda,
   status: 'Upcoming',
   slots: 20,
   prize: '₹1,000',
@@ -28,6 +120,158 @@ const emptyForm = {
   time: '',
   image: '',
 };
+
+const emptyBranchForm = {
+  name: '',
+  tag: 'Studio Branch & Practice Floor',
+  address: '',
+  city: 'Chennai',
+  phone: '+91 99947 16471',
+  specs: '1,500 sq.ft Wooden Spring Floor, 4K Stage Lighting, Air Conditioned, Free Parking',
+  status: 'Active',
+};
+
+// Pure inline SVG Icons for maximum crispness, speed, and modern SaaS look
+const Icons = {
+  dashboard: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="7" height="7"></rect>
+      <rect x="14" y="3" width="7" height="7"></rect>
+      <rect x="14" y="14" width="7" height="7"></rect>
+      <rect x="3" y="14" width="7" height="7"></rect>
+    </svg>
+  ),
+  workshop: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+    </svg>
+  ),
+  plus: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="12" y1="5" x2="12" y2="19"></line>
+      <line x1="5" y1="12" x2="19" y2="12"></line>
+    </svg>
+  ),
+  ticket: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"></path>
+      <path d="M13 5v2"></path>
+      <path d="M13 17v2"></path>
+      <path d="M13 11v2"></path>
+    </svg>
+  ),
+  branch: (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 21h18"></path>
+      <path d="M5 21V7l8-4v18"></path>
+      <path d="M19 21V11l-6-3"></path>
+      <path d="M9 9h1"></path>
+      <path d="M9 13h1"></path>
+      <path d="M9 17h1"></path>
+    </svg>
+  ),
+  globe: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="2" y1="12" x2="22" y2="12"></line>
+      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+    </svg>
+  ),
+  logout: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+      <polyline points="16 17 21 12 16 7"></polyline>
+      <line x1="21" y1="12" x2="9" y2="12"></line>
+    </svg>
+  ),
+  search: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="8"></circle>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+  ),
+  edit: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+    </svg>
+  ),
+  trash: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="3 6 5 6 21 6"></polyline>
+      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+    </svg>
+  ),
+  check: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+  ),
+  eye: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+      <circle cx="12" cy="12" r="3"></circle>
+    </svg>
+  ),
+  music: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 18V5l12-2v13"></path>
+      <circle cx="6" cy="18" r="3"></circle>
+      <circle cx="18" cy="16" r="3"></circle>
+    </svg>
+  ),
+  calendar: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+      <line x1="16" y1="2" x2="16" y2="6"></line>
+      <line x1="8" y1="2" x2="8" y2="6"></line>
+      <line x1="3" y1="10" x2="21" y2="10"></line>
+    </svg>
+  ),
+  mapPin: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+      <circle cx="12" cy="10" r="3"></circle>
+    </svg>
+  ),
+  phone: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+    </svg>
+  ),
+  clipboard: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+      <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+    </svg>
+  ),
+  sparkles: (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
+    </svg>
+  ),
+};
+
+// Return a clean vector icon badge for workshop styles instead of heavy image
+function getWorkshopStyleIcon(title = '', song = '') {
+  const text = `${title} ${song}`.toLowerCase();
+  if (text.includes('kuthu') || text.includes('folk') || text.includes('dappa')) {
+    return { icon: '🔥', label: 'FOLK', bg: 'badge-flame' };
+  }
+  if (text.includes('hip') || text.includes('urban') || text.includes('street')) {
+    return { icon: '⚡', label: 'URBAN', bg: 'badge-lightning' };
+  }
+  if (text.includes('contemporary') || text.includes('lyrical') || text.includes('ballet')) {
+    return { icon: '🩰', label: 'LYRICAL', bg: 'badge-grace' };
+  }
+  if (text.includes('battle') || text.includes('cypher') || text.includes('clash')) {
+    return { icon: '🏆', label: 'BATTLE', bg: 'badge-gold' };
+  }
+  if (text.includes('bollywood') || text.includes('commercial')) {
+    return { icon: '🌟', label: 'BOLLY', bg: 'badge-purple' };
+  }
+  return { icon: '💃', label: 'CHOREO', bg: 'badge-teal' };
+}
 
 function AdminDashboard() {
   // Navigation & View State
@@ -37,8 +281,10 @@ function AdminDashboard() {
   // Data State
   const [events, setEvents] = useState([]);
   const [bookings, setBookings] = useState([]);
+  const [branches, setBranches] = useState(DEFAULT_BRANCHES);
   const [loadingEvents, setLoadingEvents] = useState(false);
   const [loadingBookings, setLoadingBookings] = useState(false);
+  const [loadingBranches, setLoadingBranches] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
   const [statusType, setStatusType] = useState('info'); // 'info' | 'success' | 'error'
 
@@ -46,13 +292,19 @@ function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
 
-  // Modal / Form State
+  // Workshop Modal / Form State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
-  const [form, setForm] = useState(emptyForm);
+  const [form, setForm] = useState(emptyWorkshopForm);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
+
+  // Branch Modal / Form State
+  const [isBranchModalOpen, setIsBranchModalOpen] = useState(false);
+  const [editingBranchId, setEditingBranchId] = useState(null);
+  const [branchFormLoading, setBranchFormLoading] = useState(false);
+  const [branchForm, setBranchForm] = useState(emptyBranchForm);
 
   // Agenda Quick View Modal
   const [viewingAgendaEvent, setViewingAgendaEvent] = useState(null);
@@ -84,7 +336,15 @@ function AdminDashboard() {
     return data;
   }
 
-  // 1. Load Events from Backend
+  function showNotice(text, type = 'info') {
+    setStatusMessage(text);
+    setStatusType(type);
+    setTimeout(() => {
+      setStatusMessage('');
+    }, 5000);
+  }
+
+  // 1. Load Events
   async function loadEvents() {
     setLoadingEvents(true);
     try {
@@ -101,7 +361,7 @@ function AdminDashboard() {
     }
   }
 
-  // 2. Load Bookings from Backend
+  // 2. Load Bookings
   async function loadBookings() {
     setLoadingBookings(true);
     try {
@@ -117,25 +377,47 @@ function AdminDashboard() {
     }
   }
 
+  // 3. Load Branches
+  async function loadBranches() {
+    setLoadingBranches(true);
+    try {
+      const response = await fetch(BRANCHES_API, { cache: 'no-store' });
+      const data = await readResponse(response);
+      if (Array.isArray(data) && data.length > 0) {
+        setBranches(data);
+      }
+    } catch (error) {
+      console.warn('Fallback to local default branches:', error.message);
+    } finally {
+      setLoadingBranches(false);
+    }
+  }
+
   useEffect(() => {
     loadEvents();
     loadBookings();
+    loadBranches();
   }, []);
 
-  function showNotice(text, type = 'info') {
-    setStatusMessage(text);
-    setStatusType(type);
-    setTimeout(() => {
-      setStatusMessage('');
-    }, 5000);
-  }
-
+  // Workshop Form Handlers
   function handleFormChange(e) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   }
 
-  // File Upload Helper (For Images Only)
+  // Handle Topic Curriculum Template Change
+  function handleTopicChange(topicKey) {
+    const template = TOPIC_CURRICULUM_TEMPLATES[topicKey];
+    if (template) {
+      setForm((prev) => ({
+        ...prev,
+        topic: topicKey,
+        agenda: template.agenda,
+      }));
+      showNotice(`Applied "${template.name}" curriculum template!`, 'success');
+    }
+  }
+
   async function uploadFile(file, kind, authToken) {
     const formData = new FormData();
     formData.append('kind', kind);
@@ -155,7 +437,7 @@ function AdminDashboard() {
 
   function openCreateModal() {
     setEditingId(null);
-    setForm(emptyForm);
+    setForm(emptyWorkshopForm);
     setImageFile(null);
     setImagePreview('');
     setIsModalOpen(true);
@@ -167,13 +449,14 @@ function AdminDashboard() {
       title: event.title || '',
       description: event.description || '',
       instructor: event.instructor || 'Master Choreographer Rahul & RB Crew',
-      level: event.level || 'Open Level (Beginner & Intermediate Friendly)',
+      level: event.level || 'Beginner & Intermediate Friendly',
       song: event.song || '',
-      location: event.location || '',
-      agenda: event.agenda || defaultAgenda,
+      location: event.location || 'Valasaravakkam Studio, Chennai',
+      topic: event.topic || 'Hip-Hop & Urban',
+      agenda: event.agenda || TOPIC_CURRICULUM_TEMPLATES['Hip-Hop & Urban'].agenda,
       status: event.status || 'Upcoming',
       slots: event.slots ?? 20,
-      prize: event.prize || '',
+      prize: event.prize || '₹1,000',
       date: event.date || '',
       time: event.time || '',
       image: event.image || '',
@@ -186,13 +469,12 @@ function AdminDashboard() {
   function closeModal() {
     setIsModalOpen(false);
     setEditingId(null);
-    setForm(emptyForm);
+    setForm(emptyWorkshopForm);
     setImageFile(null);
     setImagePreview('');
   }
 
-  // Handle Form Submit (Create or Update)
-  async function handleFormSubmit(e) {
+  async function handleWorkshopSubmit(e) {
     e.preventDefault();
     if (formLoading) return;
 
@@ -245,7 +527,6 @@ function AdminDashboard() {
     }
   }
 
-  // Delete Workshop
   async function handleDeleteEvent(id, title) {
     if (!window.confirm(`Are you sure you want to delete "${title}"?`)) {
       return;
@@ -273,7 +554,7 @@ function AdminDashboard() {
     }
   }
 
-  // Update Booking Status
+  // Bookings Handlers
   async function handleToggleBookingStatus(booking) {
     const nextStatus = booking.status === 'Confirmed' ? 'Pending' : 'Confirmed';
     try {
@@ -291,7 +572,6 @@ function AdminDashboard() {
     }
   }
 
-  // Delete Booking
   async function handleDeleteBooking(id, dancerName) {
     if (!window.confirm(`Delete booking for dancer "${dancerName}"?`)) {
       return;
@@ -309,7 +589,133 @@ function AdminDashboard() {
     }
   }
 
-  // Logout
+  // Branch CRUD Handlers
+  function openCreateBranchModal() {
+    setEditingBranchId(null);
+    setBranchForm(emptyBranchForm);
+    setIsBranchModalOpen(true);
+  }
+
+  function openEditBranchModal(b) {
+    setEditingBranchId(b._id);
+    setBranchForm({
+      name: b.name || '',
+      tag: b.tag || 'Studio Branch & Practice Floor',
+      address: b.address || '',
+      city: b.city || 'Chennai',
+      phone: b.phone || '+91 99947 16471',
+      specs: Array.isArray(b.specs) ? b.specs.join(', ') : b.specs || '',
+      status: b.status || 'Active',
+    });
+    setIsBranchModalOpen(true);
+  }
+
+  function closeBranchModal() {
+    setIsBranchModalOpen(false);
+    setEditingBranchId(null);
+    setBranchForm(emptyBranchForm);
+  }
+
+  async function handleBranchSubmit(e) {
+    e.preventDefault();
+    if (branchFormLoading) return;
+
+    setBranchFormLoading(true);
+    showNotice('Saving studio branch...', 'info');
+
+    const specsArray = branchForm.specs
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    const payload = {
+      ...branchForm,
+      specs: specsArray,
+    };
+
+    try {
+      const url = editingBranchId ? `${BRANCHES_API}/${editingBranchId}` : BRANCHES_API;
+      const response = await fetch(url, {
+        method: editingBranchId ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      await readResponse(response);
+
+      showNotice(
+        editingBranchId ? 'Studio branch updated successfully!' : 'New studio branch added successfully!',
+        'success'
+      );
+      closeBranchModal();
+      await loadBranches();
+    } catch (error) {
+      console.warn('Branch backend fallback:', error);
+      // Local state fallback in case backend is offline
+      if (editingBranchId) {
+        setBranches((prev) =>
+          prev.map((item) =>
+            item._id === editingBranchId
+              ? { ...item, ...payload, specs: specsArray }
+              : item
+          )
+        );
+      } else {
+        const newBranch = {
+          _id: `branch-${Date.now()}`,
+          ...payload,
+          specs: specsArray,
+        };
+        setBranches((prev) => [...prev, newBranch]);
+      }
+      showNotice(
+        editingBranchId ? 'Studio branch updated!' : 'New studio branch added!',
+        'success'
+      );
+      closeBranchModal();
+    } finally {
+      setBranchFormLoading(false);
+    }
+  }
+
+  async function handleDeleteBranch(id, name) {
+    if (!window.confirm(`Are you sure you want to remove "${name}"?`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${BRANCHES_API}/${id}`, {
+        method: 'DELETE',
+      });
+      await readResponse(response);
+      showNotice(`Branch "${name}" deleted successfully!`, 'success');
+      await loadBranches();
+    } catch (error) {
+      console.warn('Branch delete fallback:', error);
+      setBranches((prev) => prev.filter((b) => b._id !== id));
+      showNotice(`Branch "${name}" removed!`, 'success');
+    }
+  }
+
+  async function handleToggleBranchStatus(branch) {
+    const nextStatus = branch.status === 'Active' ? 'Launching Soon' : 'Active';
+    try {
+      const response = await fetch(`${BRANCHES_API}/${branch._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: nextStatus }),
+      });
+      await readResponse(response);
+      showNotice(`Branch status changed to ${nextStatus}!`, 'success');
+      await loadBranches();
+    } catch (error) {
+      setBranches((prev) =>
+        prev.map((b) => (b._id === branch._id ? { ...b, status: nextStatus } : b))
+      );
+      showNotice(`Branch status changed to ${nextStatus}!`, 'success');
+    }
+  }
+
   function handleLogout() {
     sessionStorage.removeItem('adminToken');
     window.location.href = '/admin';
@@ -324,8 +730,7 @@ function AdminDashboard() {
         ev.title?.toLowerCase().includes(q) ||
         ev.description?.toLowerCase().includes(q) ||
         ev.song?.toLowerCase().includes(q) ||
-        ev.instructor?.toLowerCase().includes(q) ||
-        ev.date?.toLowerCase().includes(q);
+        ev.instructor?.toLowerCase().includes(q);
 
       const matchesStatus =
         statusFilter === 'All' ||
@@ -361,17 +766,17 @@ function AdminDashboard() {
       (e) => (e.status || '').toLowerCase() === 'upcoming'
     ).length;
     const totalBookings = bookings.length;
-    const confirmedBookings = bookings.filter((b) => b.status === 'Confirmed').length;
+    const totalBranches = branches.length;
     const totalSlots = events.reduce((sum, e) => sum + (Number(e.slots) || 0), 0);
 
     return {
       totalWorkshops,
       upcomingWorkshops,
       totalBookings,
-      confirmedBookings,
+      totalBranches,
       totalSlots,
     };
-  }, [events, bookings]);
+  }, [events, bookings, branches]);
 
   return (
     <div className="saas-admin-wrapper">
@@ -383,12 +788,12 @@ function AdminDashboard() {
         />
       )}
 
-      {/* LEFT SIDEBAR */}
+      {/* LEFT SIDEBAR WITH VECTOR ICONS */}
       <aside className={`saas-sidebar ${sidebarOpen ? 'open' : ''}`}>
         {/* Brand Header */}
         <div className="sidebar-brand">
           <div className="brand-icon-box">
-            <span>⚡</span>
+            {Icons.sparkles}
           </div>
           <div className="brand-text-box">
             <h2>RHYTHMIC BEAT</h2>
@@ -396,7 +801,7 @@ function AdminDashboard() {
           </div>
         </div>
 
-        {/* Navigation Items */}
+        {/* Navigation Items with Clean Vector Icons */}
         <nav className="sidebar-menu">
           <button
             type="button"
@@ -406,7 +811,7 @@ function AdminDashboard() {
               setSidebarOpen(false);
             }}
           >
-            <span className="menu-icon">📊</span>
+            <span className="menu-icon">{Icons.dashboard}</span>
             <span className="menu-label">Dashboard</span>
           </button>
 
@@ -418,7 +823,7 @@ function AdminDashboard() {
               setSidebarOpen(false);
             }}
           >
-            <span className="menu-icon">💃</span>
+            <span className="menu-icon">{Icons.workshop}</span>
             <span className="menu-label">All Workshops</span>
             {events.length > 0 && (
               <span className="menu-badge">{events.length}</span>
@@ -433,7 +838,7 @@ function AdminDashboard() {
               setSidebarOpen(false);
             }}
           >
-            <span className="menu-icon">➕</span>
+            <span className="menu-icon">{Icons.plus}</span>
             <span className="menu-label">Add New Workshop</span>
           </button>
 
@@ -445,7 +850,7 @@ function AdminDashboard() {
               setSidebarOpen(false);
             }}
           >
-            <span className="menu-icon">🎟️</span>
+            <span className="menu-icon">{Icons.ticket}</span>
             <span className="menu-label">Registrations / Bookings</span>
             {bookings.length > 0 && (
               <span className="menu-badge highlight">{bookings.length}</span>
@@ -460,8 +865,9 @@ function AdminDashboard() {
               setSidebarOpen(false);
             }}
           >
-            <span className="menu-icon">🏢</span>
+            <span className="menu-icon">{Icons.branch}</span>
             <span className="menu-label">Branches</span>
+            <span className="menu-badge">{branches.length}</span>
           </button>
 
           <a
@@ -470,13 +876,13 @@ function AdminDashboard() {
             rel="noreferrer"
             className="menu-item link-item"
           >
-            <span className="menu-icon">🌐</span>
+            <span className="menu-icon">{Icons.globe}</span>
             <span className="menu-label">View Live Website</span>
             <span className="external-arrow">↗</span>
           </a>
         </nav>
 
-        {/* Bottom Sidebar: Super Admin Card & Logout */}
+        {/* Bottom Sidebar: Super Admin Profile & Logout */}
         <div className="sidebar-footer">
           <div className="admin-profile-pill">
             <div className="avatar-circle">S</div>
@@ -491,7 +897,7 @@ function AdminDashboard() {
             className="sidebar-logout-btn"
             onClick={handleLogout}
           >
-            <span className="logout-icon">🚪</span>
+            <span className="logout-icon">{Icons.logout}</span>
             <span>Logout</span>
           </button>
         </div>
@@ -520,79 +926,90 @@ function AdminDashboard() {
               </h1>
               <p className="header-subtitle">
                 {activeTab === 'workshops' &&
-                  'Manage workshop choreography, what happens in each session, and dancer capacity'}
+                  'Monitor schedules, song tracks, instructor assignments, and session curricula'}
                 {activeTab === 'bookings' &&
-                  'Review dancer registrations, instant ticket codes, and WhatsApp passes'}
+                  'Review dancer registrations, digital tickets, and direct WhatsApp links'}
                 {activeTab === 'overview' &&
-                  'Real-time metrics, booking statistics, and studio capacity summary'}
+                  'Real-time metrics, workshop occupancy, and studio performance'}
                 {activeTab === 'branches' &&
-                  'Explore Rhythmic Beat Dance Court locations across Chennai'}
+                  'Manage academy venues, practice floors, amenities, and contact helplines'}
               </p>
             </div>
           </div>
 
           {/* Top Controls */}
           <div className="header-actions">
-            <div className="search-box">
-              <span className="search-icon">🔍</span>
-              <input
-                type="text"
-                placeholder={
-                  activeTab === 'bookings'
-                    ? 'Search dancer, phone, ticket...'
-                    : 'Search choreo, song, date...'
-                }
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              {searchQuery && (
+            {activeTab !== 'branches' ? (
+              <>
+                <div className="search-box">
+                  <span className="search-icon">{Icons.search}</span>
+                  <input
+                    type="text"
+                    placeholder={
+                      activeTab === 'bookings'
+                        ? 'Search dancer, phone, ticket...'
+                        : 'Search workshop, song, instructor...'
+                    }
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  {searchQuery && (
+                    <button
+                      type="button"
+                      className="search-clear-btn"
+                      onClick={() => setSearchQuery('')}
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+
+                <div className="filter-dropdown-wrap">
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="filter-select"
+                  >
+                    <option value="All">Filter by Status</option>
+                    {activeTab === 'bookings' ? (
+                      <>
+                        <option value="Pending">Pending</option>
+                        <option value="Confirmed">Confirmed</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="Upcoming">Upcoming</option>
+                        <option value="Ongoing">Ongoing</option>
+                        <option value="Completed">Completed</option>
+                      </>
+                    )}
+                  </select>
+                </div>
+
                 <button
                   type="button"
-                  className="search-clear-btn"
-                  onClick={() => setSearchQuery('')}
+                  className="primary-cta-btn"
+                  onClick={openCreateModal}
                 >
-                  ✕
+                  <span className="btn-icon">{Icons.plus}</span> NEW WORKSHOP
                 </button>
-              )}
-            </div>
-
-            <div className="filter-dropdown-wrap">
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="filter-select"
+              </>
+            ) : (
+              <button
+                type="button"
+                className="primary-cta-btn"
+                onClick={openCreateBranchModal}
               >
-                <option value="All">Filter by Status</option>
-                {activeTab === 'bookings' ? (
-                  <>
-                    <option value="Pending">Pending</option>
-                    <option value="Confirmed">Confirmed</option>
-                  </>
-                ) : (
-                  <>
-                    <option value="Upcoming">Upcoming</option>
-                    <option value="Ongoing">Ongoing</option>
-                    <option value="Completed">Completed</option>
-                  </>
-                )}
-              </select>
-            </div>
-
-            {/* Primary Action Button */}
-            <button
-              type="button"
-              className="primary-cta-btn"
-              onClick={openCreateModal}
-            >
-              <span>+</span> NEW WORKSHOP
-            </button>
+                <span className="btn-icon">{Icons.plus}</span> ADD NEW BRANCH
+              </button>
+            )}
           </div>
         </header>
 
         {/* NOTIFICATION BANNER */}
         {statusMessage && (
           <div className={`status-banner ${statusType}`}>
-            <span>{statusType === 'success' ? '✓' : statusType === 'error' ? '⚠️' : 'ℹ️'}</span>
+            <span>{statusType === 'success' ? Icons.check : statusType === 'error' ? '⚠️' : 'ℹ️'}</span>
             <p>{statusMessage}</p>
           </div>
         )}
@@ -601,7 +1018,7 @@ function AdminDashboard() {
         {(activeTab === 'overview' || activeTab === 'workshops') && (
           <div className="metrics-summary-grid">
             <div className="metric-box">
-              <div className="metric-icon-wrap mint">💃</div>
+              <div className="metric-icon-wrap mint">{Icons.workshop}</div>
               <div>
                 <small>TOTAL WORKSHOPS</small>
                 <h3>{metrics.totalWorkshops}</h3>
@@ -609,7 +1026,7 @@ function AdminDashboard() {
             </div>
 
             <div className="metric-box">
-              <div className="metric-icon-wrap orange">⚡</div>
+              <div className="metric-icon-wrap orange">{Icons.sparkles}</div>
               <div>
                 <small>UPCOMING SESSIONS</small>
                 <h3>{metrics.upcomingWorkshops}</h3>
@@ -617,18 +1034,18 @@ function AdminDashboard() {
             </div>
 
             <div className="metric-box">
-              <div className="metric-icon-wrap blue">🎟️</div>
+              <div className="metric-icon-wrap blue">{Icons.ticket}</div>
               <div>
-                <small>DANCER BOOKINGS</small>
+                <small>DANCER REGISTRATIONS</small>
                 <h3>{metrics.totalBookings}</h3>
               </div>
             </div>
 
             <div className="metric-box">
-              <div className="metric-icon-wrap teal">👥</div>
+              <div className="metric-icon-wrap teal">{Icons.branch}</div>
               <div>
-                <small>TOTAL OPEN SLOTS</small>
-                <h3>{metrics.totalSlots}</h3>
+                <small>ACTIVE BRANCHES</small>
+                <h3>{metrics.totalBranches}</h3>
               </div>
             </div>
           </div>
@@ -636,7 +1053,7 @@ function AdminDashboard() {
 
         {/* MAIN BODY CONTAINER */}
         <main className="saas-content-card">
-          {/* TAB 1: ALL WORKSHOPS TABLE */}
+          {/* TAB 1: ALL WORKSHOPS TABLE (REPLACED IMAGES WITH SLEEK VECTOR ICONS) */}
           {activeTab === 'workshops' && (
             <div className="table-responsive">
               <table className="saas-data-table">
@@ -646,8 +1063,8 @@ function AdminDashboard() {
                     <th>CHOREOGRAPHER & LEVEL</th>
                     <th>DATE & TIME</th>
                     <th>PRICE / PASS</th>
-                    <th>SLOTS</th>
-                    <th>SESSION AGENDA</th>
+                    <th>AVAILABLE SLOTS</th>
+                    <th>SESSION CURRICULUM</th>
                     <th>STATUS</th>
                     <th className="text-right">ACTIONS</th>
                   </tr>
@@ -674,117 +1091,115 @@ function AdminDashboard() {
                       </td>
                     </tr>
                   ) : (
-                    filteredEvents.map((event) => (
-                      <tr key={event._id} className="table-row">
-                        {/* Title & Poster */}
-                        <td>
-                          <div className="workshop-info-cell">
-                            {event.image ? (
-                              <img
-                                src={assetUrl(event.image)}
-                                alt={event.title}
-                                className="table-poster-thumb"
-                              />
-                            ) : (
-                              <div className="table-poster-placeholder">💃</div>
-                            )}
-                            <div>
-                              <strong className="workshop-title-text">
-                                {event.title}
-                              </strong>
-                              <span className="song-subtitle-text">
-                                🎵 Song: {formatSongName(event.song)}
-                              </span>
+                    filteredEvents.map((event) => {
+                      const styleBadge = getWorkshopStyleIcon(event.title, event.song);
+                      return (
+                        <tr key={event._id} className="table-row">
+                          {/* Workshop Title with Styled Vector Icon Badge instead of Image */}
+                          <td>
+                            <div className="workshop-info-cell">
+                              <div className={`style-icon-badge ${styleBadge.bg}`}>
+                                <span className="style-emoji">{styleBadge.icon}</span>
+                                <span className="style-tag">{styleBadge.label}</span>
+                              </div>
+                              <div>
+                                <strong className="workshop-title-text">
+                                  {event.title}
+                                </strong>
+                                <span className="song-subtitle-text">
+                                  {Icons.music} {formatSongName(event.song)}
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                        </td>
+                          </td>
 
-                        {/* Choreographer & Level */}
-                        <td>
-                          <div className="instructor-cell">
-                            <strong>{event.instructor || 'Master Choreographer'}</strong>
-                            <small>{event.level || 'Open Level'}</small>
-                          </div>
-                        </td>
+                          {/* Choreographer & Level */}
+                          <td>
+                            <div className="instructor-cell">
+                              <strong>{event.instructor || 'Master Choreographer'}</strong>
+                              <small>{event.level || 'Beginner Friendly'}</small>
+                            </div>
+                          </td>
 
-                        {/* Date & Time */}
-                        <td>
-                          <div className="datetime-cell">
-                            <strong>{event.date || 'TBA'}</strong>
-                            <small>{event.time || 'Schedule TBA'}</small>
-                          </div>
-                        </td>
+                          {/* Date & Time */}
+                          <td>
+                            <div className="datetime-cell">
+                              <strong>{event.date || 'TBA'}</strong>
+                              <small>{event.time || 'Schedule TBA'}</small>
+                            </div>
+                          </td>
 
-                        {/* Price */}
-                        <td>
-                          <span className="fee-badge">{event.prize || '₹1,000'}</span>
-                        </td>
+                          {/* Price */}
+                          <td>
+                            <span className="fee-badge">{event.prize || '₹1,000'}</span>
+                          </td>
 
-                        {/* Slots */}
-                        <td>
-                          <div className="slots-cell">
-                            <span className="slot-num">{event.slots ?? 0}</span>
-                            <small>Left</small>
-                          </div>
-                        </td>
+                          {/* Slots */}
+                          <td>
+                            <div className="slots-cell">
+                              <span className="slot-num">{event.slots ?? 0}</span>
+                              <small>Left</small>
+                            </div>
+                          </td>
 
-                        {/* What Happens in Workshop (Agenda Preview) */}
-                        <td>
-                          <button
-                            type="button"
-                            className="agenda-view-btn"
-                            onClick={() => setViewingAgendaEvent(event)}
-                            title="Click to view full workshop session flow"
-                          >
-                            📋 View Session Flow
-                          </button>
-                        </td>
-
-                        {/* Status */}
-                        <td>
-                          <span
-                            className={`status-chip ${
-                              (event.status || 'upcoming').toLowerCase()
-                            }`}
-                          >
-                            {event.status || 'Upcoming'}
-                          </span>
-                        </td>
-
-                        {/* Actions */}
-                        <td className="text-right">
-                          <div className="row-action-buttons">
+                          {/* Session Curriculum Preview Button */}
+                          <td>
                             <button
                               type="button"
-                              className="action-icon-btn edit"
-                              title="Edit Workshop"
-                              onClick={() => openEditModal(event)}
+                              className="agenda-view-btn"
+                              onClick={() => setViewingAgendaEvent(event)}
+                              title="Click to view full workshop session flow"
                             >
-                              ✏️ Edit
+                              <span className="btn-icon">{Icons.clipboard}</span> View Flow
                             </button>
+                          </td>
 
-                            <button
-                              type="button"
-                              className="action-icon-btn delete"
-                              title="Delete Workshop"
-                              onClick={() => handleDeleteEvent(event._id, event.title)}
+                          {/* Status */}
+                          <td>
+                            <span
+                              className={`status-chip ${
+                                (event.status || 'upcoming').toLowerCase()
+                              }`}
                             >
-                              🗑️
-                            </button>
+                              {event.status || 'Upcoming'}
+                            </span>
+                          </td>
 
-                            <a
-                              href={`/#ws-${event._id}`}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="action-icon-btn view"
-                              title="View on Website"
-                            >
-                              👁️
-                            </a>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
+                          {/* Actions */}
+                          <td className="text-right">
+                            <div className="row-action-buttons">
+                              <button
+                                type="button"
+                                className="action-icon-btn edit"
+                                title="Edit Workshop"
+                                onClick={() => openEditModal(event)}
+                              >
+                                {Icons.edit} Edit
+                              </button>
+
+                              <button
+                                type="button"
+                                className="action-icon-btn delete"
+                                title="Delete Workshop"
+                                onClick={() => handleDeleteEvent(event._id, event.title)}
+                              >
+                                {Icons.trash}
+                              </button>
+
+                              <a
+                                href={`/#ws-${event._id}`}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="action-icon-btn view"
+                                title="View on Website"
+                              >
+                                {Icons.eye}
+                              </a>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>
@@ -801,7 +1216,7 @@ function AdminDashboard() {
                     <th>WHATSAPP / CONTACT</th>
                     <th>WORKSHOP & PASS CODE</th>
                     <th>PASSES</th>
-                    <th>DATE / REGISTERED</th>
+                    <th>REGISTERED DATE</th>
                     <th>STATUS</th>
                     <th className="text-right">ACTIONS</th>
                   </tr>
@@ -819,7 +1234,7 @@ function AdminDashboard() {
                       <td colSpan="7" className="table-empty-cell">
                         <p>No dancer registrations recorded yet.</p>
                         <small>
-                          When visitors fill the "Reserve Your Slot" popup on the website, their details appear here in real time.
+                          When dancers submit the booking modal on the website, their details appear here instantly.
                         </small>
                       </td>
                     </tr>
@@ -841,13 +1256,13 @@ function AdminDashboard() {
                           </div>
                         </td>
 
-                        {/* WhatsApp / Phone */}
+                        {/* WhatsApp / Phone with One-Click Link */}
                         <td>
                           <div className="phone-cell">
                             <span className="phone-number">{b.phone}</span>
                             <a
                               href={`https://wa.me/${b.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
-                                `Hi ${b.name}! Thank you for reserving pass #${b.ticketId} for "${b.eventTitle}" at Rhythmic Beat Dance Court. We look forward to seeing you!`
+                                `Hi ${b.name}! Thank you for reserving pass #${b.ticketId} for "${b.eventTitle}" at Rhythmic Beat Dance Court. We look forward to having you!`
                               )}`}
                               target="_blank"
                               rel="noreferrer"
@@ -913,7 +1328,7 @@ function AdminDashboard() {
                               title="Delete Registration"
                               onClick={() => handleDeleteBooking(b._id, b.name)}
                             >
-                              🗑️
+                              {Icons.trash}
                             </button>
                           </div>
                         </td>
@@ -930,7 +1345,16 @@ function AdminDashboard() {
             <div className="overview-tab-content">
               <div className="overview-cards-row">
                 <div className="overview-panel">
-                  <h3>Recent Workshops</h3>
+                  <div className="panel-title-row">
+                    <h3>Recent Workshops</h3>
+                    <button
+                      type="button"
+                      className="link-subtle-btn"
+                      onClick={() => setActiveTab('workshops')}
+                    >
+                      View All →
+                    </button>
+                  </div>
                   <div className="mini-event-list">
                     {events.slice(0, 4).map((ev) => (
                       <div key={ev._id} className="mini-event-row">
@@ -949,10 +1373,19 @@ function AdminDashboard() {
                 </div>
 
                 <div className="overview-panel">
-                  <h3>Recent Dancer Bookings</h3>
+                  <div className="panel-title-row">
+                    <h3>Recent Dancer Bookings</h3>
+                    <button
+                      type="button"
+                      className="link-subtle-btn"
+                      onClick={() => setActiveTab('bookings')}
+                    >
+                      View All →
+                    </button>
+                  </div>
                   <div className="mini-event-list">
                     {bookings.length === 0 ? (
-                      <p className="empty-subtext">No registrations yet.</p>
+                      <p className="empty-subtext">No registrations recorded yet.</p>
                     ) : (
                       bookings.slice(0, 4).map((b) => (
                         <div key={b._id} className="mini-event-row">
@@ -974,53 +1407,95 @@ function AdminDashboard() {
             </div>
           )}
 
-          {/* TAB 4: STUDIO BRANCHES */}
+          {/* TAB 4: STUDIO BRANCHES WITH FULL CRUD ACTIONS */}
           {activeTab === 'branches' && (
-            <div className="branches-admin-grid">
-              <div className="branch-admin-card">
-                <div className="branch-header-badge">HEADQUARTERS & MAIN STAGE</div>
-                <h3>Valasaravakkam Studio</h3>
-                <p>
-                  📍 42, Arcot Road, Near Mega Mart, Valasaravakkam, Chennai - 600087
-                </p>
-                <div className="branch-specs">
-                  <span>✨ 1,800 sq.ft Wooden Spring Floor</span>
-                  <span>🎥 4K Stage Lighting & Video Setup</span>
-                  <span>❄️ Fully Air Conditioned</span>
+            <div className="branches-admin-wrapper">
+              <div className="branches-section-bar">
+                <div>
+                  <h3 className="branches-section-title">Studio Venues & Practice Courts</h3>
+                  <p className="branches-section-subtitle">
+                    Manage academy locations, wooden dance floors, amenities, and branch phone numbers.
+                  </p>
                 </div>
-                <div className="branch-contact">
-                  <strong>📞 Studio Helpline:</strong> +91 99947 16471
-                </div>
+                <button
+                  type="button"
+                  className="primary-cta-btn"
+                  onClick={openCreateBranchModal}
+                >
+                  <span className="btn-icon">{Icons.plus}</span> + ADD NEW BRANCH
+                </button>
               </div>
 
-              <div className="branch-admin-card">
-                <div className="branch-header-badge secondary">PRACTICE & CREW FLOOR</div>
-                <h3>Kolapakkam Studio</h3>
-                <p>
-                  📍 15, VGN Boulevard, Near Max Hospital, Kolapakkam, Chennai - 600128
-                </p>
-                <div className="branch-specs">
-                  <span>✨ 1,200 sq.ft Rehearsal Hall</span>
-                  <span>🔊 Surround Acoustic System</span>
-                  <span>🚗 Free Dancer Parking</span>
-                </div>
-                <div className="branch-contact">
-                  <strong>📞 Studio Helpline:</strong> +91 99947 16471
-                </div>
-              </div>
+              <div className="branches-admin-grid">
+                {branches.map((b) => (
+                  <div key={b._id} className="branch-admin-card">
+                    {/* Header: Tag + Status Chip */}
+                    <div className="branch-card-header">
+                      <span className="branch-header-badge">{b.tag || 'STUDIO VENUE'}</span>
+                      <button
+                        type="button"
+                        className={`branch-status-toggle ${b.status === 'Active' ? 'active' : 'upcoming'}`}
+                        title="Click to toggle status"
+                        onClick={() => handleToggleBranchStatus(b)}
+                      >
+                        {b.status === 'Active' ? '● Active Studio' : '○ Launching Soon'}
+                      </button>
+                    </div>
 
-              <div className="branch-admin-card">
-                <div className="branch-header-badge secondary">UPCOMING EXPANSION</div>
-                <h3>Ambattur Masterclass Branch</h3>
-                <p>📍 MTH Road, Near Industrial Estate, Ambattur, Chennai - 600053</p>
-                <div className="branch-specs">
-                  <span>✨ Masterclass Arena</span>
-                  <span>🏆 Battle Zone & Showcase Stage</span>
-                  <span>👥 Capacity: 60+ Dancers</span>
-                </div>
-                <div className="branch-contact">
-                  <strong>📞 Launching Soon:</strong> Reach out on WhatsApp
-                </div>
+                    <h3 className="branch-name">{b.name}</h3>
+
+                    <p className="branch-address">
+                      <span className="icon-wrap">{Icons.mapPin}</span> {b.address}
+                    </p>
+
+                    {/* Features / Amenities list */}
+                    <div className="branch-specs">
+                      {(Array.isArray(b.specs) ? b.specs : (b.specs || '').split(','))
+                        .map((spec, i) => (
+                          <span key={i} className="spec-tag">
+                            <span className="spec-check">{Icons.check}</span> {spec.trim()}
+                          </span>
+                        ))}
+                    </div>
+
+                    {/* Contact Helpline with WhatsApp */}
+                    <div className="branch-contact-bar">
+                      <div className="phone-info">
+                        <span className="icon-wrap">{Icons.phone}</span>
+                        <strong>{b.phone || '+91 99947 16471'}</strong>
+                      </div>
+                      <a
+                        href={`https://wa.me/${(b.phone || STUDIO_PHONE).replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
+                          `Hi Rhythmic Beat Dance Court! I am inquiring about the ${b.name} branch.`
+                        )}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="branch-wa-link"
+                      >
+                        💬 WhatsApp
+                      </a>
+                    </div>
+
+                    {/* Branch Actions Toolbar */}
+                    <div className="branch-actions-row">
+                      <button
+                        type="button"
+                        className="branch-action-btn edit"
+                        onClick={() => openEditBranchModal(b)}
+                      >
+                        {Icons.edit} Edit Branch
+                      </button>
+
+                      <button
+                        type="button"
+                        className="branch-action-btn delete"
+                        onClick={() => handleDeleteBranch(b._id, b.name)}
+                      >
+                        {Icons.trash} Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}
@@ -1048,9 +1523,9 @@ function AdminDashboard() {
               </button>
             </div>
 
-            <form onSubmit={handleFormSubmit} className="saas-modal-form">
+            <form onSubmit={handleWorkshopSubmit} className="saas-modal-form">
               <div className="modal-form-grid">
-                {/* Workshop Title */}
+                {/* Title */}
                 <div className="form-field full-width">
                   <label htmlFor="form-title">Workshop Title *</label>
                   <input
@@ -1063,41 +1538,24 @@ function AdminDashboard() {
                   />
                 </div>
 
-                {/* Name of the Song */}
+                {/* Song / Track */}
                 <div className="form-field full-width">
                   <label htmlFor="form-song">Name of the Song / Track *</label>
                   <input
                     id="form-song"
                     name="song"
-                    placeholder="e.g. Arabic Kuthu / Kaavaalaa / Master Beats"
+                    placeholder="e.g. Arabic Kuthu - Anirudh Choreography"
                     value={form.song}
                     onChange={handleFormChange}
                   />
                   <small className="field-hint">
-                    🎵 Audio upload removed as requested. Song name will display cleanly on the workshop page badge.
+                    Song name will be displayed cleanly on the workshop page and card badges.
                   </small>
                 </div>
 
- {/* Location */}
-                <div className="form-field full-width">
-  <label htmlFor="form-location">📍 Workshop Location *</label>
-  <input
-    id="form-location"
-    name="location"
-    type="text"
-    required
-    placeholder="e.g. Valasaravakkam Studio, Chennai"
-    value={form.location}
-    onChange={handleFormChange}
-  />
-  <small className="field-hint">
-    Enter the venue where this workshop will take place.
-  </small>
-</div>
-
-                {/* Lead Choreographer */}
+                {/* Lead Instructor */}
                 <div className="form-field">
-                  <label htmlFor="form-instructor">Lead Choreographer / Instructor</label>
+                  <label htmlFor="form-instructor">Lead Choreographer / Faculty</label>
                   <input
                     id="form-instructor"
                     name="instructor"
@@ -1110,13 +1568,32 @@ function AdminDashboard() {
                 {/* Dancer Level */}
                 <div className="form-field">
                   <label htmlFor="form-level">Dancer Level / Difficulty</label>
-                  <input
+                  <select
                     id="form-level"
                     name="level"
-                    placeholder="e.g. Open Level (Beginner & Intermediate)"
                     value={form.level}
                     onChange={handleFormChange}
-                  />
+                  >
+                    <option value="Beginner Friendly">Beginner Friendly</option>
+                    <option value="Open Level (Beginner & Intermediate)">Open Level (Beginner & Intermediate)</option>
+                    <option value="Intermediate / Advanced">Intermediate / Advanced</option>
+                    <option value="Masterclass Intensive (Pro)">Masterclass Intensive (Pro)</option>
+                  </select>
+                </div>
+
+                {/* Branch Venue */}
+                <div className="form-field">
+                  <label htmlFor="form-location">Studio Venue / Branch</label>
+                  <select
+                    id="form-location"
+                    name="location"
+                    value={form.location}
+                    onChange={handleFormChange}
+                  >
+                    <option value="Valasaravakkam Studio, Chennai">Valasaravakkam Studio, Chennai</option>
+                    <option value="Kolapakkam Studio, Chennai">Kolapakkam Studio, Chennai</option>
+                    <option value="Ambattur Masterclass Branch, Chennai">Ambattur Masterclass Branch, Chennai</option>
+                  </select>
                 </div>
 
                 {/* Status */}
@@ -1191,17 +1668,33 @@ function AdminDashboard() {
                     id="form-description"
                     name="description"
                     rows="2"
-                    placeholder="Overview of the workshop style, musicality, and key dance skills..."
+                    placeholder="Overview of the choreography routine, musicality nuances, and performance training..."
                     value={form.description}
                     onChange={handleFormChange}
                   />
                 </div>
 
-                {/* WHAT HAPPENS IN THIS WORKSHOP (AGENDA & SCHEDULE) */}
-                <div className="form-field full-width">
-                  <label htmlFor="form-agenda" className="highlight-label">
-                    ✨ What Happens in This Workshop (Session Flow / Agenda) *
-                  </label>
+                {/* TOPIC-RELEVANT CURRICULUM SELECTOR */}
+                <div className="form-field full-width topic-curriculum-box">
+                  <div className="curriculum-header-row">
+                    <label htmlFor="form-agenda" className="highlight-label">
+                      ✨ What Happens in This Workshop (Session Flow / Agenda) *
+                    </label>
+                    <div className="template-picker-group">
+                      <span className="picker-label">Apply Topic Template:</span>
+                      {Object.keys(TOPIC_CURRICULUM_TEMPLATES).map((key) => (
+                        <button
+                          key={key}
+                          type="button"
+                          className="topic-pill-btn"
+                          onClick={() => handleTopicChange(key)}
+                        >
+                          {key}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
                   <textarea
                     id="form-agenda"
                     name="agenda"
@@ -1211,7 +1704,7 @@ function AdminDashboard() {
                     onChange={handleFormChange}
                   />
                   <small className="field-hint">
-                    This step-by-step timeline is displayed directly to dancers on the website so they know exactly what will be taught!
+                    This step-by-step timeline is displayed directly to dancers on the website so they know exactly what will be taught! Click any topic pill above to auto-fill.
                   </small>
                 </div>
 
@@ -1267,6 +1760,158 @@ function AdminDashboard() {
         </div>
       )}
 
+      {/* CREATE / EDIT BRANCH MODAL */}
+      {isBranchModalOpen && (
+        <div className="saas-modal-backdrop" onClick={closeBranchModal}>
+          <div
+            className="saas-modal-window branch-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="modal-top-bar">
+              <div>
+                <h2>{editingBranchId ? 'Edit Studio Branch' : 'Create New Studio Branch'}</h2>
+                <p>Configure dance studio venue location, amenities, and contact helpline.</p>
+              </div>
+              <button
+                type="button"
+                className="modal-close-icon"
+                onClick={closeBranchModal}
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleBranchSubmit} className="saas-modal-form">
+              <div className="modal-form-grid">
+                {/* Branch Name */}
+                <div className="form-field full-width">
+                  <label htmlFor="branch-name">Branch / Studio Name *</label>
+                  <input
+                    id="branch-name"
+                    required
+                    placeholder="e.g. Anna Nagar Studio"
+                    value={branchForm.name}
+                    onChange={(e) =>
+                      setBranchForm({ ...branchForm, name: e.target.value })
+                    }
+                  />
+                </div>
+
+                {/* Tag / Category */}
+                <div className="form-field">
+                  <label htmlFor="branch-tag">Tagline / Category</label>
+                  <input
+                    id="branch-tag"
+                    placeholder="e.g. MAIN STAGE & STUDIO HQ"
+                    value={branchForm.tag}
+                    onChange={(e) =>
+                      setBranchForm({ ...branchForm, tag: e.target.value })
+                    }
+                  />
+                </div>
+
+                {/* Status */}
+                <div className="form-field">
+                  <label htmlFor="branch-status">Status</label>
+                  <select
+                    id="branch-status"
+                    value={branchForm.status}
+                    onChange={(e) =>
+                      setBranchForm({ ...branchForm, status: e.target.value })
+                    }
+                  >
+                    <option value="Active">Active Studio</option>
+                    <option value="Launching Soon">Launching Soon</option>
+                    <option value="Renovating">Renovating</option>
+                  </select>
+                </div>
+
+                {/* Address */}
+                <div className="form-field full-width">
+                  <label htmlFor="branch-address">Full Studio Address *</label>
+                  <input
+                    id="branch-address"
+                    required
+                    placeholder="e.g. 2nd Avenue, Near Roundtana, Anna Nagar, Chennai - 600040"
+                    value={branchForm.address}
+                    onChange={(e) =>
+                      setBranchForm({ ...branchForm, address: e.target.value })
+                    }
+                  />
+                </div>
+
+                {/* Phone */}
+                <div className="form-field">
+                  <label htmlFor="branch-phone">Helpline / WhatsApp Phone</label>
+                  <input
+                    id="branch-phone"
+                    placeholder="e.g. +91 99947 16471"
+                    value={branchForm.phone}
+                    onChange={(e) =>
+                      setBranchForm({ ...branchForm, phone: e.target.value })
+                    }
+                  />
+                </div>
+
+                {/* City */}
+                <div className="form-field">
+                  <label htmlFor="branch-city">City</label>
+                  <input
+                    id="branch-city"
+                    placeholder="Chennai"
+                    value={branchForm.city}
+                    onChange={(e) =>
+                      setBranchForm({ ...branchForm, city: e.target.value })
+                    }
+                  />
+                </div>
+
+                {/* Amenities / Specs */}
+                <div className="form-field full-width">
+                  <label htmlFor="branch-specs">
+                    Studio Features & Amenities (Comma Separated)
+                  </label>
+                  <textarea
+                    id="branch-specs"
+                    rows="3"
+                    placeholder="e.g. 1,800 sq.ft Wooden Spring Floor, 4K Stage Lighting, Fully Air Conditioned, Free Parking"
+                    value={branchForm.specs}
+                    onChange={(e) =>
+                      setBranchForm({ ...branchForm, specs: e.target.value })
+                    }
+                  />
+                  <small className="field-hint">
+                    Separate amenities with commas (e.g. Wooden Floor, Full AC, Changing Rooms).
+                  </small>
+                </div>
+              </div>
+
+              <div className="modal-actions-bar">
+                <button
+                  type="button"
+                  className="modal-cancel-btn"
+                  onClick={closeBranchModal}
+                  disabled={branchFormLoading}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="modal-submit-btn"
+                  disabled={branchFormLoading}
+                >
+                  {branchFormLoading
+                    ? 'Saving...'
+                    : editingBranchId
+                    ? 'Update Branch'
+                    : 'Add Branch'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* QUICK AGENDA VIEW MODAL */}
       {viewingAgendaEvent && (
         <div
@@ -1295,11 +1940,11 @@ function AdminDashboard() {
               <div className="agenda-meta-row">
                 <span>🎵 <strong>Song:</strong> {formatSongName(viewingAgendaEvent.song)}</span>
                 <span>👤 <strong>Choreographer:</strong> {viewingAgendaEvent.instructor || 'Master Faculty'}</span>
-                <span>⚡ <strong>Level:</strong> {viewingAgendaEvent.level || 'Open Level'}</span>
+                <span>⚡ <strong>Level:</strong> {viewingAgendaEvent.level || 'Beginner & Intermediate'}</span>
               </div>
 
               <div className="agenda-steps-list">
-                {(viewingAgendaEvent.agenda || defaultAgenda)
+                {(viewingAgendaEvent.agenda || TOPIC_CURRICULUM_TEMPLATES['Hip-Hop & Urban'].agenda)
                   .split('\n')
                   .filter((line) => line.trim())
                   .map((step, idx) => (

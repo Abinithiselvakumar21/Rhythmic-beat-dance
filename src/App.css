@@ -2188,3 +2188,411 @@ body {
   color: #666;
   line-height: 1.5;
 }
+
+
+/* ========================================================
+   MODERN WORKSHOP CARDS & MULTI-FILTERS SECTION
+   ======================================================== */
+
+.filter-select-input {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  background: #ffffff;
+  color: var(--text-heading);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.filter-select-input:focus {
+  border-color: var(--primary);
+}
+
+.clear-all-text-btn {
+  background: transparent;
+  border: 0;
+  color: var(--primary);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 8px;
+  text-decoration: underline;
+}
+
+/* Modern Workshop Cards Grid */
+.modern-workshop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.modern-workshop-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+  position: relative;
+}
+
+.modern-workshop-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(217, 4, 41, 0.35);
+  box-shadow: 0 16px 36px rgba(217, 4, 41, 0.12);
+}
+
+/* Media Banner */
+.card-media-banner {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: #0f172a;
+  overflow: hidden;
+}
+
+.card-poster-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition: transform 0.4s ease;
+}
+
+.modern-workshop-card:hover .card-poster-img {
+  transform: scale(1.05);
+}
+
+.card-poster-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  color: #ffffff;
+}
+
+.card-poster-placeholder span {
+  font-size: 32px;
+  color: var(--primary);
+}
+
+.card-poster-placeholder small {
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  font-size: 11px;
+}
+
+/* Top Genre Pill */
+.card-genre-pill {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(6px);
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Urgency / Status Pill */
+.card-urgency-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(6px);
+  color: #0f766e;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.card-urgency-badge.urgent {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
+  animation: pulse-slow 2s infinite;
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+
+/* Modern Card Body */
+.modern-card-body {
+  padding: 18px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.modern-card-title {
+  margin: 0 0 10px;
+  font-family: 'Space Grotesk', var(--font-heading), sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: #0f172a;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Song Badge */
+.card-song-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: #f0fdfa;
+  border: 1px solid #ccfbf1;
+  color: #0f766e;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.song-icon {
+  font-size: 13px;
+}
+
+.song-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Meta List */
+.card-meta-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+  font-size: 12.5px;
+  color: #475569;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.meta-icon {
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.level-highlight {
+  font-weight: 700;
+  color: #0f766e;
+}
+
+/* Perks Row */
+.card-perks-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.perk-pill {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+/* Modern Card Footer */
+.modern-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid #f1f5f9;
+  margin-top: auto;
+}
+
+.fee-box small {
+  display: block;
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.5px;
+}
+
+.fee-box strong {
+  display: block;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.reserve-card-btn {
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: var(--primary);
+  border: 0;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(217, 4, 41, 0.25);
+}
+
+.reserve-card-btn:hover {
+  background: #b50322;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(217, 4, 41, 0.35);
+}
+
+/* Topic Curriculum Timeline in Detail View */
+.session-agenda-block {
+  margin: 28px 0;
+  padding: 24px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+}
+
+.agenda-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.agenda-kicker-tag {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #0f766e;
+  letter-spacing: 1px;
+}
+
+.agenda-block-header h3 {
+  margin: 2px 0 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.agenda-total-time {
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: #ccfbf1;
+  color: #0f766e;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.agenda-lead-intro {
+  margin: 0 0 18px;
+  color: #64748b;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.session-steps-timeline {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.timeline-step-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.timeline-step-card:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.step-badge-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.step-circle-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #f0fdfa;
+  border: 1px solid #ccfbf1;
+  color: #0f766e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.step-label-pill {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.5px;
+}
+
+.step-text-col h4 {
+  margin: 0 0 4px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.step-text-col p {
+  margin: 0;
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.5;
+}
