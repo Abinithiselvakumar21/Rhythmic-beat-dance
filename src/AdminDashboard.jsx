@@ -9,52 +9,26 @@ const UPLOAD_API = `${SERVER}/api/upload`;
 const STUDIO_PHONE = '919994716471';
 
 // Pre-defined Curricula by Dance Style / Topic
-const TOPIC_CURRICULUM_TEMPLATES = {
-  'Hip-Hop & Urban': {
-    name: 'Hip-Hop & Urban Choreography',
-    agenda: `1. Groove Foundation & Joint Isolations (00:00 - 00:20): Bounce drills, ankle/knee conditioning, neck & chest isolations to train body control.
-2. Rhythm & Beat Pocket Breakdown (00:20 - 00:50): Footwork angles, weight transitions, syncopated 8-counts, and hitting the bass pocket.
-3. Flow & Texture Switching (00:50 - 01:30): Transitioning between hard hits (popping) and smooth fluid glide textures.
-4. Group Formations & Stage Energy (01:30 - 02:15): Camera angle awareness, eye focus, synchronization, and crew chemistry.
-5. Cinematic 4K Stage Reel Shoot (02:15 - 02:45): Professional stage lights shoot for your Instagram reels & portfolio.
-6. Feedback, Q&A & Certificate Handover (02:45 - 03:00): Individual posture correction, mentor guidance, and official RB certificate.`,
-  },
-  'Folk & Kuthu': {
-    name: 'Folk & Kuthu Intensive',
-    agenda: `1. High-Energy Stamina Warm-up (00:00 - 00:20): Dappankuthu foot stomp drills, cardio warm-up, and hip flexibility drills.
-2. Authentic Kuthu Steps & Body Flow (00:20 - 00:55): Traditional beats count breakdown, shoulder bounces, and waist movements.
-3. Fast-Tempo Musicality & Expressions (00:55 - 01:35): Tamil mass beats timing, facial expressions, and dynamic punch moves.
-4. Mass Crew Synchronization (01:35 - 02:15): High-speed group performance, battle circle face-off, and whistle moments.
-5. 4K Mass Stage Video Shoot (02:15 - 02:45): High-voltage cinematic video capture with full studio lighting.
-6. Group Photo & Certificate Presentation (02:45 - 03:00): Certificate handover and studio community connect.`,
-  },
-  'Contemporary & Lyrical': {
-    name: 'Contemporary & Lyrical Flow',
-    agenda: `1. Floor-work & Alignment Warm-up (00:00 - 00:25): Spine articulation, hamstring stretches, and center core grounding.
-2. Fluid Extensions & Pirouette Technique (00:25 - 01:05): Breath control, suspension, balance release, and lyrical floor slides.
-3. Emotional Storytelling & Musical Texture (01:05 - 01:45): Translating song lyrics into body language and expressive dynamic movement.
-4. Partner Work & Stage Formation (01:45 - 02:15): Safe weight-sharing techniques and aesthetic stage spacing.
-5. Cinematic 4K Lyrical Showcase Shoot (02:15 - 02:45): Soft-glow stage spotlight recording capturing emotional nuances.
-6. Reflection & Certificate Award (02:45 - 03:00): Mentor feedback on emotional expression and official certificate.`,
-  },
-  'Dance Battle & Freestyle': {
-    name: 'Dance Battle & Cypher Masterclass',
-    agenda: `1. Freestyle Foundations Warm-up (00:00 - 00:20): Freestyle groove, cypher circles, and reaction-time drills.
-2. Battle Concept Breakdown & Musicality (00:20 - 01:00): Hitting unexpected snare/bass drops, round-stealing concepts, and musical pauses.
-3. Call-outs, Mimicry & Stage Presence (01:00 - 01:40): Eye-contact dominance, psychological confidence, and dynamic floor recovery.
-4. Mock 1v1 & 2v2 Battle Cypher (01:40 - 02:20): Live judged battle practice with immediate mentor constructive critique.
-5. 4K Battle Highlight Shoot (02:20 - 02:45): Fast-paced multi-angle battle recording with stage arena lighting.
-6. Battle Honor & Certificate Distribution (02:45 - 03:00): Certificate award, judge tips, and dancer networking.`,
-  },
-  'Bollywood Commercial': {
-    name: 'Bollywood Commercial & Hook-step',
-    agenda: `1. Bollywood Groove Warm-up (00:00 - 00:20): Hook-step body posture, neck movements, and cheerful stage energy warmup.
-2. Hook-step Breakdown & Expressions (00:20 - 01:00): Thumkas, mudras, energetic footwork, and bright theatrical expressions (Navarasa).
-3. Camera-Ready Performance Coaching (01:00 - 01:40): Close-up lip sync, smile projection, and cinematic angles.
-4. Blockbuster Formation Training (01:40 - 02:15): Grand group formation switching and coordinated ensemble flow.
-5. 4K Bollywood Reel Production Shoot (02:15 - 02:45): High-energy studio lights video recording ready for Instagram & YouTube.
-6. Star Certificate & Photo Session (02:45 - 03:00): Official certification and mentor group pictures.`,
-  },
+const emptyWorkshopForm = {
+  title: '',
+  description: '',
+  instructor: 'Master Choreographer Rahul & RB Crew',
+  level: 'Beginner & Intermediate Friendly',
+  song: '',
+  location: 'Valasaravakkam Studio, Chennai',
+
+  agenda: '',
+  participants: '',
+  guestName: '',
+  specialActivities: '',
+  highlights: '',
+
+  status: 'Upcoming',
+  slots: 20,
+  prize: '₹1,000',
+  date: '',
+  time: '',
+  image: '',
 };
 
 const DEFAULT_BRANCHES = [
@@ -446,20 +420,25 @@ function AdminDashboard() {
   function openEditModal(event) {
     setEditingId(event._id);
     setForm({
-      title: event.title || '',
-      description: event.description || '',
-      instructor: event.instructor || 'Master Choreographer Rahul & RB Crew',
-      level: event.level || 'Beginner & Intermediate Friendly',
-      song: event.song || '',
-      location: event.location || 'Valasaravakkam Studio, Chennai',
-      topic: event.topic || 'Hip-Hop & Urban',
-      agenda: event.agenda || TOPIC_CURRICULUM_TEMPLATES['Hip-Hop & Urban'].agenda,
-      status: event.status || 'Upcoming',
-      slots: event.slots ?? 20,
-      prize: event.prize || '₹1,000',
-      date: event.date || '',
-      time: event.time || '',
-      image: event.image || '',
+     title: event.title || '',
+  description: event.description || '',
+  instructor: event.instructor || 'Master Choreographer Rahul & RB Crew',
+  level: event.level || 'Beginner & Intermediate Friendly',
+  song: event.song || '',
+  location: event.location || 'Valasaravakkam Studio, Chennai',
+
+  agenda: event.agenda || '',
+  participants: event.participants || '',
+  guestName: event.guestName || '',
+  specialActivities: event.specialActivities || '',
+  highlights: event.highlights || '',
+
+  status: event.status || 'Upcoming',
+  slots: event.slots ?? 20,
+  prize: event.prize || '₹1,000',
+  date: event.date || '',
+  time: event.time || '',
+  image: event.image || '',
     });
     setImageFile(null);
     setImagePreview(event.image ? assetUrl(event.image) : '');
@@ -1675,38 +1654,77 @@ function AdminDashboard() {
                 </div>
 
                 {/* TOPIC-RELEVANT CURRICULUM SELECTOR */}
-                <div className="form-field full-width topic-curriculum-box">
-                  <div className="curriculum-header-row">
-                    <label htmlFor="form-agenda" className="highlight-label">
-                      ✨ What Happens in This Workshop (Session Flow / Agenda) *
-                    </label>
-                    <div className="template-picker-group">
-                      <span className="picker-label">Apply Topic Template:</span>
-                      {Object.keys(TOPIC_CURRICULUM_TEMPLATES).map((key) => (
-                        <button
-                          key={key}
-                          type="button"
-                          className="topic-pill-btn"
-                          onClick={() => handleTopicChange(key)}
-                        >
-                          {key}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+              {/* WORKSHOP SESSION FLOW */}
+<div className="form-field full-width topic-curriculum-box">
+  <label htmlFor="form-agenda" className="highlight-label">
+    ✨ What Happens in This Workshop (Session Flow / Agenda) *
+  </label>
 
-                  <textarea
-                    id="form-agenda"
-                    name="agenda"
-                    rows="6"
-                    placeholder="Step-by-step breakdown of the session timeline..."
-                    value={form.agenda}
-                    onChange={handleFormChange}
-                  />
-                  <small className="field-hint">
-                    This step-by-step timeline is displayed directly to dancers on the website so they know exactly what will be taught! Click any topic pill above to auto-fill.
-                  </small>
-                </div>
+  <textarea
+    id="form-agenda"
+    name="agenda"
+    rows="6"
+    required
+    placeholder="Enter the complete workshop session flow..."
+    value={form.agenda}
+    onChange={handleFormChange}
+  />
+
+  <small className="field-hint">
+    Manually enter the workshop schedule and activities.
+  </small>
+</div>
+
+{/* WHO CAN PARTICIPATE */}
+<div className="form-field full-width">
+  <label htmlFor="form-participants">👥 Who Can Participate?</label>
+  <textarea
+    id="form-participants"
+    name="participants"
+    rows="2"
+    placeholder="e.g. Kids, Adults, Beginners, All Age Groups..."
+    value={form.participants}
+    onChange={handleFormChange}
+  />
+</div>
+
+{/* GUEST NAME */}
+<div className="form-field full-width">
+  <label htmlFor="form-guestName">🎤 Guest Name</label>
+  <input
+    id="form-guestName"
+    name="guestName"
+    placeholder="Enter special guest name"
+    value={form.guestName}
+    onChange={handleFormChange}
+  />
+</div>
+
+{/* SPECIAL ACTIVITIES */}
+<div className="form-field full-width">
+  <label htmlFor="form-specialActivities">🎬 Special Activities</label>
+  <textarea
+    id="form-specialActivities"
+    name="specialActivities"
+    rows="3"
+    placeholder="e.g. Live choreography, Dance battle, Group performance..."
+    value={form.specialActivities}
+    onChange={handleFormChange}
+  />
+</div>
+
+{/* WORKSHOP HIGHLIGHTS */}
+<div className="form-field full-width">
+  <label htmlFor="form-highlights">🌟 Workshop Highlights</label>
+  <textarea
+    id="form-highlights"
+    name="highlights"
+    rows="3"
+    placeholder="Enter the special highlights of this workshop..."
+    value={form.highlights}
+    onChange={handleFormChange}
+  />
+</div>
 
                 {/* Poster Image File */}
                 <div className="form-field full-width">
@@ -1944,7 +1962,7 @@ function AdminDashboard() {
               </div>
 
               <div className="agenda-steps-list">
-                {(viewingAgendaEvent.agenda || TOPIC_CURRICULUM_TEMPLATES['Hip-Hop & Urban'].agenda)
+                {(viewingAgendaEvent.agenda || 'Session flow has not been added yet.')
                   .split('\n')
                   .filter((line) => line.trim())
                   .map((step, idx) => (
