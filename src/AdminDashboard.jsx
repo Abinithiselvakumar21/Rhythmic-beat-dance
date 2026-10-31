@@ -78,22 +78,6 @@ const DEFAULT_BRANCHES = [
   },
 ];
 
-const emptyWorkshopForm = {
-  title: '',
-  description: '',
-  instructor: 'Master Choreographer Rahul & RB Crew',
-  level: 'Beginner & Intermediate Friendly',
-  song: '',
-  location: 'Valasaravakkam Studio, Chennai',
-  topic: 'Hip-Hop & Urban',
-  agenda: TOPIC_CURRICULUM_TEMPLATES['Hip-Hop & Urban'].agenda,
-  status: 'Upcoming',
-  slots: 20,
-  prize: '₹1,000',
-  date: '',
-  time: '',
-  image: '',
-};
 
 const emptyBranchForm = {
   name: '',
