@@ -103,23 +103,7 @@ const TOPIC_CURRICULUM_TEMPLATES = {
 };
 
 function getTopicRelevantAgenda(workshop) {
-  if (workshop.agenda && workshop.agenda.trim().length > 30) {
-    return workshop.agenda;
-  }
-  const text = `${workshop.title || ''} ${workshop.description || ''} ${workshop.song || ''}`.toLowerCase();
-  if (text.includes('kuthu') || text.includes('folk') || text.includes('dappa') || text.includes('mass')) {
-    return TOPIC_CURRICULUM_TEMPLATES['Folk & Kuthu'].agenda;
-  }
-  if (text.includes('contemporary') || text.includes('lyrical') || text.includes('classical') || text.includes('ballet')) {
-    return TOPIC_CURRICULUM_TEMPLATES['Contemporary & Lyrical'].agenda;
-  }
-  if (text.includes('battle') || text.includes('cypher') || text.includes('clash') || text.includes('freestyle')) {
-    return TOPIC_CURRICULUM_TEMPLATES['Dance Battle & Freestyle'].agenda;
-  }
-  if (text.includes('bollywood') || text.includes('commercial') || text.includes('cinematic')) {
-    return TOPIC_CURRICULUM_TEMPLATES['Bollywood Commercial'].agenda;
-  }
-  return TOPIC_CURRICULUM_TEMPLATES['Hip-Hop & Urban'].agenda;
+ 
 }
 
 // Dance Workshop Specific Categories
@@ -779,88 +763,65 @@ const resetAllFilters = () => {
                   </div>
 
                   {/* TOPIC-RELEVANT CURRICULUM TIMELINE */}
-                  <div className="premium-agenda-block">
-                    <div className="agenda-block-header">
-                      <div>
-                        <span className="agenda-kicker-tag">SESSION FLOW & BREAKDOWN</span>
-                        <h3>What Happens In This Workshop</h3>
-                      </div>
-<span className="agenda-total-time">
-  <Timer size={17} /> 3-Hour Intensive
-</span>                    </div>
-                    <p className="agenda-lead-intro">
-                      Step-by-step masterclass progression designed to take you from foundational counts to camera-ready performance:
-                    </p>
+{/* ADMIN-ENTERED WORKSHOP DETAILS */}
 
-                    <div className="premium-timeline-list">
-                      {getTopicRelevantAgenda(selectedWorkshop)
-                        .split('\n')
-                        .filter((l) => l.trim())
-                        .map((line, idx) => {
-                          const cleanLine = line.replace(/^\d+[\.\)]\s*/, '');
-                          const colonIdx = cleanLine.indexOf(':');
-                          const title = colonIdx > -1 ? cleanLine.substring(0, colonIdx) : cleanLine;
-                          const desc = colonIdx > -1 ? cleanLine.substring(colonIdx + 1).trim() : '';
+{selectedWorkshop.agenda?.trim() && (
+  <div className="premium-agenda-block">
+    <div className="agenda-block-header">
+      <div>
+        <span className="agenda-kicker-tag">SESSION FLOW & BREAKDOWN</span>
+        <h3>What Happens in This Workshop</h3>
+      </div>
+    </div>
 
-                         const stepIcons = [
-  <Zap size={20} />,
-  <Users size={20} />,
-  <Music2 size={20} />,
-  <Users size={20} />,
-  <Video size={20} />,
-  <Trophy size={20} />
-];
+    <div className="premium-timeline-list">
+      {selectedWorkshop.agenda
+        .split('\n')
+        .filter((line) => line.trim())
+        .map((line, idx) => (
+          <div key={idx} className="premium-timeline-card">
+            <div className="timeline-num-box">
+              <span className="timeline-icon">
+                <Music2 size={20} />
+              </span>
+              <small>Phase 0{idx + 1}</small>
+            </div>
+            <div className="timeline-body">
+              <p>{line}</p>
+            </div>
+          </div>
+        ))}
+    </div>
+  </div>
+)}
 
-const icon = stepIcons[idx % stepIcons.length];
+{selectedWorkshop.participants?.trim() && (
+  <div className="premium-agenda-block">
+    <h3><Users size={20} /> Who Can Participate?</h3>
+    <p>{selectedWorkshop.participants}</p>
+  </div>
+)}
 
-                          return (
-                            <div key={idx} className="premium-timeline-card">
-                              <div className="timeline-num-box">
-                                <span className="timeline-icon">{icon}</span>
-                                <small>Phase 0{idx + 1}</small>
-                              </div>
-                              <div className="timeline-body">
-                                <h4>{title}</h4>
-                                {desc && <p>{desc}</p>}
-                              </div>
-                            </div>
-                          );
-                        })}
-                    </div>
-                  </div>
+{selectedWorkshop.guestName?.trim() && (
+  <div className="premium-agenda-block">
+    <h3><Music2 size={20} /> Guest Name</h3>
+    <p>{selectedWorkshop.guestName}</p>
+  </div>
+)}
 
-                  {/* Guidelines */}
-                  <div className="premium-guidelines-box">
-                    <h4>Studio Instructions:</h4>
-                    <p>
-                      • Clean sneakers or dance shoes required on the sprung wooden floor.<br />
-                      • Wear comfortable athletic / dance clothing.<br />
-                      • Bring your personal water bottle and hand towel.<br />
-                      • Arrive 15 minutes prior for warm-up.
-                    </p>
-                  </div>
+{selectedWorkshop.specialActivities?.trim() && (
+  <div className="premium-agenda-block">
+    <h3><Zap size={20} /> Special Activities</h3>
+    <p>{selectedWorkshop.specialActivities}</p>
+  </div>
+)}
 
-                  {/* STICKY / PROMINENT ADMISSION PASS BOOKING BAR */}
-                  <div className="premium-booking-bar">
-                    <div className="fee-display-card">
-                      <small>REGISTRATION FEE</small>
-                      <strong className="fee-amount">{selectedWorkshop.prize || '₹1,000'}</strong>
-                      <span className="fee-sub">Admission & 4K Video Included</span>
-                    </div>
-
-                    <button
-                      type="button"
-                      className="premium-claim-pass-btn"
-                      onClick={() => {
-                        setReserveSuccess(false);
-                        setIsBookingModalOpen(true);
-                      }}
-                    >
-                     BOOK YOUR SLOT NOW <Ticket size={18} />
-                    </button>
-                  </div>
-                </div>
-              </div>
+{selectedWorkshop.highlights?.trim() && (
+  <div className="premium-agenda-block">
+    <h3><Trophy size={20} /> Workshop Highlights</h3>
+    <p>{selectedWorkshop.highlights}</p>
+  </div>
+)}
 
               {/* BOOKING POPUP MODAL */}
               {isBookingModalOpen && (
