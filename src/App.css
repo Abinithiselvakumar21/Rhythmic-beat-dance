@@ -3454,3 +3454,223 @@ body {
     justify-content: center;
   }
 }
+
+
+
+/* NEW RHYTHMIC BEAT HERO BANNER */
+
+.rb-hero {
+  position: relative;
+  min-height: 650px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background-image: url('/hero-banner.png');
+  background-size: cover;
+  background-position: center 38%;
+  background-repeat: no-repeat;
+  isolation: isolate;
+}
+
+.rb-hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    90deg,
+    rgba(12, 55, 112, 0.98) 0%,
+    rgba(15, 57, 111, 0.94) 32%,
+    rgba(16, 55, 105, 0.65) 53%,
+    rgba(10, 30, 60, 0.08) 100%
+  );
+}
+
+.rb-hero-content {
+  width: 100%;
+  max-width: 1450px;
+  margin: auto;
+  padding: 90px 7%;
+  color: #fff;
+  position: relative;
+  z-index: 1;
+}
+
+.rb-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 20px;
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 40px;
+  background: rgba(255,255,255,0.12);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.rb-hero-badge span {
+  color: #ff821c;
+}
+
+.rb-hero-title {
+  font-size: clamp(54px, 6vw, 92px);
+  line-height: 0.98;
+  font-weight: 950;
+  letter-spacing: -3px;
+  margin: 35px 0 25px;
+  color: white;
+}
+
+.rb-hero-title span {
+  display: block;
+  color: #ff821c;
+}
+
+.rb-hero-description {
+  max-width: 540px;
+  font-size: 21px;
+  line-height: 1.7;
+  color: #e5eaf3;
+  margin-bottom: 38px;
+}
+
+.rb-hero-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.rb-btn-primary,
+.rb-btn-secondary {
+  min-height: 66px;
+  padding: 0 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  border-radius: 16px;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 850;
+  transition: 0.3s ease;
+}
+
+.rb-btn-primary {
+  background: #ff821c;
+  color: white;
+}
+
+.rb-btn-primary:hover {
+  background: #ed6d0c;
+  transform: translateY(-3px);
+}
+
+.rb-btn-secondary {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.5);
+  color: white;
+}
+
+.rb-btn-secondary:hover {
+  background: white;
+  color: #123c75;
+}
+
+.rb-next-workshop {
+  margin-top: 32px;
+  max-width: 470px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.13);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: white;
+  text-decoration: none;
+}
+
+.rb-workshop-icon {
+  width: 55px;
+  height: 55px;
+  display: grid;
+  place-items: center;
+  background: #ff821c;
+  border-radius: 13px;
+  font-size: 25px;
+}
+
+.rb-next-workshop small {
+  display: block;
+  color: #ffb16c;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.rb-next-workshop strong {
+  font-size: 15px;
+}
+
+.rb-workshop-arrow {
+  margin-left: auto;
+  font-size: 25px;
+}
+
+/* MOBILE RESPONSIVE */
+
+@media (max-width: 768px) {
+  .rb-hero {
+    min-height: 680px;
+    align-items: flex-end;
+    background-position: 57% center;
+  }
+
+  .rb-hero-overlay {
+    background: linear-gradient(
+      0deg,
+      rgba(9, 43, 91, 0.98) 0%,
+      rgba(10, 48, 98, 0.91) 48%,
+      rgba(10, 40, 80, 0.15) 100%
+    );
+  }
+
+  .rb-hero-content {
+    padding: 260px 22px 45px;
+  }
+
+  .rb-hero-badge {
+    font-size: 10px;
+    padding: 10px 13px;
+    letter-spacing: 0.8px;
+  }
+
+  .rb-hero-title {
+    font-size: clamp(48px, 12vw, 68px);
+    letter-spacing: -2px;
+    margin: 23px 0 15px;
+  }
+
+  .rb-hero-description {
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 25px;
+  }
+
+  .rb-hero-buttons {
+    flex-direction: column;
+  }
+
+  .rb-btn-primary,
+  .rb-btn-secondary {
+    width: 100%;
+    min-height: 58px;
+  }
+
+  .rb-next-workshop {
+    max-width: 100%;
+    margin-top: 22px;
+  }
+}

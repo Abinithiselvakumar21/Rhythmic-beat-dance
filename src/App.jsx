@@ -2,7 +2,6 @@ import { useEffect, useState, useMemo } from 'react';
 import './App.css';
 import Admin from './Admin';
 import AdminDashboard from './AdminDashboard';
-import heroImg from './assets/hero.png';
 
 const SERVER = 'https://rhythmic-beat-dance.onrender.com';
 const API = `${SERVER}/api/events`;
@@ -96,7 +95,7 @@ function getTopicRelevantAgenda(workshop) {
   return TOPIC_CURRICULUM_TEMPLATES['Hip-Hop & Urban'].agenda;
 }
 
-// Dance Workshop Specific Categories (No Generic "All Styles")
+// Dance Workshop Specific Categories
 const WORKSHOP_GENRES = [
   'Hip-Hop & Urban',
   'Folk & Kuthu',
@@ -104,19 +103,6 @@ const WORKSHOP_GENRES = [
   'Bollywood Commercial',
   'Dance Battle',
   'Choreography',
-];
-
-// Specific Studio Branches (No Generic "All Branches")
-const SPECIFIC_BRANCHES = [
-  'Valasaravakkam Studio',
-  'Kolapakkam Studio',
-  'Ambattur Branch',
-];
-
-const SKILL_LEVELS = [
-  'Beginner Friendly',
-  'Intermediate / Advanced',
-  'Masterclass Intensive',
 ];
 
 const FAQS = [
@@ -204,14 +190,10 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [failedImages, setFailedImages] = useState({});
 
-  // Multi-Filter State (No "All Styles" or "All Branches" buttons)
+  // Filter State
   const [selectedWorkshop, setSelectedWorkshop] = useState(null);
-  const [selectedGenre, setSelectedGenre] = useState(''); // Empty means all, or specific genre
-  const [selectedBranch, setSelectedBranch] = useState(''); // Empty means all, or specific branch
-  const [selectedLevel, setSelectedLevel] = useState('');
-  const [priceFilter, setPriceFilter] = useState('');
+  const [selectedGenre, setSelectedGenre] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState('soonest');
 
   // Booking Modal State
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
@@ -306,10 +288,10 @@ function App() {
 
   const closeMenu = () => setMenuOpen(false);
 
-  // Multi-Filter Logic
+  // Filter Logic
   const filteredEvents = useMemo(() => {
-    let result = events.filter((ev) => {
-      // 1. Keyword Search
+    return events.filter((ev) => {
+      // Keyword Search
       const query = searchQuery.trim().toLowerCase();
       const matchesSearch =
         !query ||
@@ -320,7 +302,7 @@ function App() {
         ev.date?.toLowerCase().includes(query) ||
         ev.location?.toLowerCase().includes(query);
 
-      // 2. Specific Dance Genre Filter (No generic "All Styles")
+      // Dance Genre Filter
       let matchesGenre = true;
       if (selectedGenre) {
         const catKeywords = selectedGenre.toLowerCase().split(/[&/\s]+/);
@@ -328,67 +310,15 @@ function App() {
         matchesGenre = catKeywords.some((kw) => text.includes(kw));
       }
 
-      // 3. Specific Branch Filter (No generic "All Branches")
-      let matchesBranch = true;
-      if (selectedBranch) {
-        const branchKey = selectedBranch.toLowerCase().split(' ')[0]; // 'valasaravakkam', 'kolapakkam', 'ambattur'
-        const locText = `${ev.location || ''}`.toLowerCase();
-        matchesBranch = locText.includes(branchKey);
-      }
-
-      // 4. Skill Level
-      let matchesLevel = true;
-      if (selectedLevel) {
-        const lvlText = (ev.level || '').toLowerCase();
-        if (selectedLevel.includes('Beginner')) {
-          matchesLevel = lvlText.includes('beginner') || lvlText.includes('open');
-        } else if (selectedLevel.includes('Intermediate')) {
-          matchesLevel = lvlText.includes('intermediate') || lvlText.includes('advanced');
-        } else if (selectedLevel.includes('Masterclass')) {
-          matchesLevel = lvlText.includes('masterclass') || lvlText.includes('pro');
-        }
-      }
-
-      // 5. Price Range
-      let matchesPrice = true;
-      if (priceFilter) {
-        const rawNum = parseInt((ev.prize || '').replace(/[^0-9]/g, ''), 10) || 1000;
-        if (priceFilter === 'under-1000') matchesPrice = rawNum <= 1000;
-        if (priceFilter === 'above-1000') matchesPrice = rawNum > 1000;
-      }
-
-      return matchesSearch && matchesGenre && matchesBranch && matchesLevel && matchesPrice;
+      return matchesSearch && matchesGenre;
     });
+  }, [events, searchQuery, selectedGenre]);
 
-    // Sorting
-    if (sortBy === 'price-low') {
-      result.sort((a, b) => {
-        const pA = parseInt((a.prize || '').replace(/[^0-9]/g, ''), 10) || 0;
-        const pB = parseInt((b.prize || '').replace(/[^0-9]/g, ''), 10) || 0;
-        return pA - pB;
-      });
-    } else if (sortBy === 'price-high') {
-      result.sort((a, b) => {
-        const pA = parseInt((a.prize || '').replace(/[^0-9]/g, ''), 10) || 0;
-        const pB = parseInt((b.prize || '').replace(/[^0-9]/g, ''), 10) || 0;
-        return pB - pA;
-      });
-    } else if (sortBy === 'slots-low') {
-      result.sort((a, b) => (Number(a.slots) || 0) - (Number(b.slots) || 0));
-    }
-
-    return result;
-  }, [events, searchQuery, selectedGenre, selectedBranch, selectedLevel, priceFilter, sortBy]);
-
-  const hasActiveFilters = searchQuery || selectedGenre || selectedBranch || selectedLevel || priceFilter;
+  const hasActiveFilters = searchQuery || selectedGenre;
 
   const resetAllFilters = () => {
     setSearchQuery('');
     setSelectedGenre('');
-    setSelectedBranch('');
-    setSelectedLevel('');
-    setPriceFilter('');
-    setSortBy('soonest');
   };
 
   const handleOpenWorkshop = (ev) => {
@@ -513,96 +443,51 @@ function App() {
       </header>
 
       <main>
-        {/* BANNER / HERO SECTION (Look upgraded, brand-matching without black background) */}
-        <section className="hero brand-hero-light" id="home">
-          <div className="hero-content">
-            <div className="brand-eyebrow-chip">
-              <span className="chip-fire">⚡</span>
-              <span>CHENNAI'S PREMIER DANCE ARENA • VALASARAVAKKAM • KOLAPAKKAM • AMBATTUR</span>
-            </div>
+        {/* BANNER / HERO SECTION */}
+        {/* NEW HERO BANNER */}
+<section className="rb-hero" id="home">
+  <div className="rb-hero-overlay"></div>
 
-            <h1 className="brand-hero-title">
-              <span className="title-navy">RHYTHMIC BEAT</span>
-              <br />
-              <span className="title-orange">DANCE COURT.</span>
-            </h1>
+  <div className="rb-hero-content">
+    <div className="rb-hero-badge">
+      <span>●</span> RHYTHMIC BEAT DANCE COURT · SINCE 2003
+    </div>
 
-            <div className="brand-tagline-bar">
-              <span className="beat-wave-anim">
-                <i></i><i></i><i></i><i></i><i></i>
-              </span>
-              <span className="tagline-text">"LET UR BODY SPEAK"</span>
-            </div>
+    <h1 className="rb-hero-title">
+      LET UR BODY
+      <span>SPEAK.</span>
+    </h1>
 
-            <p className="hero-text">
-              Experience explosive masterclass choreography, world-class musicality, high-energy dance battles,
-              and professional stage training on joint-safe sprung wooden floors led by Chennai's top faculties.
-            </p>
+    <p className="rb-hero-description">
+      Dance, fitness & wellness for every age,
+      across Chennai.
+    </p>
 
-            <div className="hero-actions">
-              <a className="brand-primary-btn" href="#workshops">
-                EXPLORE WORKSHOPS <span>↓</span>
-              </a>
-              <a
-                className="brand-secondary-btn"
-                href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20Rhythmic%20Beat%20Dance%20Court%2C%20I%20want%20to%20join%20a%20regular%20dance%20batch.`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                JOIN REGULAR BATCH <span>↗</span>
-              </a>
-            </div>
+    <div className="rb-hero-buttons">
+      <a
+        className="rb-btn-primary"
+        href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%2C%20I%20want%20to%20book%20a%20free%20trial.`}
+        target="_blank"
+        rel="noreferrer"
+      >
+        Book a free trial
+      </a>
 
-            <div className="hero-stats">
-              <div className="stat-item">
-                <strong className="stat-num-navy">1,500+</strong>
-                <span>Dancers Trained</span>
-              </div>
-              <div className="stat-separator" />
-              <div className="stat-item">
-                <strong className="stat-num-orange">3</strong>
-                <span>Chennai Studios</span>
-              </div>
-              <div className="stat-separator" />
-              <div className="stat-item">
-                <strong className="stat-num-navy">50+</strong>
-                <span>Workshops Conducted</span>
-              </div>
-            </div>
-          </div>
+      <a className="rb-btn-secondary" href="#workshops">
+        Upcoming workshops <span>→</span>
+      </a>
+    </div>
 
-          {/* RIGHT-SIDE HERO SHOWCASE (Vibrant, Light studio aesthetic matching the logo) */}
-          <div className="hero-visual-wrap">
-            <div className="brand-visual-showcase">
-              <div className="ambient-sun-glow" />
-              <div className="ambient-blue-glow" />
-
-              <img
-                src={heroImg}
-                alt="Dance masterclass at Rhythmic Beat Dance Court"
-                className="brand-dancer-img"
-              />
-
-              {/* Floating Interactive Live Badges */}
-              <div className="floating-live-pill">
-                <span className="pulse-orange-dot" />
-                <span>LIVE WORKSHOP PASSES OPEN</span>
-              </div>
-
-              <div className="floating-studio-card">
-                <div className="studio-card-icon">⚡</div>
-                <div>
-                  <strong>Official RB Dance Pass</strong>
-                  <small>Valasaravakkam • Kolapakkam • Ambattur</small>
-                </div>
-              </div>
-
-              <div className="floating-perk-badge">
-                <span>🎥 4K Stage Video Shoots Included</span>
-              </div>
-            </div>
-          </div>
-        </section>
+    <a className="rb-next-workshop" href="#workshops">
+      <div className="rb-workshop-icon">💃</div>
+      <div>
+        <small>EXPLORE OUR WORKSHOPS</small>
+        <strong>Upcoming Dance Workshops</strong>
+      </div>
+      <span className="rb-workshop-arrow">→</span>
+    </a>
+  </div>
+</section>
 
         {/* WORKSHOPS & MASTERCLASSES SECTION */}
         <section className="workshops-section" id="workshops">
