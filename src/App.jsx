@@ -322,13 +322,7 @@ const filteredEvents = useMemo(() => {
       ev.date?.toLowerCase().includes(query) ||
       ev.location?.toLowerCase().includes(query);
 
-    // Dance Genre
-    let matchesGenre = true;
-    if (selectedGenre) {
-      const catKeywords = selectedGenre.toLowerCase().split(/[&/\s]+/);
-      const text = `${ev.title || ''} ${ev.description || ''} ${ev.song || ''}`.toLowerCase();
-      matchesGenre = catKeywords.some((kw) => text.includes(kw));
-    }
+   
 
     // Studio Branch
     const matchesBranch =
@@ -351,7 +345,6 @@ const filteredEvents = useMemo(() => {
 
     return (
       matchesSearch &&
-      matchesGenre &&
       matchesBranch &&
       matchesLevel &&
       matchesPrice
@@ -388,12 +381,11 @@ const filteredEvents = useMemo(() => {
 ]);
 
 const hasActiveFilters =
-  searchQuery || selectedGenre || selectedBranch ||
+  searchQuery || selectedBranch ||
   selectedLevel || priceFilter;
 
 const resetAllFilters = () => {
   setSearchQuery('');
-  setSelectedGenre('');
   setSelectedBranch('');
   setSelectedLevel('');
   setPriceFilter('');
@@ -1056,27 +1048,7 @@ const resetAllFilters = () => {
                   </div>
                 </div>
 
-                {/* Dance Style Filters (Direct Workshop Genres, No "All Styles") */}
-                <div className="filter-block">
-                  <span className="filter-label">Dance Style / Topic</span>
-                  <div className="category-pill-list">
-                    {WORKSHOP_GENRES.map((genre) => (
-                      <button
-                        key={genre}
-                        type="button"
-                        className={`category-pill ${
-                          selectedGenre === genre ? 'active' : ''
-                        }`}
-                        onClick={() =>
-                          setSelectedGenre(selectedGenre === genre ? '' : genre)
-                        }
-                      >
-                        {genre}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
+              
                 {/* Specific Studio Branches (Direct Branches, No "All Branches") */}
                 <div className="filter-block">
                   <span className="filter-label">Studio Branch</span>
@@ -1195,17 +1167,6 @@ const resetAllFilters = () => {
 
                   {hasActiveFilters && (
                     <div className="active-tag-pills">
-                      {selectedGenre && (
-                        <span className="active-pill">
-                          {selectedGenre}
-                          <button
-                            type="button"
-                            onClick={() => setSelectedGenre('')}
-                          >
-                            ✕
-                          </button>
-                        </span>
-                      )}
                       {selectedBranch && (
                         <span className="active-pill">
                           {selectedBranch}
