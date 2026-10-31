@@ -1637,16 +1637,11 @@ function AdminDashboard() {
                 {/* TOPIC-RELEVANT CURRICULUM SELECTOR */}
               {/* WORKSHOP SESSION FLOW */}
 {/* WORKSHOP SESSION FLOW / AGENDA */}
-<div className="form-field full-width topic-curriculum-box">
-
-  <label htmlFor="form-agenda" className="highlight-label">
-    ✨ What Happens in This Workshop (Session Flow / Agenda) *
-  </label>
-
-</div>
-
 {/* WHO CAN PARTICIPATE */}
 <div className="form-field full-width">
+    <label htmlFor="form-agenda" className="highlight-label">
+    ✨ What Happens in This Workshop (Session Flow / Agenda) *
+  </label>
   <label htmlFor="form-participants">👥 Who Can Participate?</label>
   <textarea
     id="form-participants"
