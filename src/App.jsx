@@ -2,6 +2,12 @@ import { useEffect, useState, useMemo } from 'react';
 import './App.css';
 import Admin from './Admin';
 import AdminDashboard from './AdminDashboard';
+import {
+  CalendarDays,
+  Clock,
+  MapPin,
+  Zap
+} from 'lucide-react';
 
 const SERVER = 'https://rhythmic-beat-dance.onrender.com';
 const API = `${SERVER}/api/events`;
@@ -693,39 +699,55 @@ const resetAllFilters = () => {
                   </div>
 
                   {/* Key Highlights Grid (Clean soft cards) */}
-                  <div className="premium-specs-grid">
-                    <div className="spec-card">
-                      <span className="spec-icon">📅</span>
-                      <div>
-                        <small>EVENT DATE</small>
-                        <strong>{selectedWorkshop.date || 'Scheduled Soon'}</strong>
-                      </div>
-                    </div>
-                    <div className="spec-card">
-                      <span className="spec-icon">⏰</span>
-                      <div>
-                        <small>WORKSHOP TIMING</small>
-                        <strong>{selectedWorkshop.time || 'Schedule TBA'}</strong>
-                      </div>
-                    </div>
-                    <div className="spec-card">
-                      <span className="spec-icon">📍</span>
-                      <div>
-                        <small>STUDIO VENUE</small>
-                        <strong>{selectedWorkshop.location || 'Valasaravakkam Studio, Chennai'}</strong>
-                      </div>
-                    </div>
-                    <div className="spec-card">
-                      <span className="spec-icon">⚡</span>
-                      <div>
-                        <small>SLOTS REMAINING</small>
-                        <strong className="slots-text-highlight">
-                          {selectedWorkshop.slots > 0 ? `${selectedWorkshop.slots} Slots Left` : 'Open Registration'}
-                        </strong>
-                      </div>
-                    </div>
-                  </div>
+<div className="premium-specs-grid">
 
+  {/* EVENT DATE */}
+  <div className="spec-card">
+    <span className="spec-icon">
+      <CalendarDays size={22} />
+    </span>
+    <div>
+      <small>EVENT DATE</small>
+      <strong>{selectedWorkshop.date || 'Scheduled Soon'}</strong>
+    </div>
+  </div>
+
+  {/* WORKSHOP TIMING */}
+  <div className="spec-card">
+    <span className="spec-icon">
+      <Clock size={22} />
+    </span>
+    <div>
+      <small>WORKSHOP TIMING</small>
+      <strong>{selectedWorkshop.time || 'Schedule TBA'}</strong>
+    </div>
+  </div>
+
+  {/* STUDIO VENUE */}
+  <div className="spec-card">
+    <span className="spec-icon">
+      <MapPin size={22} />
+    </span>
+    <div>
+      <small>STUDIO VENUE</small>
+      <strong>{selectedWorkshop.location || 'Valasaravakkam Studio, Chennai'}</strong>
+    </div>
+  </div>
+
+  {/* SLOTS REMAINING */}
+  <div className="spec-card">
+    <span className="spec-icon">
+      <Zap size={22} />
+    </span>
+    <div>
+      <small>SLOTS REMAINING</small>
+      <strong className="slots-text-highlight">
+        {selectedWorkshop.slots > 0 ? `${selectedWorkshop.slots} Slots Left` : 'Open Registration'}
+      </strong>
+    </div>
+  </div>
+
+</div>
                   {/* Description */}
                   <div className="premium-desc-block">
                     <h3>About The Workshop</h3>
