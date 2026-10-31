@@ -28,7 +28,6 @@ import {
   Ticket,
   Search,
   Drama,
-  Instagram
 } from 'lucide-react';
 
 const SERVER = 'https://rhythmic-beat-dance.onrender.com';
@@ -1588,7 +1587,7 @@ RESERVE PASS <Ticket size={17} />
                 rel="noreferrer"
                 aria-label="Instagram"
               >
-                <Instagram size={18} /> Instagram
+               <Camera size={20} /> Instagram
               </a>
             </div>
           </div>
