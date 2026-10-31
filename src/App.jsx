@@ -6,7 +6,29 @@ import {
   CalendarDays,
   Clock,
   MapPin,
-  Zap
+  Zap,
+  UserRound,
+  MessageCircle,
+  Menu,
+  X,
+  ArrowRight,
+  Music2,
+  Trophy,
+  Sparkles,
+  Flame,
+  Handshake,
+  Video,
+  Award,
+  Headphones,
+  Droplets,
+  Camera,
+  Target,
+  Timer,
+  Users,
+  Ticket,
+  Search,
+  Drama,
+  Instagram
 } from 'lucide-react';
 
 const SERVER = 'https://rhythmic-beat-dance.onrender.com';
@@ -475,7 +497,7 @@ const resetAllFilters = () => {
         className="floating-whatsapp-widget"
         aria-label="Chat with Studio on WhatsApp"
       >
-        <span className="wa-icon">💬</span>
+        <span className="wa-icon"><MessageCircle size={22} /></span>
         <span className="wa-text">Chat on WhatsApp</span>
       </a>
 
@@ -497,7 +519,7 @@ const resetAllFilters = () => {
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen(!menuOpen)}
         >
-          {menuOpen ? '✕' : '☰'}
+          {menuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
 
         <nav className={`nav-links ${menuOpen ? 'nav-links-open' : ''}`}>
@@ -514,7 +536,7 @@ const resetAllFilters = () => {
             rel="noreferrer"
             onClick={closeMenu}
           >
-            <span>💬</span> WhatsApp Enquire
+            <MessageCircle size={18} /> WhatsApp Enquire
           </a>
         </nav>
       </header>
@@ -556,8 +578,9 @@ const resetAllFilters = () => {
     </div>
 
     <a className="rb-next-workshop" href="#workshops">
-      <div className="rb-workshop-icon">💃</div>
-      <div>
+<div className="rb-workshop-icon">
+  <Users size={24} />
+</div>      <div>
         <small>EXPLORE OUR WORKSHOPS</small>
         <strong>Upcoming Dance Workshops</strong>
       </div>
@@ -611,9 +634,10 @@ const resetAllFilters = () => {
                   <span className="detail-status-pill">
                     ● {selectedWorkshop.status || 'OPEN FOR BOOKING'}
                   </span>
-                  <span className="detail-branch-pill">
-                    📍 {selectedWorkshop.location || 'Valasaravakkam Studio, Chennai'}
-                  </span>
+                 <span className="detail-branch-pill">
+  <MapPin size={16} />
+  {selectedWorkshop.location || 'Valasaravakkam Studio, Chennai'}
+</span>
                 </div>
               </div>
 
@@ -643,7 +667,7 @@ const resetAllFilters = () => {
                       </>
                     ) : (
                       <div className="poster-placeholder-brand">
-                        <span className="placeholder-icon">⚡</span>
+<span className="placeholder-icon"><Zap size={28} /></span>
                         <strong>RHYTHMIC BEAT</strong>
                         <small>DANCE COURT</small>
                       </div>
@@ -657,12 +681,12 @@ const resetAllFilters = () => {
                   <div className="poster-inclusions-box">
                     <h4>Pass Inclusions & Perks:</h4>
                     <ul>
-                      <li>🎥 4K Cinematic Stage Video Shoot</li>
-                      <li>🏆 Verified Studio Certificate of Completion</li>
-                      <li>🎧 Official Choreography Practice Audio Access</li>
-                      <li>💧 Fully Air-Conditioned Sprung Wooden Floor</li>
-                      <li>📸 Professional Group & Solo Photoshoot</li>
-                    </ul>
+  <li><Video size={17} /> 4K Cinematic Stage Video Shoot</li>
+  <li><Trophy size={17} /> Verified Studio Certificate of Completion</li>
+  <li><Headphones size={17} /> Official Choreography Practice Audio Access</li>
+  <li><Droplets size={17} /> Fully Air-Conditioned Sprung Wooden Floor</li>
+  <li><Camera size={17} /> Professional Group & Solo Photoshoot</li>
+</ul>
                   </div>
                 </div>
 
@@ -671,10 +695,10 @@ const resetAllFilters = () => {
                   {/* Genre Tag & Level */}
                   <div className="title-tags-row">
                     <span className="genre-tag-pill">
-                      ⚡ {selectedWorkshop.title.toLowerCase().includes('kuthu') ? 'FOLK & KUTHU' : selectedWorkshop.title.toLowerCase().includes('contemporary') ? 'CONTEMPORARY' : selectedWorkshop.title.toLowerCase().includes('battle') ? 'DANCE BATTLE' : 'CHOREOGRAPHY MASTERCLASS'}
+                      <Zap size={16} /> {selectedWorkshop.title.toLowerCase().includes('kuthu') ? 'FOLK & KUTHU' : selectedWorkshop.title.toLowerCase().includes('contemporary') ? 'CONTEMPORARY' : selectedWorkshop.title.toLowerCase().includes('battle') ? 'DANCE BATTLE' : 'CHOREOGRAPHY MASTERCLASS'}
                     </span>
                     <span className="level-tag-pill">
-                      🎯 {selectedWorkshop.level || 'Beginner & Intermediate Friendly'}
+                      <Target size={16} />{selectedWorkshop.level || 'Beginner & Intermediate Friendly'}
                     </span>
                   </div>
 
@@ -682,8 +706,7 @@ const resetAllFilters = () => {
 
                   {/* Song Badge */}
                   <div className="premium-song-box">
-                    <span className="song-badge-icon">🎵</span>
-                    <div>
+<span className="song-badge-icon"><Music2 size={22} /></span>                    <div>
                       <small>OFFICIAL CHOREOGRAPHY TRACK</small>
                       <strong>{formatSongName(selectedWorkshop.song)}</strong>
                     </div>
@@ -691,8 +714,7 @@ const resetAllFilters = () => {
 
                   {/* Lead Faculty Card */}
                   <div className="premium-mentor-card">
-                    <div className="mentor-avatar-badge">💃</div>
-                    <div>
+<div className="mentor-avatar-badge"><Users size={22} /></div>                    <div>
                       <small>LEAD FACULTY & CHOREOGRAPHER</small>
                       <strong>{selectedWorkshop.instructor || 'Master Choreographer Rahul & RB Crew'}</strong>
                     </div>
@@ -764,8 +786,9 @@ const resetAllFilters = () => {
                         <span className="agenda-kicker-tag">SESSION FLOW & BREAKDOWN</span>
                         <h3>What Happens In This Workshop</h3>
                       </div>
-                      <span className="agenda-total-time">⏱️ 3-Hour Intensive</span>
-                    </div>
+<span className="agenda-total-time">
+  <Timer size={17} /> 3-Hour Intensive
+</span>                    </div>
                     <p className="agenda-lead-intro">
                       Step-by-step masterclass progression designed to take you from foundational counts to camera-ready performance:
                     </p>
@@ -780,8 +803,16 @@ const resetAllFilters = () => {
                           const title = colonIdx > -1 ? cleanLine.substring(0, colonIdx) : cleanLine;
                           const desc = colonIdx > -1 ? cleanLine.substring(colonIdx + 1).trim() : '';
 
-                          const stepIcons = ['⚡', '💃', '🎵', '👥', '🎥', '🏆'];
-                          const icon = stepIcons[idx % stepIcons.length];
+                         const stepIcons = [
+  <Zap size={20} />,
+  <Users size={20} />,
+  <Music2 size={20} />,
+  <Users size={20} />,
+  <Video size={20} />,
+  <Trophy size={20} />
+];
+
+const icon = stepIcons[idx % stepIcons.length];
 
                           return (
                             <div key={idx} className="premium-timeline-card">
@@ -826,7 +857,7 @@ const resetAllFilters = () => {
                         setIsBookingModalOpen(true);
                       }}
                     >
-                      BOOK YOUR SLOT NOW <span>🎟️</span>
+                     BOOK YOUR SLOT NOW <Ticket size={18} />
                     </button>
                   </div>
                 </div>
@@ -886,8 +917,7 @@ const resetAllFilters = () => {
                           target="_blank"
                           rel="noreferrer"
                         >
-                          💬 Send Pass via WhatsApp
-                        </a>
+<MessageCircle size={18} /> Send Pass via WhatsApp                        </a>
 
                         <button
                           type="button"
@@ -997,8 +1027,7 @@ const resetAllFilters = () => {
                               'SECURING YOUR PASS...'
                             ) : (
                               <>
-                                CONFIRM & CLAIM TICKET <span>🎟️</span>
-                              </>
+CONFIRM & CLAIM TICKET <Ticket size={18} />                            </>
                             )}
                           </button>
                         </form>
@@ -1049,7 +1078,7 @@ const resetAllFilters = () => {
                     Search Workshop
                   </label>
                   <div className="search-input-wrap">
-                    <span className="search-icon">🔍</span>
+<span className="search-icon"><Search size={18} /></span>
                     <input
                       id="workshop-search"
                       type="text"
@@ -1148,10 +1177,10 @@ const resetAllFilters = () => {
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
                   >
-                    <option value="soonest">📅 Date: Upcoming First</option>
-                    <option value="slots-low">⚡ Slots: Fewest Left</option>
-                    <option value="price-low">💵 Price: Low to High</option>
-                    <option value="price-high">💎 Price: High to Low</option>
+                    <option value="soonest">Date: Upcoming First</option>
+<option value="slots-low">Slots: Fewest Left</option>
+<option value="price-low">Price: Low to High</option>
+<option value="price-high">Price: High to Low</option>
                   </select>
                 </div>
 
@@ -1247,7 +1276,7 @@ const resetAllFilters = () => {
                 {/* REDESIGNED WORKSHOP CARDS GRID */}
                 {filteredEvents.length === 0 ? (
                   <div className="empty-results-box">
-                    <span className="empty-icon">🎭</span>
+<span className="empty-icon"><Drama size={30} /></span>
                     <h4>No Workshops Match Your Selected Filters</h4>
                     <p>
                       Try resetting your search or pick another dance style.
@@ -1289,7 +1318,7 @@ const resetAllFilters = () => {
                               />
                             ) : (
                               <div className="card-poster-placeholder">
-                                <span>⚡</span>
+                                <span><Zap size={28} /></span>
                                 <strong>RHYTHMIC BEAT</strong>
                                 <small>DANCE COURT</small>
                               </div>
@@ -1297,7 +1326,7 @@ const resetAllFilters = () => {
 
                             {/* Top Style Tag */}
                             <span className="card-genre-pill">
-                              ⚡ {event.title.toLowerCase().includes('kuthu') ? 'FOLK & KUTHU' : event.title.toLowerCase().includes('contemporary') ? 'CONTEMPORARY' : event.title.toLowerCase().includes('battle') ? 'DANCE BATTLE' : 'CHOREOGRAPHY'}
+                              <Zap size={16} /> {event.title.toLowerCase().includes('kuthu') ? 'FOLK & KUTHU' : event.title.toLowerCase().includes('contemporary') ? 'CONTEMPORARY' : event.title.toLowerCase().includes('battle') ? 'DANCE BATTLE' : 'CHOREOGRAPHY'}
                             </span>
 
                             {/* Slots Urgency Chip */}
@@ -1306,11 +1335,13 @@ const resetAllFilters = () => {
                                 isFewSlots ? 'urgent' : ''
                               }`}
                             >
-                              {isFewSlots
-                                ? `🔥 ONLY ${event.slots} SLOTS LEFT`
-                                : event.slots > 0
-                                ? `● ${event.slots} SLOTS AVAILABLE`
-                                : '● REGISTRATION OPEN'}
+                              {isFewSlots ? (
+  <><Flame size={15} /> ONLY {event.slots} SLOTS LEFT</>
+) : event.slots > 0 ? (
+  <>● {event.slots} SLOTS AVAILABLE</>
+) : (
+  <>● REGISTRATION OPEN</>
+)}
                             </span>
                           </div>
 
@@ -1320,8 +1351,8 @@ const resetAllFilters = () => {
 
                             {/* Song Badge */}
                             <div className="card-song-badge">
-                              <span className="song-icon">🎵</span>
-                              <span className="song-text">
+<span className="song-icon"><Music2 size={18} /></span>  
+                            <span className="song-text">
                                 Track: {formatSongName(event.song)}
                               </span>
                             </div>
@@ -1329,24 +1360,21 @@ const resetAllFilters = () => {
                             {/* Schedule & Venue Meta */}
                             <div className="card-meta-list">
                               <div className="meta-item">
-                                <span className="meta-icon">📅</span>
-                                <span>{event.date || 'Date TBA'} {event.time ? `• ${event.time}` : ''}</span>
+<span className="meta-icon"><CalendarDays size={18} /></span>                                <span>{event.date || 'Date TBA'} {event.time ? `• ${event.time}` : ''}</span>
                               </div>
                               <div className="meta-item">
-                                <span className="meta-icon">📍</span>
-                                <span>{event.location || 'Valasaravakkam Studio, Chennai'}</span>
+<span className="meta-icon"><MapPin size={18} /></span>                                <span>{event.location || 'Valasaravakkam Studio, Chennai'}</span>
                               </div>
                               <div className="meta-item">
-                                <span className="meta-icon">👤</span>
-                                <span>{event.instructor || 'Master Choreographer'} • <span className="level-highlight">{event.level || 'Beginner Friendly'}</span></span>
+<span className="meta-icon"><UserRound size={18} /></span>                                <span>{event.instructor || 'Master Choreographer'} • <span className="level-highlight">{event.level || 'Beginner Friendly'}</span></span>
                               </div>
                             </div>
 
                             {/* Inclusions Row */}
-                            <div className="card-perks-row">
-                              <span className="perk-pill">🎥 4K Video Shoot</span>
-                              <span className="perk-pill">🏆 Certificate</span>
-                            </div>
+                           <div className="card-perks-row">
+  <span className="perk-pill"><Video size={15} /> 4K Video Shoot</span>
+  <span className="perk-pill"><Trophy size={15} /> Certificate</span>
+</div>
 
                             {/* Footer: Fee & Booking CTA */}
                             <div className="modern-card-footer">
@@ -1363,8 +1391,8 @@ const resetAllFilters = () => {
                                   handleOpenWorkshop(event);
                                 }}
                               >
-                                RESERVE PASS <span>🎟️</span>
-                              </button>
+RESERVE PASS <Ticket size={17} />          
+                    </button>
                             </div>
                           </div>
                         </article>
@@ -1391,15 +1419,15 @@ const resetAllFilters = () => {
 
           <div className="features-grid">
             <div className="feature-card">
-              <span className="feature-icon">🏆</span>
-              <h3>Celebrity & Pro Mentors</h3>
+<span className="feature-icon"><Trophy size={26} /></span>      
+        <h3>Celebrity & Pro Mentors</h3>
               <p>
                 Learn industry choreography, musicality, and stage confidence directly from top artists.
               </p>
             </div>
 
             <div className="feature-card">
-              <span className="feature-icon">✨</span>
+<span className="feature-icon"><Sparkles size={26} /></span>
               <h3>Joint-Safe Wooden Floors</h3>
               <p>
                 Professional cushioned sprung wooden floors designed to protect your joints during intensive routines.
@@ -1407,7 +1435,7 @@ const resetAllFilters = () => {
             </div>
 
             <div className="feature-card">
-              <span className="feature-icon">🔥</span>
+<span className="feature-icon"><Flame size={26} /></span>
               <h3>Stage & Battle Exposure</h3>
               <p>
                 Direct opportunities for state competitions, studio showcase video shoots, and performance battles.
@@ -1415,7 +1443,7 @@ const resetAllFilters = () => {
             </div>
 
             <div className="feature-card">
-              <span className="feature-icon">🤝</span>
+<span className="feature-icon"><Handshake size={26} /></span>
               <h3>All Skill Levels Welcome</h3>
               <p>
                 Whether you are stepping onto the floor for the first time or training for pro performances.
@@ -1552,7 +1580,7 @@ const resetAllFilters = () => {
                 rel="noreferrer"
                 aria-label="WhatsApp"
               >
-                💬 WhatsApp
+<MessageCircle size={18} /> WhatsApp
               </a>
               <a
                 href="https://instagram.com"
@@ -1560,7 +1588,7 @@ const resetAllFilters = () => {
                 rel="noreferrer"
                 aria-label="Instagram"
               >
-                📸 Instagram
+                <Instagram size={18} /> Instagram
               </a>
             </div>
           </div>
