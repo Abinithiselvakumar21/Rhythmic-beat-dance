@@ -190,6 +190,14 @@ const SPECIFIC_BRANCHES = [
   "Kolapakkam"
 ];
 
+
+const SKILL_LEVELS = [
+  'Beginner',
+  'Intermediate',
+  'Advanced',
+  'All Levels',
+];
+
 function App() {
   const [events, setEvents] = useState([]);
   const [branches, setBranches] = useState(DEFAULT_BRANCH_LIST);
@@ -198,11 +206,14 @@ function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [failedImages, setFailedImages] = useState({});
 
-  // Filter State
-  const [selectedWorkshop, setSelectedWorkshop] = useState(null);
-  const [selectedGenre, setSelectedGenre] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedBranch, setSelectedBranch] = useState('');
+// Filter State
+const [selectedWorkshop, setSelectedWorkshop] = useState(null);
+const [selectedGenre, setSelectedGenre] = useState('');
+const [searchQuery, setSearchQuery] = useState('');
+const [selectedBranch, setSelectedBranch] = useState('');
+const [selectedLevel, setSelectedLevel] = useState('');
+const [priceFilter, setPriceFilter] = useState('');
+const [sortBy, setSortBy] = useState('soonest');
 
   // Booking Modal State
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
@@ -297,38 +308,97 @@ function App() {
 
   const closeMenu = () => setMenuOpen(false);
 
-  // Filter Logic
-  const filteredEvents = useMemo(() => {
-    return events.filter((ev) => {
-      // Keyword Search
-      const query = searchQuery.trim().toLowerCase();
-      const matchesSearch =
-        !query ||
-        ev.title?.toLowerCase().includes(query) ||
-        ev.description?.toLowerCase().includes(query) ||
-        ev.song?.toLowerCase().includes(query) ||
-        ev.instructor?.toLowerCase().includes(query) ||
-        ev.date?.toLowerCase().includes(query) ||
-        ev.location?.toLowerCase().includes(query);
+ // Filter Logic
+const filteredEvents = useMemo(() => {
+  const filtered = events.filter((ev) => {
+    // Keyword Search
+    const query = searchQuery.trim().toLowerCase();
+    const matchesSearch =
+      !query ||
+      ev.title?.toLowerCase().includes(query) ||
+      ev.description?.toLowerCase().includes(query) ||
+      ev.song?.toLowerCase().includes(query) ||
+      ev.instructor?.toLowerCase().includes(query) ||
+      ev.date?.toLowerCase().includes(query) ||
+      ev.location?.toLowerCase().includes(query);
 
-      // Dance Genre Filter
-      let matchesGenre = true;
-      if (selectedGenre) {
-        const catKeywords = selectedGenre.toLowerCase().split(/[&/\s]+/);
-        const text = `${ev.title || ''} ${ev.description || ''} ${ev.song || ''}`.toLowerCase();
-        matchesGenre = catKeywords.some((kw) => text.includes(kw));
-      }
+    // Dance Genre
+    let matchesGenre = true;
+    if (selectedGenre) {
+      const catKeywords = selectedGenre.toLowerCase().split(/[&/\s]+/);
+      const text = `${ev.title || ''} ${ev.description || ''} ${ev.song || ''}`.toLowerCase();
+      matchesGenre = catKeywords.some((kw) => text.includes(kw));
+    }
 
-      return matchesSearch && matchesGenre;
-    });
-  }, [events, searchQuery, selectedGenre]);
+    // Studio Branch
+    const matchesBranch =
+      !selectedBranch ||
+      (ev.location || '').toLowerCase().includes(selectedBranch.toLowerCase());
 
-  const hasActiveFilters = searchQuery || selectedGenre;
+    // Skill Level
+    const matchesLevel =
+      !selectedLevel ||
+      selectedLevel === 'All Levels' ||
+      (ev.level || '').toLowerCase().includes(selectedLevel.toLowerCase());
 
-  const resetAllFilters = () => {
-    setSearchQuery('');
-    setSelectedGenre('');
-  };
+    // Pass Fee
+    const price = Number(String(ev.prize || '').replace(/[^\d]/g, '')) || 0;
+
+    const matchesPrice =
+      !priceFilter ||
+      (priceFilter === 'under-1000' && price <= 1000) ||
+      (priceFilter === 'above-1000' && price > 1000);
+
+    return (
+      matchesSearch &&
+      matchesGenre &&
+      matchesBranch &&
+      matchesLevel &&
+      matchesPrice
+    );
+  });
+
+  // Sort Results
+  filtered.sort((a, b) => {
+    if (sortBy === 'slots-low') {
+      return (Number(a.slots) || 0) - (Number(b.slots) || 0);
+    }
+
+    const priceA = Number(String(a.prize || '').replace(/[^\d]/g, '')) || 0;
+    const priceB = Number(String(b.prize || '').replace(/[^\d]/g, '')) || 0;
+
+    if (sortBy === 'price-low') return priceA - priceB;
+    if (sortBy === 'price-high') return priceB - priceA;
+
+    const dateA = new Date(a.date || '').getTime() || Infinity;
+    const dateB = new Date(b.date || '').getTime() || Infinity;
+
+    return dateA - dateB;
+  });
+
+  return filtered;
+}, [
+  events,
+  searchQuery,
+  selectedGenre,
+  selectedBranch,
+  selectedLevel,
+  priceFilter,
+  sortBy,
+]);
+
+const hasActiveFilters =
+  searchQuery || selectedGenre || selectedBranch ||
+  selectedLevel || priceFilter;
+
+const resetAllFilters = () => {
+  setSearchQuery('');
+  setSelectedGenre('');
+  setSelectedBranch('');
+  setSelectedLevel('');
+  setPriceFilter('');
+  setSortBy('soonest');
+};
 
   const handleOpenWorkshop = (ev) => {
     setSelectedWorkshop(ev);
