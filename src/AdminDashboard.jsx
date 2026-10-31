@@ -17,7 +17,13 @@ const emptyWorkshopForm = {
   song: '',
   location: 'Valasaravakkam Studio, Chennai',
 
-  agenda: '',
+agenda: `Who Can Participate?
+
+Guest Name:
+
+Special Activities:
+
+Workshop Highlights:`,
   participants: '',
   guestName: '',
   specialActivities: '',
