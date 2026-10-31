@@ -182,6 +182,14 @@ const DEFAULT_BRANCH_LIST = [
   },
 ];
 
+
+
+const SPECIFIC_BRANCHES = [
+  "Valasaravakkam",
+  "Pondicherry",
+  "Kolapakkam"
+];
+
 function App() {
   const [events, setEvents] = useState([]);
   const [branches, setBranches] = useState(DEFAULT_BRANCH_LIST);
