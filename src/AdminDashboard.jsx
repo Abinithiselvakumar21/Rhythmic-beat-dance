@@ -16,13 +16,10 @@ const emptyWorkshopForm = {
   level: 'Beginner & Intermediate Friendly',
   song: '',
   location: 'Valasaravakkam Studio, Chennai',
-  agenda: `Who Can Participate?
-
-Guest Name:
-
-Special Activities:
-
-Workshop Highlights:`,
+  participants: '',
+  guestName: '',
+  specialActivities: '',
+  highlights: '',
   status: 'Upcoming',
   slots: 20,
   prize: '₹1,000',
@@ -1645,20 +1642,6 @@ function AdminDashboard() {
   <label htmlFor="form-agenda" className="highlight-label">
     ✨ What Happens in This Workshop (Session Flow / Agenda) *
   </label>
-
-  <textarea
-    id="form-agenda"
-    name="agenda"
-    rows="10"
-    required
-    value={form.agenda}
-    onChange={handleFormChange}
-    placeholder="Enter workshop session flow and details..."
-  />
-
-  <small className="field-hint">
-    Enter the details under each heading.
-  </small>
 
 </div>
 
