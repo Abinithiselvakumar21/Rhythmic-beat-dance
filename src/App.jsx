@@ -186,7 +186,7 @@ const DEFAULT_BRANCH_LIST = [
 
 const SPECIFIC_BRANCHES = [
   "Valasaravakkam",
-  "Pondicherry",
+  "Ambattur",
   "Kolapakkam"
 ];
 
@@ -202,6 +202,7 @@ function App() {
   const [selectedWorkshop, setSelectedWorkshop] = useState(null);
   const [selectedGenre, setSelectedGenre] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedBranch, setSelectedBranch] = useState('');
 
   // Booking Modal State
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
