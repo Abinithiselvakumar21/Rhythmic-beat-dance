@@ -102,9 +102,7 @@ const TOPIC_CURRICULUM_TEMPLATES = {
   },
 };
 
-function getTopicRelevantAgenda(workshop) {
- 
-}
+
 
 // Dance Workshop Specific Categories
 const WORKSHOP_GENRES = [
@@ -822,6 +820,8 @@ const resetAllFilters = () => {
     <p>{selectedWorkshop.highlights}</p>
   </div>
 )}
+                </div>
+              </div>
 
               {/* BOOKING POPUP MODAL */}
               {isBookingModalOpen && (
