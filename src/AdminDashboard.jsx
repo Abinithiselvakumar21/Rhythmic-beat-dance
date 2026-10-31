@@ -8,7 +8,7 @@ const BRANCHES_API = `${SERVER}/api/branches`;
 const UPLOAD_API = `${SERVER}/api/upload`;
 const STUDIO_PHONE = '919994716471';
 
-// Pre-defined Curricula by Dance Style / Topic
+// Workshop Form
 const emptyWorkshopForm = {
   title: '',
   description: '',
@@ -16,19 +16,13 @@ const emptyWorkshopForm = {
   level: 'Beginner & Intermediate Friendly',
   song: '',
   location: 'Valasaravakkam Studio, Chennai',
-
-agenda: `Who Can Participate?
+  agenda: `Who Can Participate?
 
 Guest Name:
 
 Special Activities:
 
 Workshop Highlights:`,
-  participants: '',
-  guestName: '',
-  specialActivities: '',
-  highlights: '',
-
   status: 'Upcoming',
   slots: 20,
   prize: '₹1,000',
@@ -1645,7 +1639,9 @@ function AdminDashboard() {
 
                 {/* TOPIC-RELEVANT CURRICULUM SELECTOR */}
               {/* WORKSHOP SESSION FLOW */}
+{/* WORKSHOP SESSION FLOW / AGENDA */}
 <div className="form-field full-width topic-curriculum-box">
+
   <label htmlFor="form-agenda" className="highlight-label">
     ✨ What Happens in This Workshop (Session Flow / Agenda) *
   </label>
@@ -1653,16 +1649,17 @@ function AdminDashboard() {
   <textarea
     id="form-agenda"
     name="agenda"
-    rows="6"
+    rows="10"
     required
-    placeholder="Enter the complete workshop session flow..."
     value={form.agenda}
     onChange={handleFormChange}
+    placeholder="Enter workshop session flow and details..."
   />
 
   <small className="field-hint">
-    Manually enter the workshop schedule and activities.
+    Enter the details under each heading.
   </small>
+
 </div>
 
 {/* WHO CAN PARTICIPATE */}
