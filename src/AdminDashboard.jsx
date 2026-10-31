@@ -12,6 +12,7 @@ const STUDIO_PHONE = '919994716471';
 const emptyWorkshopForm = {
   title: '',
   description: '',
+  agenda: '',
   instructor: 'Master Choreographer Rahul & RB Crew',
   level: 'Beginner & Intermediate Friendly',
   song: '',
@@ -1626,6 +1627,26 @@ function AdminDashboard() {
 
                 {/* TOPIC-RELEVANT CURRICULUM SELECTOR */}
               {/* WORKSHOP SESSION FLOW */}
+
+
+              {/* WORKSHOP SESSION FLOW / AGENDA */}
+<div className="form-field full-width">
+  <label htmlFor="form-agenda" className="highlight-label">
+    What Happens in This Workshop (Session Flow / Agenda)
+  </label>
+
+  <textarea
+    id="form-agenda"
+    name="agenda"
+    rows="5"
+    placeholder="Enter workshop session flow, one activity per line..."
+    value={form.agenda || ''}
+    onChange={handleFormChange}
+  />
+</div>
+
+
+
 {/* WORKSHOP SESSION FLOW / AGENDA */}
 {/* WHO CAN PARTICIPATE */}
 <div className="form-field full-width">
