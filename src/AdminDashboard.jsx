@@ -1622,17 +1622,7 @@ function AdminDashboard() {
                 </div>
 
                 {/* Workshop Description */}
-                <div className="form-field full-width">
-                  <label htmlFor="form-description">Short Workshop Description</label>
-                  <textarea
-                    id="form-description"
-                    name="description"
-                    rows="2"
-                    placeholder="Overview of the choreography routine, musicality nuances, and performance training..."
-                    value={form.description}
-                    onChange={handleFormChange}
-                  />
-                </div>
+           
 
                 {/* TOPIC-RELEVANT CURRICULUM SELECTOR */}
               {/* WORKSHOP SESSION FLOW */}
