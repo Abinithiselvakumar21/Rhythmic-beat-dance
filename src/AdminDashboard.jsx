@@ -1649,6 +1649,8 @@ function AdminDashboard() {
 
 {/* WORKSHOP SESSION FLOW / AGENDA */}
 {/* WHO CAN PARTICIPATE */}
+<div className="form-field full-width">
+   
   <label htmlFor="form-participants">👥 Who Can Participate?</label>
   <textarea
     id="form-participants"
