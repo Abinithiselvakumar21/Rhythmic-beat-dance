@@ -672,7 +672,7 @@ const resetAllFilters = () => {
                 </div>
 
                 {/* RIGHT: WORKSHOP DETAILS & CURRICULUM */}
-                <div className="premium-info-col">
+                <div className="premium-info-col">                     
                   {/* Genre Tag & Level */}
                   <div className="title-tags-row">
                     <span className="genre-tag-pill">
@@ -687,7 +687,7 @@ const resetAllFilters = () => {
 
                   {/* Song Badge */}
                   <div className="premium-song-box">
-<span className="song-badge-icon"><Music2 size={22} /></span>                    <div>
+                           <span className="song-badge-icon"><Music2 size={22} /></span>                    <div>
                       <small>OFFICIAL CHOREOGRAPHY TRACK</small>
                       <strong>{formatSongName(selectedWorkshop.song)}</strong>
                     </div>
@@ -695,25 +695,25 @@ const resetAllFilters = () => {
 
                   {/* Lead Faculty Card */}
                   <div className="premium-mentor-card">
-<div className="mentor-avatar-badge"><Users size={22} /></div>                    <div>
+                            <div className="mentor-avatar-badge"><Users size={22} /></div>                    <div>
                       <small>LEAD FACULTY & CHOREOGRAPHER</small>
                       <strong>{selectedWorkshop.instructor || 'Master Choreographer Rahul & RB Crew'}</strong>
                     </div>
                   </div>
 
                   {/* Key Highlights Grid (Clean soft cards) */}
-<div className="premium-specs-grid">
+                   <div className="premium-specs-grid">
 
-  {/* EVENT DATE */}
-  <div className="spec-card">
-    <span className="spec-icon">
-      <CalendarDays size={22} />
-    </span>
-    <div>
-      <small>EVENT DATE</small>
-      <strong>{selectedWorkshop.date || 'Scheduled Soon'}</strong>
-    </div>
-  </div>
+                       {/* EVENT DATE */}
+                    <div className="spec-card">
+                       <span className="spec-icon">
+                            <CalendarDays size={22} />
+                    </span>
+                   <div>
+                          <small>EVENT DATE</small>
+                      <strong>{selectedWorkshop.date || 'Scheduled Soon'}</strong>
+                    </div>
+                </div>
 
   {/* WORKSHOP TIMING */}
   <div className="spec-card">
@@ -820,6 +820,13 @@ const resetAllFilters = () => {
     <p>{selectedWorkshop.highlights}</p>
   </div>
 )}
+{/* BOOK THE WORKSHOP BUTTON */}
+<button
+  className="premium-book-btn"
+  onClick={() => setIsBookingModalOpen(true)}
+>
+  Book the Workshop
+</button>
                 </div>
               </div>
 
