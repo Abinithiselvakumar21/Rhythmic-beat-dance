@@ -224,6 +224,7 @@ function App() {
 
 
 
+
 function AppContent() {
   const { workshopId } = useParams();
   const navigate = useNavigate();
@@ -296,21 +297,32 @@ const [sortBy, setSortBy] = useState('soonest');
 
   // Sync hash routing with selected workshop
 
-// Sync selected workshop with the individual workshop URL
-useEffect(() => {
-  if (!workshopId) {
-    setSelectedWorkshop(null);
-    return;
-  }
+  // Sync selected workshop with both URL params (/workshop/:workshopId) and hash (#ws-:id)
+  useEffect(() => {
+    function resolveTargetWorkshop() {
+      const hash = window.location.hash || '';
+      let targetId = workshopId;
+      if (!targetId && hash.startsWith('#ws-')) {
+        targetId = hash.replace('#ws-', '');
+      }
 
-  const found = events.find(
-    (event) => String(event._id) === String(workshopId)
-  );
+      if (!targetId) {
+        if (!workshopId && !hash.startsWith('#ws-')) {
+          setSelectedWorkshop(null);
+        }
+        return;
+      }
 
-  if (found) {
-    setSelectedWorkshop(found);
-  }
-}, [workshopId, events]);
+      const found = events.find((ev) => String(ev._id) === String(targetId));
+      if (found) {
+        setSelectedWorkshop(found);
+      }
+    }
+
+    resolveTargetWorkshop();
+    window.addEventListener('hashchange', resolveTargetWorkshop);
+    return () => window.removeEventListener('hashchange', resolveTargetWorkshop);
+  }, [workshopId, events]);
 
   const pathname = window.location.pathname.replace(/\/+$/, '') || '/';
 
@@ -344,11 +356,6 @@ const filteredEvents = useMemo(() => {
 
    
 
-    // Studio Branch
-    const matchesBranch =
-      !selectedBranch ||
-      (ev.location || '').toLowerCase().includes(selectedBranch.toLowerCase());
-
     // Skill Level
     const matchesLevel =
       !selectedLevel ||
@@ -365,7 +372,6 @@ const filteredEvents = useMemo(() => {
 
     return (
       matchesSearch &&
-      matchesBranch &&
       matchesLevel &&
       matchesPrice
     );
@@ -393,20 +399,16 @@ const filteredEvents = useMemo(() => {
 }, [
   events,
   searchQuery,
-  selectedGenre,
-  selectedBranch,
   selectedLevel,
   priceFilter,
   sortBy,
 ]);
 
 const hasActiveFilters =
-  searchQuery || selectedBranch ||
-  selectedLevel || priceFilter;
+  searchQuery || selectedLevel || priceFilter;
 
 const resetAllFilters = () => {
   setSearchQuery('');
-  setSelectedBranch('');
   setSelectedLevel('');
   setPriceFilter('');
   setSortBy('soonest');
@@ -532,55 +534,179 @@ const handleCloseWorkshop = () => {
       </header>
 
       <main>
-        {/* BANNER / HERO SECTION */}
-        
-        {/* NEW HERO BANNER */}
-        {!workshopId && (
-<section className="rb-hero" id="home">
-  <div className="rb-hero-overlay"></div>
+        {/* BANNER / HERO SECTION (Modern Light Aesthetic, No Black Background, Right Side Spotlight Pass) */}
+        {!selectedWorkshop && !workshopId && (
+          <section className="rb-hero-modern" id="home">
+            <div className="rb-hero-backdrop-glow" aria-hidden="true" />
+            <div className="rb-hero-container">
+              {/* LEFT COLUMN: HERO CONTENT */}
+              <div className="rb-hero-text-col">
+                <div className="rb-hero-pill-badge">
+                  <span className="badge-dot">●</span>
+                  <span>THE STAGE IS YOURS • CHENNAI</span>
+                </div>
 
-  <div className="rb-hero-content">
-    <div className="rb-hero-badge">
-      <span>●</span> RHYTHMIC BEAT DANCE COURT · SINCE 2003
-    </div>
+                <h1 className="rb-hero-heading">
+                  FEEL THE <span className="highlight-beat">BEAT.</span>
+                  <br />
+                  OWN THE STAGE.
+                </h1>
 
-    <h1 className="rb-hero-title">
-      LET UR BODY
-      <span>SPEAK.</span>
-    </h1>
+                <p className="rb-hero-subtext">
+                  Welcome to Rhythmic Beat Dance Court. Experience masterclass choreography,
+                  high-energy workshops, and professional stage training led by industry-leading dancers.
+                </p>
 
-    <p className="rb-hero-description">
-      Dance, fitness & wellness for every age,
-      across Chennai.
-    </p>
+                <div className="rb-hero-cta-group">
+                  <a className="hero-btn-primary" href="#workshops">
+                    EXPLORE WORKSHOPS <ArrowRight size={18} />
+                  </a>
+                  <a
+                    className="hero-btn-secondary"
+                    href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20Rhythmic%20Beat!%20I%20want%20to%20join%20regular%20dance%20batch.`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    JOIN REGULAR BATCH ↗
+                  </a>
+                </div>
 
-    <div className="rb-hero-buttons">
-      <a
-        className="rb-btn-primary"
-        href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%2C%20I%20want%20to%20book%20a%20free%20trial.`}
-        target="_blank"
-        rel="noreferrer"
-      >
-        Book a free trial
-      </a>
+                {/* STATS ROW (FROM SCREENSHOT 2) */}
+                <div className="rb-hero-stats-row">
+                  <div className="stat-item">
+                    <strong>1,500+</strong>
+                    <span>DANCERS TRAINED</span>
+                  </div>
+                  <div className="stat-separator" />
+                  <div className="stat-item">
+                    <strong>3</strong>
+                    <span>CHENNAI STUDIOS</span>
+                  </div>
+                  <div className="stat-separator" />
+                  <div className="stat-item">
+                    <strong>50+</strong>
+                    <span>WORKSHOPS CONDUCTED</span>
+                  </div>
+                </div>
+              </div>
 
-      <a className="rb-btn-secondary" href="#workshops">
-        Upcoming workshops <span>→</span>
-      </a>
-    </div>
+              {/* RIGHT COLUMN: MODERN SPOTLIGHT WORKSHOP CARD (FIXES EMPTY RIGHT SIDE) */}
+              <div className="rb-hero-showcase-col">
+                {events[0] ? (
+                  <div className="hero-spotlight-card">
+                    <div className="spotlight-card-top">
+                      <span className="spotlight-pulse-chip">
+                        <span className="pulse-ping" />
+                        FEATURED MASTERCLASS
+                      </span>
+                      <span className="spotlight-level-chip">
+                        <Target size={14} /> {events[0].level || 'Open Level'}
+                      </span>
+                    </div>
 
-    <a className="rb-next-workshop" href="#workshops">
-<div className="rb-workshop-icon">
-  <Users size={24} />
-</div>      <div>
-        <small>EXPLORE OUR WORKSHOPS</small>
-        <strong>Upcoming Dance Workshops</strong>
-      </div>
-      <span className="rb-workshop-arrow">→</span>
-    </a>
-  </div>
-</section>
-)}
+                    <div className="spotlight-media-frame">
+                      {assetUrl(events[0].image) && !failedImages[events[0]._id] ? (
+                        <img
+                          src={assetUrl(events[0].image)}
+                          alt={events[0].title}
+                          className="spotlight-poster-img"
+                          onError={() =>
+                            setFailedImages((prev) => ({
+                              ...prev,
+                              [events[0]._id]: true,
+                            }))
+                          }
+                        />
+                      ) : (
+                        <div className="spotlight-poster-placeholder">
+                          <Zap size={32} />
+                          <strong>RHYTHMIC BEAT</strong>
+                          <small>MASTERCLASS ARENA</small>
+                        </div>
+                      )}
+                      <div className="spotlight-fee-overlay">
+                        <span>PASS FEE</span>
+                        <strong>{events[0].prize || '₹1,000'}</strong>
+                      </div>
+                    </div>
+
+                    <div className="spotlight-body">
+                      <h3 className="spotlight-title">{events[0].title}</h3>
+
+                      <div className="spotlight-track-pill">
+                        <Music2 size={16} />
+                        <span>Track: {formatSongName(events[0].song)}</span>
+                      </div>
+
+                      <div className="spotlight-specs-compact">
+                        <div className="spec-compact-item">
+                          <CalendarDays size={15} />
+                          <span>{events[0].date || 'Upcoming'}</span>
+                        </div>
+                        <div className="spec-compact-item">
+                          <Clock size={15} />
+                          <span>{events[0].time || 'TBA'}</span>
+                        </div>
+                        <div className="spec-compact-item full">
+                          <MapPin size={15} />
+                          <span>{events[0].location || 'Valasaravakkam Studio, Chennai'}</span>
+                        </div>
+                      </div>
+
+                      {/* Capacity / Slots Remaining bar */}
+                      <div className="spotlight-slots-meter">
+                        <div className="meter-header">
+                          <small>AVAILABILITY</small>
+                          <strong>
+                            {events[0].slots > 0
+                              ? `Only ${events[0].slots} Slots Remaining`
+                              : 'Registration Open'}
+                          </strong>
+                        </div>
+                        <div className="meter-track">
+                          <div
+                            className="meter-fill"
+                            style={{
+                              width: `${Math.max(
+                                15,
+                                Math.min(100, ((20 - (events[0].slots || 10)) / 20) * 100)
+                              )}%`,
+                            }}
+                          />
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        className="spotlight-reserve-btn"
+                        onClick={() => handleOpenWorkshop(events[0])}
+                      >
+                        RESERVE ADMISSION PASS <Ticket size={17} />
+                      </button>
+                    </div>
+
+                    {/* Floating Badges */}
+                    <div className="spotlight-floating-badge badge-top">
+                      <Sparkles size={15} /> 4.9★ Dancer Rating
+                    </div>
+                    <div className="spotlight-floating-badge badge-bottom">
+                      <Video size={15} /> 4K Cinematic Reel Included
+                    </div>
+                  </div>
+                ) : (
+                  <div className="hero-spotlight-fallback">
+                    <div className="fallback-icon-ring">
+                      <Zap size={36} />
+                    </div>
+                    <h3>Intensive Dance Masterclasses</h3>
+                    <p>Learn choreographies from industry masters across Hip-Hop, Folk, Kuthu & Contemporary.</p>
+                    <a href="#workshops" className="fallback-btn">Explore Sessions ↓</a>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* WORKSHOPS & MASTERCLASSES SECTION */}
         <section className="workshops-section" id="workshops">
@@ -611,627 +737,566 @@ const handleCloseWorkshop = () => {
               </button>
             </div>
           ) : selectedWorkshop ? (
-            <>
-         
-           <div className="premium-detail-container">
-  <div className="detail-top-nav">
-    <button
-      type="button"
-      className="premium-back-btn"
-      onClick={handleCloseWorkshop}
-    >
-      ← Back to All Workshops
-    </button>
-
-    <div className="detail-header-badges">
-      <span className="detail-status-pill">
-        ● {selectedWorkshop.status || 'OPEN FOR BOOKING'}
-      </span>
-
-      <span className="detail-branch-pill">
-        <MapPin size={16} />
-        {selectedWorkshop.location || 'Valasaravakkam Studio, Chennai'}
-      </span>
-    </div>
-  </div>
-
-  <div className="premium-card-wrapper">
-
-    {/* LEFT: MAIN WORKSHOP POSTER */}
-    <div className="premium-poster-box">
-      <div className="poster-frame-card">
-        {assetUrl(selectedWorkshop.image) &&
-        !failedImages[selectedWorkshop._id] ? (
-          <>
-            <img
-              src={assetUrl(selectedWorkshop.image)}
-              alt={selectedWorkshop.title}
-              className="poster-bg-blur"
-              aria-hidden="true"
-            />
-
-            <img
-              src={assetUrl(selectedWorkshop.image)}
-              alt={selectedWorkshop.title}
-              className="poster-img"
-              onError={() =>
-                setFailedImages((prev) => ({
-                  ...prev,
-                  [selectedWorkshop._id]: true
-                }))
-              }
-            />
-          </>
-        ) : (
-          <div className="poster-placeholder-brand">
-            <span className="placeholder-icon">
-              <Zap size={28} />
-            </span>
-            <strong>RHYTHMIC BEAT</strong>
-            <small>DANCE COURT</small>
-          </div>
-        )}
-
-        <div className="poster-badge-stamp">
-          <span>OFFICIAL WORKSHOP PASS</span>
-        </div>
-      </div>
-
-      {/* PASS INCLUSIONS */}
-      <div className="poster-inclusions-box">
-        <h4>Pass Inclusions & Perks:</h4>
-        <ul>
-          <li><Video size={17} /> 4K Cinematic Stage Video Shoot</li>
-          <li><Trophy size={17} /> Verified Studio Certificate of Completion</li>
-          <li><Headphones size={17} /> Official Choreography Practice Audio Access</li>
-          <li><Droplets size={17} /> Fully Air-Conditioned Sprung Wooden Floor</li>
-          <li><Camera size={17} /> Professional Group & Solo Photoshoot</li>
-        </ul>
-      </div>
-    </div>
-
-    {/* RIGHT: WORKSHOP DETAILS */}
-    <div className="premium-info-col">
-
-      {/* GENRE AND LEVEL */}
-      <div className="title-tags-row">
-        <span className="genre-tag-pill">
-          <Zap size={16} />
-          {selectedWorkshop.title.toLowerCase().includes('kuthu')
-            ? 'FOLK & KUTHU'
-            : selectedWorkshop.title.toLowerCase().includes('contemporary')
-            ? 'CONTEMPORARY'
-            : selectedWorkshop.title.toLowerCase().includes('battle')
-            ? 'DANCE BATTLE'
-            : 'CHOREOGRAPHY MASTERCLASS'}
-        </span>
-
-        <span className="level-tag-pill">
-          <Target size={16} />
-          {selectedWorkshop.level || 'Beginner & Intermediate Friendly'}
-        </span>
-      </div>
-
-      {/* WORKSHOP TITLE */}
-      <h1 className="premium-title">
-        {selectedWorkshop.title}
-      </h1>
-
-      {/* SONG */}
-      <div className="premium-song-box">
-        <span className="song-badge-icon">
-          <Music2 size={22} />
-        </span>
-        <div>
-          <small>OFFICIAL CHOREOGRAPHY TRACK</small>
-          <strong>{formatSongName(selectedWorkshop.song)}</strong>
-        </div>
-      </div>
-
-      {/* LEAD FACULTY - ICON INSTEAD OF PHOTO */}
-      <div className="premium-mentor-card">
-        <div className="mentor-avatar-badge">
-          <UsersRound size={22} />
-        </div>
-        <div>
-          <small>LEAD FACULTY & CHOREOGRAPHER</small>
-          <strong>
-            {selectedWorkshop.instructor ||
-              'Master Choreographer Rahul & RB Crew'}
-          </strong>
-        </div>
-      </div>
-
-      {/* EVENT DETAILS */}
-      <div className="premium-specs-grid">
-
-        <div className="spec-card">
-          <span className="spec-icon">
-            <CalendarDays size={22} />
-          </span>
-          <div>
-            <small>EVENT DATE</small>
-            <strong>{selectedWorkshop.date || 'Scheduled Soon'}</strong>
-          </div>
-        </div>
-
-        <div className="spec-card">
-          <span className="spec-icon">
-            <Clock size={22} />
-          </span>
-          <div>
-            <small>WORKSHOP TIMING</small>
-            <strong>{selectedWorkshop.time || 'Schedule TBA'}</strong>
-          </div>
-        </div>
-
-        <div className="spec-card">
-          <span className="spec-icon">
-            <MapPin size={22} />
-          </span>
-          <div>
-            <small>STUDIO VENUE</small>
-            <strong>
-              {selectedWorkshop.location ||
-                'Valasaravakkam Studio, Chennai'}
-            </strong>
-          </div>
-        </div>
-
-        <div className="spec-card">
-          <span className="spec-icon">
-            <Zap size={22} />
-          </span>
-          <div>
-            <small>SLOTS REMAINING</small>
-            <strong className="slots-text-highlight">
-              {selectedWorkshop.slots > 0
-                ? `${selectedWorkshop.slots} Slots Left`
-                : 'Open Registration'}
-            </strong>
-          </div>
-        </div>
-
-      </div>
-
-      {/* DESCRIPTION */}
-      <div className="premium-desc-block">
-        <h3>About The Workshop</h3>
-        <p>
-          {selectedWorkshop.description ||
-            'Get ready to learn an explosive choreography piece with master techniques, musicality nuances, dynamic body control, and confidence on stage.'}
-        </p>
-      </div>
-
-      {/* SESSION FLOW */}
-      {selectedWorkshop.agenda?.trim() && (
-        <div className="premium-agenda-block">
-          <div className="agenda-block-header">
-            <div>
-              <span className="agenda-kicker-tag">
-                SESSION FLOW & BREAKDOWN
-              </span>
-              <h3>What Happens in This Workshop</h3>
-            </div>
-          </div>
-
-          <div className="premium-timeline-list">
-            {selectedWorkshop.agenda
-              .split('\n')
-              .filter((line) => line.trim())
-              .map((line, idx) => (
-                <div key={idx} className="premium-timeline-card">
-                  <div className="timeline-num-box">
-                    <span className="timeline-icon">
-                      <Music2 size={20} />
-                    </span>
-                    <small>Phase 0{idx + 1}</small>
-                  </div>
-
-                  <div className="timeline-body">
-                    <p>{line}</p>
-                  </div>
-                </div>
-              ))}
-          </div>
-        </div>
-      )}
-
-      {/* EXTRA WORKSHOP DETAILS */}
-      <div className="workshop-extra-grid">
-
-        {selectedWorkshop.participants?.trim() && (
-          <div className="premium-agenda-block">
-            <h3>
-              <UsersRound size={20} />
-              Who Can Participate?
-            </h3>
-            <p>{selectedWorkshop.participants}</p>
-          </div>
-        )}
-
-        {selectedWorkshop.guestName?.trim() && (
-          <div className="premium-agenda-block">
-            <h3>
-              <Music2 size={20} />
-              Guest Name
-            </h3>
-            <p>{selectedWorkshop.guestName}</p>
-          </div>
-        )}
-
-        {selectedWorkshop.specialActivities?.trim() && (
-          <div className="premium-agenda-block">
-            <h3>
-              <Zap size={20} />
-              Special Activities
-            </h3>
-            <p>{selectedWorkshop.specialActivities}</p>
-          </div>
-        )}
-
-        {selectedWorkshop.highlights?.trim() && (
-          <div className="premium-agenda-block">
-            <h3>
-              <Trophy size={20} />
-              Workshop Highlights
-            </h3>
-            <p>{selectedWorkshop.highlights}</p>
-          </div>
-        )}
-
-      </div>
-
-      {/* BOOKING BUTTON - EXISTING FLOW PRESERVED */}
-      <button
-        className="premium-book-btn"
-        onClick={() => setIsBookingModalOpen(true)}
-      >
-        Book the Workshop
-      </button>
-
-    </div>
-  </div>
-</div>
-
-
-              {/* BOOKING POPUP MODAL */}
-              {isBookingModalOpen && (
-                <div
-                  className="modal-overlay"
-                  onClick={() => setIsBookingModalOpen(false)}
+            /* =========================================
+               WORKSHOP DETAIL VIEW (REDESIGNED MATCHING SCREENSHOT 1 & 2-COLUMN PASS)
+               ========================================= */
+            <div className="premium-detail-container">
+              <div className="detail-top-nav">
+                <button
+                  type="button"
+                  className="premium-back-btn"
+                  onClick={handleCloseWorkshop}
                 >
-                  <div
-                    className="booking-modal-card"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <button
-                      type="button"
-                      className="modal-close-btn"
-                      aria-label="Close booking popup"
-                      onClick={() => setIsBookingModalOpen(false)}
-                    >
-                      ✕
-                    </button>
+                  ← Back to All Workshops
+                </button>
+
+                <div className="detail-header-badges">
+                  <span className="detail-status-pill">
+                    ● {selectedWorkshop.status || 'OPEN FOR BOOKING'}
+                  </span>
+                  <span className="detail-branch-pill">
+                    <MapPin size={16} />
+                    {selectedWorkshop.location || 'Valasaravakkam Studio, Chennai'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="detail-columns-layout">
+                {/* LEFT COLUMN: WORKSHOP MEDIA, TITLE, SPECS & CURRICULUM */}
+                <div className="detail-left-content">
+                  {/* MAIN POSTER / IMAGE */}
+                  <div className="detail-poster-wrapper">
+                    {assetUrl(selectedWorkshop.image) && !failedImages[selectedWorkshop._id] ? (
+                      <div className="poster-frame-clean">
+                        <img
+                          src={assetUrl(selectedWorkshop.image)}
+                          alt={selectedWorkshop.title}
+                          className="poster-img-clean"
+                          onError={() =>
+                            setFailedImages((prev) => ({
+                              ...prev,
+                              [selectedWorkshop._id]: true,
+                            }))
+                          }
+                        />
+                        <div className="poster-badge-floating">
+                          <Ticket size={15} /> OFFICIAL WORKSHOP PASS
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="poster-placeholder-clean">
+                        <Zap size={32} />
+                        <strong>RHYTHMIC BEAT</strong>
+                        <small>DANCE COURT</small>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* TITLE & TAGS */}
+                  <div className="detail-title-section">
+                    <div className="detail-tags-row">
+                      <span className="tag-pill genre">
+                        <Zap size={14} />
+                        {selectedWorkshop.title.toLowerCase().includes('kuthu')
+                          ? 'FOLK & KUTHU'
+                          : selectedWorkshop.title.toLowerCase().includes('contemporary')
+                          ? 'CONTEMPORARY'
+                          : selectedWorkshop.title.toLowerCase().includes('battle')
+                          ? 'DANCE BATTLE'
+                          : 'CHOREOGRAPHY MASTERCLASS'}
+                      </span>
+                      <span className="tag-pill level">
+                        <Target size={14} />
+                        {selectedWorkshop.level || 'Beginner & Intermediate Friendly'}
+                      </span>
+                    </div>
+
+                    <h1 className="detail-main-title">{selectedWorkshop.title}</h1>
+                  </div>
+
+                  {/* SPECS GRID WITH CRISP LUCIDE ICONS (NO PLACEHOLDER SVG IMAGES) */}
+                  <div className="detail-specs-grid">
+                    <div className="spec-card-modern">
+                      <div className="spec-icon-box calendar">
+                        <CalendarDays size={20} />
+                      </div>
+                      <div>
+                        <small>EVENT DATE</small>
+                        <strong>{selectedWorkshop.date || 'Scheduled Soon'}</strong>
+                      </div>
+                    </div>
+
+                    <div className="spec-card-modern">
+                      <div className="spec-icon-box clock">
+                        <Clock size={20} />
+                      </div>
+                      <div>
+                        <small>WORKSHOP TIME</small>
+                        <strong>{selectedWorkshop.time || 'Schedule TBA'}</strong>
+                      </div>
+                    </div>
+
+                    <div className="spec-card-modern">
+                      <div className="spec-icon-box venue">
+                        <MapPin size={20} />
+                      </div>
+                      <div>
+                        <small>STUDIO VENUE</small>
+                        <strong>{selectedWorkshop.location || 'Valasaravakkam Studio, Chennai'}</strong>
+                      </div>
+                    </div>
+
+                    <div className="spec-card-modern">
+                      <div className="spec-icon-box slots">
+                        <Zap size={20} />
+                      </div>
+                      <div>
+                        <small>AVAILABLE SLOTS</small>
+                        <strong className="slots-alert-text">
+                          {selectedWorkshop.slots > 0
+                            ? `${selectedWorkshop.slots} Slots Left`
+                            : 'Open Registration'}
+                        </strong>
+                      </div>
+                    </div>
+
+                    <div className="spec-card-modern">
+                      <div className="spec-icon-box duration">
+                        <Timer size={20} />
+                      </div>
+                      <div>
+                        <small>DURATION</small>
+                        <strong>{selectedWorkshop.duration || '2.5 Hours Masterclass'}</strong>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* OFFICIAL WORKSHOP TRACK */}
+                  <div className="detail-track-card">
+                    <div className="track-icon-box">
+                      <Music2 size={24} />
+                    </div>
+                    <div className="track-info">
+                      <small>OFFICIAL WORKSHOP TRACK</small>
+                      <strong>{formatSongName(selectedWorkshop.song)}</strong>
+                      <p>Learn authentic musicality, beat pockets, and speed variations.</p>
+                    </div>
+                  </div>
+
+                  {/* LEAD FACULTY */}
+                  <div className="detail-mentor-card">
+                    <div className="mentor-icon-box">
+                      <UsersRound size={24} />
+                    </div>
+                    <div className="mentor-info">
+                      <small>LEAD FACULTY & CHOREOGRAPHER</small>
+                      <strong>
+                        {selectedWorkshop.instructor || 'Master Choreographer Rahul & RB Crew'}
+                      </strong>
+                    </div>
+                  </div>
+
+                  {/* ABOUT THE WORKSHOP */}
+                  <div className="detail-info-block">
+                    <h3>About The Workshop</h3>
+                    <p>
+                      {selectedWorkshop.description ||
+                        'Get ready to learn an explosive choreography piece with master techniques, musicality nuances, dynamic body control, and confidence on stage.'}
+                    </p>
+                  </div>
+
+                  {/* WHAT HAPPENS IN THIS WORKSHOP (SESSION CURRICULUM FLOW) */}
+                  {selectedWorkshop.agenda?.trim() && (
+                    <div className="detail-agenda-block">
+                      <div className="agenda-title-wrap">
+                        <span className="agenda-subtag">SESSION FLOW & CURRICULUM</span>
+                        <h3>What Happens in This Workshop</h3>
+                      </div>
+                      <div className="agenda-timeline-cards">
+                        {selectedWorkshop.agenda
+                          .split('\n')
+                          .filter((l) => l.trim())
+                          .map((line, idx) => (
+                            <div key={idx} className="timeline-step-card">
+                              <div className="step-badge">
+                                <span>Phase 0{idx + 1}</span>
+                              </div>
+                              <p className="step-text">{line}</p>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* PASS INCLUSIONS & PERKS */}
+                  <div className="detail-inclusions-card">
+                    <h3>Pass Inclusions & Perks</h3>
+                    <ul className="inclusions-icon-list">
+                      <li>
+                        <Video size={18} className="inc-icon video" />
+                        <div>
+                          <strong>4K Cinematic Stage Video Shoot</strong>
+                          <span>Professionally captured stage lighting reel for your portfolio & Instagram.</span>
+                        </div>
+                      </li>
+                      <li>
+                        <Trophy size={18} className="inc-icon trophy" />
+                        <div>
+                          <strong>Verified Studio Certificate</strong>
+                          <span>Official certification of completion signed by master choreographers.</span>
+                        </div>
+                      </li>
+                      <li>
+                        <Headphones size={18} className="inc-icon audio" />
+                        <div>
+                          <strong>High-Quality Practice Audio Track</strong>
+                          <span>Direct access to speed-controlled choreography audio cuts.</span>
+                        </div>
+                      </li>
+                      <li>
+                        <Droplets size={18} className="inc-icon floor" />
+                        <div>
+                          <strong>Air-Conditioned Sprung Wooden Floor</strong>
+                          <span>Injury-preventive studio flooring engineered for high jumps & knee work.</span>
+                        </div>
+                      </li>
+                      <li>
+                        <Camera size={18} className="inc-icon camera" />
+                        <div>
+                          <strong>High-Resolution Photo Session</strong>
+                          <span>Solo stage poses and mentor group photos delivered after session.</span>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* DRESS CODE & GUIDELINES */}
+                  <div className="detail-info-block">
+                    <h3>Dress Code & Guidelines</h3>
+                    <p>
+                      {selectedWorkshop.requirements ||
+                        'Wear comfortable dancewear or athletic sweatpants and clean indoor dance sneakers. Please bring your personal water bottle and sweat towel.'}
+                    </p>
+                  </div>
+
+                  {/* EXTRA DETAILS: PARTICIPANTS, GUEST, SPECIAL ACTIVITIES, HIGHLIGHTS */}
+                  {(selectedWorkshop.participants?.trim() ||
+                    selectedWorkshop.guestName?.trim() ||
+                    selectedWorkshop.specialActivities?.trim() ||
+                    selectedWorkshop.highlights?.trim()) && (
+                    <div className="detail-extra-grid">
+                      {selectedWorkshop.participants?.trim() && (
+                        <div className="extra-info-card">
+                          <h4><Users size={18} /> Who Can Participate?</h4>
+                          <p>{selectedWorkshop.participants}</p>
+                        </div>
+                      )}
+                      {selectedWorkshop.guestName?.trim() && (
+                        <div className="extra-info-card">
+                          <h4><Music2 size={18} /> Guest Faculty</h4>
+                          <p>{selectedWorkshop.guestName}</p>
+                        </div>
+                      )}
+                      {selectedWorkshop.specialActivities?.trim() && (
+                        <div className="extra-info-card">
+                          <h4><Zap size={18} /> Special Activities</h4>
+                          <p>{selectedWorkshop.specialActivities}</p>
+                        </div>
+                      )}
+                      {selectedWorkshop.highlights?.trim() && (
+                        <div className="extra-info-card">
+                          <h4><Trophy size={18} /> Highlights</h4>
+                          <p>{selectedWorkshop.highlights}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* RIGHT COLUMN: STICKY ADMISSION PASS CARD (EXACTLY LIKE SCREENSHOT 1) */}
+                <div className="detail-sticky-pass-col">
+                  <div className="admission-pass-card">
+                    {/* CARD HEADER */}
+                    <div className="pass-card-header">
+                      <div className="pass-brand-title">
+                        <span className="pass-ticket-icon">
+                          <Ticket size={18} />
+                        </span>
+                        <div>
+                          <h3>ADMISSION PASS</h3>
+                          <small>RHYTHMIC BEAT</small>
+                        </div>
+                      </div>
+                      <div className="pass-fee-badge">
+                        <span className="fee-lbl">FEE</span>
+                        <span className="fee-val">{selectedWorkshop.prize || '1000'}</span>
+                      </div>
+                    </div>
+
+                    {/* PASSES REMAINING WARNING */}
+                    <div className="pass-urgency-banner">
+                      <span className="urgency-dot">●</span>
+                      <span>
+                        {selectedWorkshop.slots > 0
+                          ? `Only ${selectedWorkshop.slots} Passes Remaining!`
+                          : 'Limited Workshop Admission'}
+                      </span>
+                    </div>
 
                     {reserveSuccess ? (
-                      <div className="modal-confirmed-content">
-                        <div className="confirmed-badge">✓ SLOT RESERVED</div>
-                        <h3>Pass Claimed Successfully!</h3>
-                        <p className="confirmed-desc">
-                          Your pass code is <strong>#{ticketId}</strong>. We've saved your registration to our database and opened WhatsApp to finalize your booking with our team.
+                      /* BOOKED CONFIRMATION CARD */
+                      <div className="pass-success-view">
+                        <div className="success-badge-pill">✓ PASS SECURED</div>
+                        <h4>Registration Registered!</h4>
+                        <p>
+                          Your Admission Pass Code is:
+                          <strong className="ticket-code-highlight"> #{ticketId}</strong>
                         </p>
-
-                        <div className="ticket-voucher">
-                          <div className="voucher-row">
+                        <div className="success-receipt-box">
+                          <div className="receipt-row">
                             <span>WORKSHOP:</span>
                             <strong>{selectedWorkshop.title}</strong>
                           </div>
-                          <div className="voucher-row">
+                          <div className="receipt-row">
                             <span>DANCER:</span>
                             <strong>{reserveForm.name}</strong>
                           </div>
-                          <div className="voucher-row">
+                          <div className="receipt-row">
                             <span>PASSES:</span>
                             <strong>{reserveForm.slots} Slot(s)</strong>
-                          </div>
-                          <div className="voucher-row">
-                            <span>LOCATION:</span>
-                            <strong>{selectedWorkshop.location || 'Valasaravakkam Studio, Chennai'}</strong>
                           </div>
                         </div>
 
                         <a
-                          className="whatsapp-reserve-btn"
+                          className="pass-confirm-wa-btn"
                           href={`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(
-                            `Hi RB Dance Court! I have reserved pass #${ticketId} for: ${selectedWorkshop.title}`
+                            `Hi RB Dance Court! I have reserved pass #${ticketId} for ${selectedWorkshop.title}. Please confirm admission.`
                           )}`}
                           target="_blank"
                           rel="noreferrer"
                         >
-<MessageCircle size={18} /> Send Pass via WhatsApp                        </a>
+                          <MessageCircle size={18} /> Confirm Pass on WhatsApp
+                        </a>
 
                         <button
                           type="button"
-                          className="reset-form-btn"
-                          onClick={() => {
-                            setReserveSuccess(false);
-                            setIsBookingModalOpen(false);
-                          }}
+                          className="pass-new-booking-btn"
+                          onClick={() => setReserveSuccess(false)}
                         >
-                          Close Window
+                          Reserve Another Pass
                         </button>
                       </div>
                     ) : (
-                      <>
-                        <div className="modal-header">
-                          <span className="modal-tag">ADMISSION PASS</span>
-                          <h3>Reserve Your Slot</h3>
-                          <p className="modal-workshop-name">
-                            {selectedWorkshop.title} •{' '}
-                            <span>{selectedWorkshop.prize || '₹1,000'}</span>
-                          </p>
+                      /* DIRECT RESERVATION FORM */
+                      <form className="pass-claim-form" onSubmit={handleReserveSubmit}>
+                        {/* PASS QUANTITY SELECTOR */}
+                        <div className="pass-form-row">
+                          <label className="pass-input-label">Select Quantity of Passes</label>
+                          <div className="pass-count-selector">
+                            {[1, 2, 3, 4].map((num) => (
+                              <button
+                                key={num}
+                                type="button"
+                                className={`pass-qty-btn ${reserveForm.slots === num ? 'active' : ''}`}
+                                onClick={() =>
+                                  setReserveForm({
+                                    ...reserveForm,
+                                    slots: num,
+                                  })
+                                }
+                              >
+                                {num} {num === 1 ? 'Pass' : 'Passes'}
+                              </button>
+                            ))}
+                          </div>
                         </div>
 
-                        <form
-                          className="reserve-form"
-                          onSubmit={handleReserveSubmit}
+                        {/* NAME */}
+                        <div className="pass-form-row">
+                          <label htmlFor="pass-res-name" className="pass-input-label">
+                            Full Name *
+                          </label>
+                          <input
+                            id="pass-res-name"
+                            type="text"
+                            required
+                            placeholder="e.g. Rahul Sharma"
+                            value={reserveForm.name}
+                            onChange={(e) =>
+                              setReserveForm({
+                                ...reserveForm,
+                                name: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+
+                        {/* WHATSAPP */}
+                        <div className="pass-form-row">
+                          <label htmlFor="pass-res-phone" className="pass-input-label">
+                            WhatsApp Number *
+                          </label>
+                          <input
+                            id="pass-res-phone"
+                            type="tel"
+                            required
+                            placeholder="e.g. 9876543210"
+                            value={reserveForm.phone}
+                            onChange={(e) =>
+                              setReserveForm({
+                                ...reserveForm,
+                                phone: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+
+                        {/* EMAIL */}
+                        <div className="pass-form-row">
+                          <label htmlFor="pass-res-email" className="pass-input-label">
+                            Email (Optional)
+                          </label>
+                          <input
+                            id="pass-res-email"
+                            type="email"
+                            placeholder="dancer@gmail.com"
+                            value={reserveForm.email}
+                            onChange={(e) =>
+                              setReserveForm({
+                                ...reserveForm,
+                                email: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+
+                        {/* SUBMIT BUTTON */}
+                        <button
+                          type="submit"
+                          className="pass-submit-btn"
+                          disabled={isSubmittingBooking}
                         >
-                          <div className="form-group">
-                            <label>Quantity of Passes</label>
-                            <div className="slot-quick-selector">
-                              {[1, 2, 3, 4].map((num) => (
-                                <button
-                                  key={num}
-                                  type="button"
-                                  className={`slot-pill-btn ${
-                                    reserveForm.slots === num ? 'active' : ''
-                                  }`}
-                                  onClick={() =>
-                                    setReserveForm({
-                                      ...reserveForm,
-                                      slots: num,
-                                    })
-                                  }
-                                >
-                                  {num} {num === 1 ? 'Pass' : 'Passes'}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-
-                          <div className="form-group">
-                            <label htmlFor="modal-name">Full Name *</label>
-                            <input
-                              id="modal-name"
-                              type="text"
-                              placeholder="e.g. Rahul Sharma"
-                              required
-                              value={reserveForm.name}
-                              onChange={(e) =>
-                                setReserveForm({
-                                  ...reserveForm,
-                                  name: e.target.value,
-                                })
-                              }
-                            />
-                          </div>
-
-                          <div className="form-group">
-                            <label htmlFor="modal-phone">WhatsApp Number *</label>
-                            <input
-                              id="modal-phone"
-                              type="tel"
-                              placeholder="e.g. 9876543210"
-                              required
-                              value={reserveForm.phone}
-                              onChange={(e) =>
-                                setReserveForm({
-                                  ...reserveForm,
-                                  phone: e.target.value,
-                                })
-                              }
-                            />
-                          </div>
-
-                          <div className="form-group">
-                            <label htmlFor="modal-email">Email (Optional)</label>
-                            <input
-                              id="modal-email"
-                              type="email"
-                              placeholder="dancer@gmail.com"
-                              value={reserveForm.email}
-                              onChange={(e) =>
-                                setReserveForm({
-                                  ...reserveForm,
-                                  email: e.target.value,
-                                })
-                              }
-                            />
-                          </div>
-
-                          <button
-                            type="submit"
-                            className="reserve-submit-btn"
-                            disabled={isSubmittingBooking}
-                          >
-                            {isSubmittingBooking ? (
-                              'SECURING YOUR PASS...'
-                            ) : (
-                              <>
-CONFIRM & CLAIM TICKET <Ticket size={18} />                            </>
-                            )}
-                          </button>
-                        </form>
-
-                        <div className="modal-footer-help">
-                          <p>
-                            Have queries?{' '}
-                            <a
-                              href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20RB%20Dance%20Court%2C%20I%20have%20questions%20about%20${encodeURIComponent(
-                                selectedWorkshop.title
-                              )}`}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              Chat on WhatsApp
-                            </a>
-                          </p>
-                        </div>
-                      </>
+                          {isSubmittingBooking ? (
+                            'SECURING YOUR PASS...'
+                          ) : (
+                            <>
+                              CONFIRM & CLAIM PASS <Ticket size={18} />
+                            </>
+                          )}
+                        </button>
+                      </form>
                     )}
+
+                    {/* ASSISTANCE FOOTER */}
+                    <div className="pass-card-footer">
+                      <p>Need assistance or have queries?</p>
+                      <a
+                        href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20RB%20Dance%20Court%2C%20I%20have%20questions%20about%20${encodeURIComponent(
+                          selectedWorkshop.title
+                        )}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="pass-coordinator-link"
+                      >
+                        💬 Chat With Studio Coordinator
+                      </a>
+                    </div>
                   </div>
                 </div>
-                 )}
-            </>
+              </div>
+            </div>
           ) : (
             /* =========================================
                WORKSHOPS BROWSER VIEW (SPECIFIC WORKSHOP FILTERS)
                ========================================= */
-            <div className="workshops-browser-layout">
-              {/* LEFT SIDEBAR WITH SPECIFIC FILTERS (NO "All Styles" / "All Branches" pills) */}
-              <aside className="filters-sidebar brand-filters-box">
-                <div className="filter-header">
-                  <h3>Workshop Filters</h3>
-                  {hasActiveFilters && (
+            <div className="workshops-streamlined-browser">
+              {/* CLEAN HORIZONTAL WORKSHOP FILTER TOOLBAR (REPLACED SIDEBAR & REMOVED BRANCH/STYLE AS REQUESTED) */}
+              <div className="workshop-filter-toolbar">
+                {/* Search input */}
+                <div className="toolbar-search-box">
+                  <span className="search-icon"><Search size={18} /></span>
+                  <input
+                    id="workshop-search"
+                    type="text"
+                    className="toolbar-search-input"
+                    placeholder="Search workshop, song track, choreographer..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  {searchQuery && (
                     <button
                       type="button"
-                      className="clear-filters-btn"
-                      onClick={resetAllFilters}
+                      className="search-clear-btn"
+                      onClick={() => setSearchQuery('')}
                     >
-                      Reset All
+                      ✕
                     </button>
                   )}
                 </div>
 
-                {/* Keyword Search */}
-                <div className="filter-block">
-                  <label htmlFor="workshop-search" className="filter-label">
-                    Search Workshop
-                  </label>
-                  <div className="search-input-wrap">
-<span className="search-icon"><Search size={18} /></span>
-                    <input
-                      id="workshop-search"
-                      type="text"
-                      className="filter-search-input"
-                      placeholder="Title, song, choreographer..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                    {searchQuery && (
-                      <button
-                        type="button"
-                        className="search-clear-btn"
-                        onClick={() => setSearchQuery('')}
-                      >
-                        ✕
-                      </button>
-                    )}
-                  </div>
+                {/* Skill Level Pills */}
+                <div className="toolbar-level-pills">
+                  {SKILL_LEVELS.map((lvl) => (
+                    <button
+                      key={lvl}
+                      type="button"
+                      className={`toolbar-pill-btn ${
+                        selectedLevel === lvl || (!selectedLevel && lvl === 'All Levels')
+                          ? 'active'
+                          : ''
+                      }`}
+                      onClick={() =>
+                        setSelectedLevel(lvl === 'All Levels' || selectedLevel === lvl ? '' : lvl)
+                      }
+                    >
+                      {lvl}
+                    </button>
+                  ))}
                 </div>
 
-              
-                {/* Specific Studio Branches (Direct Branches, No "All Branches") */}
-                <div className="filter-block">
-                  <span className="filter-label">Studio Branch</span>
-                  <div className="category-pill-list">
-                    {SPECIFIC_BRANCHES.map((branch) => (
-                      <button
-                        key={branch}
-                        type="button"
-                        className={`category-pill ${
-                          selectedBranch === branch ? 'active' : ''
-                        }`}
-                        onClick={() =>
-                          setSelectedBranch(selectedBranch === branch ? '' : branch)
-                        }
-                      >
-                        {branch}
-                      </button>
-                    ))}
-                  </div>
+                {/* Pass Fee Range Toggle */}
+                <div className="toolbar-fee-toggle">
+                  {[
+                    { id: 'under-1000', label: '≤ ₹1,000' },
+                    { id: 'above-1000', label: '> ₹1,000' },
+                  ].map((p) => (
+                    <button
+                      key={p.id}
+                      type="button"
+                      className={`toolbar-fee-btn ${priceFilter === p.id ? 'active' : ''}`}
+                      onClick={() => setPriceFilter(priceFilter === p.id ? '' : p.id)}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
                 </div>
 
-                {/* Skill Level Filter */}
-                <div className="filter-block">
-                  <span className="filter-label">Skill Level</span>
-                  <div className="category-pill-list">
-                    {SKILL_LEVELS.map((lvl) => (
-                      <button
-                        key={lvl}
-                        type="button"
-                        className={`category-pill ${
-                          selectedLevel === lvl ? 'active' : ''
-                        }`}
-                        onClick={() =>
-                          setSelectedLevel(selectedLevel === lvl ? '' : lvl)
-                        }
-                      >
-                        {lvl}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Pass Fee Filter */}
-                <div className="filter-block">
-                  <span className="filter-label">Pass Fee Range</span>
-                  <div className="status-toggle-group">
-                    {[
-                      { id: 'under-1000', label: '≤ ₹1,000' },
-                      { id: 'above-1000', label: '> ₹1,000' },
-                    ].map((p) => (
-                      <button
-                        key={p.id}
-                        type="button"
-                        className={`status-btn ${
-                          priceFilter === p.id ? 'active' : ''
-                        }`}
-                        onClick={() =>
-                          setPriceFilter(priceFilter === p.id ? '' : p.id)
-                        }
-                      >
-                        {p.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Sort By Dropdown */}
-                <div className="filter-block">
-                  <label htmlFor="sort-select" className="filter-label">
-                    Sort Order
-                  </label>
+                {/* Sort Order Dropdown */}
+                <div className="toolbar-sort-wrap">
                   <select
                     id="sort-select"
-                    className="filter-select-input"
+                    className="toolbar-select-input"
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
                   >
                     <option value="soonest">Date: Upcoming First</option>
-<option value="slots-low">Slots: Fewest Left</option>
-<option value="price-low">Price: Low to High</option>
-<option value="price-high">Price: High to Low</option>
+                    <option value="slots-low">Slots: Fewest Left</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
                   </select>
                 </div>
 
-                {/* Sidebar Help Card */}
-                <div className="sidebar-help-card">
-                  <p className="sidebar-help-title">Private Group Workshop?</p>
-                  <p className="sidebar-help-desc">
-                    We host private team choreography, college dance crews & battle sessions across Chennai.
-                  </p>
-                  <a
-                    href={`https://wa.me/${WHATSAPP_PHONE}?text=Hi%20RB%20Dance%20Court%2C%20I%20am%20looking%20for%20a%20private%20workshop.`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="sidebar-wa-btn"
+                {/* Reset button */}
+                {hasActiveFilters && (
+                  <button
+                    type="button"
+                    className="toolbar-reset-btn"
+                    onClick={resetAllFilters}
                   >
-                    Enquire on WhatsApp ↗
-                  </a>
-                </div>
-              </aside>
+                    Reset Filters
+                  </button>
+                )}
+              </div>
 
               {/* RIGHT MAIN CONTENT: Results Count & Redesigned Workshop Cards */}
               <div className="workshops-main-content">
@@ -1250,17 +1315,6 @@ CONFIRM & CLAIM TICKET <Ticket size={18} />                            </>
 
                   {hasActiveFilters && (
                     <div className="active-tag-pills">
-                      {selectedBranch && (
-                        <span className="active-pill">
-                          {selectedBranch}
-                          <button
-                            type="button"
-                            onClick={() => setSelectedBranch('')}
-                          >
-                            ✕
-                          </button>
-                        </span>
-                      )}
                       {selectedLevel && (
                         <span className="active-pill">
                           {selectedLevel}
@@ -1437,7 +1491,7 @@ RESERVE PASS <Ticket size={17} />
           )}
         </section>
 
-{!workshopId && (
+{!selectedWorkshop && !workshopId && (
   <>
     {/* ABOUT US SECTION */}
 
@@ -1489,7 +1543,7 @@ RESERVE PASS <Ticket size={17} />
   </>
 )}
    
-{!workshopId && (
+{!selectedWorkshop && !workshopId && (
   <>
         {/* REVIEWS & DANCER TESTIMONIALS SECTION */}
         <section className="reviews-section" id="reviews">
@@ -1524,7 +1578,7 @@ RESERVE PASS <Ticket size={17} />
 
 
 
-{!workshopId && (
+{!selectedWorkshop && !workshopId && (
   <>
     {/* OUR BRANCHES */}
     <section className="branches-section" id="branches">
@@ -1569,7 +1623,7 @@ RESERVE PASS <Ticket size={17} />
 )}
 
 
- {!workshopId && (
+ {!selectedWorkshop && !workshopId && (
   <>
     {/* FAQ SECTION */}
     <section className="faq-section" id="faq">

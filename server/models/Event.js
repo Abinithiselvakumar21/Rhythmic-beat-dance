@@ -33,27 +33,46 @@ const eventSchema = new mongoose.Schema(
       type: String,
       default: '', // Detailed workshop flow / what happens in session
     },
-      participants: {
-  type: String,
-  default: '',
-  trim: true,
-},
-guestName: {
-  type: String,
-  default: '',
-  trim: true,
-},
-specialActivities: {
-  type: String,
-  default: '',
-  trim: true,
-},
-highlights: {
-  type: String,
-  default: '',
-  trim: true,
-},
-
+    duration: {
+      type: String,
+      default: '2.5 Hours Masterclass',
+      trim: true,
+    },
+    location: {
+      type: String,
+      default: 'Valasaravakkam Studio, Chennai',
+      trim: true,
+    },
+    inclusions: {
+      type: String,
+      default: '4K Cinematic Stage Video Shoot, Official Studio Certificate, Audio Track Access, Air-Conditioned Sprung Floor',
+      trim: true,
+    },
+    requirements: {
+      type: String,
+      default: 'Comfortable dancewear or sweatpants, clean dance sneakers, personal water bottle',
+      trim: true,
+    },
+    participants: {
+      type: String,
+      default: '',
+      trim: true,
+    },
+    guestName: {
+      type: String,
+      default: '',
+      trim: true,
+    },
+    specialActivities: {
+      type: String,
+      default: '',
+      trim: true,
+    },
+    highlights: {
+      type: String,
+      default: '',
+      trim: true,
+    },
     status: {
       type: String,
       enum: ['Upcoming', 'Ongoing', 'Completed'],

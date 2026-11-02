@@ -8,19 +8,70 @@ const BRANCHES_API = `${SERVER}/api/branches`;
 const UPLOAD_API = `${SERVER}/api/upload`;
 const STUDIO_PHONE = '919994716471';
 
-// Workshop Form
+const TOPIC_CURRICULUM_TEMPLATES = {
+  'Hip-Hop & Urban': {
+    name: 'Hip-Hop & Urban Choreography',
+    agenda: `1. Groove Foundation & Joint Isolations (00:00 - 00:20): Bounce drills, ankle/knee conditioning, neck & chest isolations.
+2. Rhythm & Beat Pocket Breakdown (00:20 - 00:50): Footwork angles, weight transitions, syncopated 8-counts, and hitting the bass pocket.
+3. Flow & Texture Switching (00:50 - 01:30): Transitioning between hard hits (popping) and smooth fluid glide textures.
+4. Group Formations & Stage Energy (01:30 - 02:15): Camera angle awareness, eye focus, synchronization, and crew chemistry.
+5. Cinematic 4K Stage Reel Shoot (02:15 - 02:45): Professional stage lights shoot for your Instagram reels & portfolio.
+6. Feedback, Q&A & Certificate Handover (02:45 - 03:00): Individual posture correction, mentor guidance, and official RB certificate.`,
+  },
+  'Folk & Kuthu': {
+    name: 'Folk & Kuthu Intensive',
+    agenda: `1. High-Energy Stamina Warm-up (00:00 - 00:20): Dappankuthu foot stomp drills, cardio warm-up, and hip flexibility drills.
+2. Authentic Kuthu Steps & Body Flow (00:20 - 00:55): Traditional beats count breakdown, shoulder bounces, and waist movements.
+3. Fast-Tempo Musicality & Expressions (00:55 - 01:35): Tamil mass beats timing, facial expressions, and dynamic punch moves.
+4. Mass Crew Synchronization (01:35 - 02:15): High-speed group performance, battle circle face-off, and whistle moments.
+5. 4K Mass Stage Video Shoot (02:15 - 02:45): High-voltage cinematic video capture with full studio lighting.
+6. Group Photo & Certificate Presentation (02:45 - 03:00): Certificate handover and studio community connect.`,
+  },
+  'Contemporary & Lyrical': {
+    name: 'Contemporary & Lyrical Flow',
+    agenda: `1. Floor-work & Alignment Warm-up (00:00 - 00:25): Spine articulation, hamstring stretches, and center core grounding.
+2. Fluid Extensions & Pirouette Technique (00:25 - 01:05): Breath control, suspension, balance release, and lyrical floor slides.
+3. Emotional Storytelling & Musical Texture (01:05 - 01:45): Translating song lyrics into body language and expressive dynamic movement.
+4. Partner Work & Stage Formation (01:45 - 02:15): Safe weight-sharing techniques and aesthetic stage spacing.
+5. Cinematic 4K Lyrical Showcase Shoot (02:15 - 02:45): Soft-glow stage spotlight recording capturing emotional nuances.
+6. Reflection & Certificate Award (02:45 - 03:00): Mentor feedback on emotional expression and official certificate.`,
+  },
+  'Dance Battle & Freestyle': {
+    name: 'Dance Battle & Cypher Masterclass',
+    agenda: `1. Freestyle Foundations Warm-up (00:00 - 00:20): Freestyle groove, cypher circles, and reaction-time drills.
+2. Battle Concept Breakdown & Musicality (00:20 - 01:00): Hitting unexpected snare/bass drops, round-stealing concepts, and musical pauses.
+3. Call-outs, Mimicry & Stage Presence (01:00 - 01:40): Eye-contact dominance, psychological confidence, and dynamic floor recovery.
+4. Mock 1v1 & 2v2 Battle Cypher (01:40 - 02:20): Live judged battle practice with immediate mentor constructive critique.
+5. 4K Battle Highlight Shoot (02:20 - 02:45): Fast-paced multi-angle battle recording with stage arena lighting.
+6. Battle Honor & Certificate Distribution (02:45 - 03:00): Certificate award, judge tips, and dancer networking.`,
+  },
+  'Bollywood Commercial': {
+    name: 'Bollywood Commercial & Hook-step',
+    agenda: `1. Bollywood Groove Warm-up (00:00 - 00:20): Hook-step body posture, neck movements, and cheerful stage energy warmup.
+2. Hook-step Breakdown & Expressions (00:20 - 01:00): Thumkas, mudras, energetic footwork, and bright theatrical expressions (Navarasa).
+3. Camera-Ready Performance Coaching (01:00 - 01:40): Close-up lip sync, smile projection, and cinematic angles.
+4. Blockbuster Formation Training (01:40 - 02:15): Grand group formation switching and coordinated ensemble flow.
+5. 4K Bollywood Reel Production Shoot (02:15 - 02:45): High-energy studio lights video recording ready for Instagram & YouTube.
+6. Star Certificate & Photo Session (02:45 - 03:00): Official certification and mentor group pictures.`,
+  },
+};
+
+// Workshop Form with Extra Content Fields
 const emptyWorkshopForm = {
   title: '',
   description: '',
   agenda: '',
+  duration: '2.5 Hours Masterclass',
+  inclusions: '4K Cinematic Stage Video Shoot, Official Studio Certificate, Audio Track Access, Air-Conditioned Sprung Floor',
+  requirements: 'Comfortable dancewear or sweatpants, clean dance sneakers, personal water bottle',
   instructor: 'Master Choreographer Rahul & RB Crew',
   level: 'Beginner & Intermediate Friendly',
   song: '',
   location: 'Valasaravakkam Studio, Chennai',
-  participants: '',
+  participants: 'Open to all age groups, beginners and intermediate dancers',
   guestName: '',
-  specialActivities: '',
-  highlights: '',
+  specialActivities: 'Freestyle Cypher, Group 4K Video Shoot, Mentor Feedback',
+  highlights: 'Live stage lights shoot, individual feedback, studio certificate',
   status: 'Upcoming',
   slots: 20,
   prize: '₹1,000',
@@ -402,25 +453,26 @@ function AdminDashboard() {
   function openEditModal(event) {
     setEditingId(event._id);
     setForm({
-     title: event.title || '',
-  description: event.description || '',
-  instructor: event.instructor || 'Master Choreographer Rahul & RB Crew',
-  level: event.level || 'Beginner & Intermediate Friendly',
-  song: event.song || '',
-  location: event.location || 'Valasaravakkam Studio, Chennai',
-
-  agenda: event.agenda || '',
-  participants: event.participants || '',
-  guestName: event.guestName || '',
-  specialActivities: event.specialActivities || '',
-  highlights: event.highlights || '',
-
-  status: event.status || 'Upcoming',
-  slots: event.slots ?? 20,
-  prize: event.prize || '₹1,000',
-  date: event.date || '',
-  time: event.time || '',
-  image: event.image || '',
+      title: event.title || '',
+      description: event.description || '',
+      instructor: event.instructor || 'Master Choreographer Rahul & RB Crew',
+      level: event.level || 'Beginner & Intermediate Friendly',
+      song: event.song || '',
+      location: event.location || 'Valasaravakkam Studio, Chennai',
+      duration: event.duration || '2.5 Hours Masterclass',
+      inclusions: event.inclusions || '4K Cinematic Stage Video Shoot, Official Studio Certificate, Audio Track Access, Air-Conditioned Sprung Floor',
+      requirements: event.requirements || 'Comfortable dancewear or sweatpants, clean dance sneakers, personal water bottle',
+      agenda: event.agenda || '',
+      participants: event.participants || '',
+      guestName: event.guestName || '',
+      specialActivities: event.specialActivities || '',
+      highlights: event.highlights || '',
+      status: event.status || 'Upcoming',
+      slots: event.slots ?? 20,
+      prize: event.prize || '₹1,000',
+      date: event.date || '',
+      time: event.time || '',
+      image: event.image || '',
     });
     setImageFile(null);
     setImagePreview(event.image ? assetUrl(event.image) : '');
@@ -1486,6 +1538,15 @@ function AdminDashboard() {
 
             <form onSubmit={handleWorkshopSubmit} className="saas-modal-form">
               <div className="modal-form-grid">
+                {/* SECTION 1: ESSENTIAL WORKSHOP DETAILS */}
+                <div className="form-section-banner full-width">
+                  <span className="section-step-num">1</span>
+                  <div>
+                    <h4>Core Workshop Details</h4>
+                    <p>Primary information displayed across cards and admission passes</p>
+                  </div>
+                </div>
+
                 {/* Title */}
                 <div className="form-field full-width">
                   <label htmlFor="form-title">Workshop Title *</label>
@@ -1501,7 +1562,7 @@ function AdminDashboard() {
 
                 {/* Song / Track */}
                 <div className="form-field full-width">
-                  <label htmlFor="form-song">Name of the Song / Track *</label>
+                  <label htmlFor="form-song">Choreography Song / Track Name *</label>
                   <input
                     id="form-song"
                     name="song"
@@ -1510,7 +1571,7 @@ function AdminDashboard() {
                     onChange={handleFormChange}
                   />
                   <small className="field-hint">
-                    Song name will be displayed cleanly on the workshop page and card badges.
+                    Displayed prominently on workshop detail pass and music badge.
                   </small>
                 </div>
 
@@ -1535,8 +1596,8 @@ function AdminDashboard() {
                     value={form.level}
                     onChange={handleFormChange}
                   >
-                    <option value="Beginner Friendly">Beginner Friendly</option>
                     <option value="Open Level (Beginner & Intermediate)">Open Level (Beginner & Intermediate)</option>
+                    <option value="Beginner Friendly">Beginner Friendly</option>
                     <option value="Intermediate / Advanced">Intermediate / Advanced</option>
                     <option value="Masterclass Intensive (Pro)">Masterclass Intensive (Pro)</option>
                   </select>
@@ -1557,45 +1618,25 @@ function AdminDashboard() {
                   </select>
                 </div>
 
-                {/* Status */}
+                {/* Duration */}
                 <div className="form-field">
-                  <label htmlFor="form-status">Status</label>
-                  <select
-                    id="form-status"
-                    name="status"
-                    value={form.status}
-                    onChange={handleFormChange}
-                  >
-                    <option value="Upcoming">Upcoming</option>
-                    <option value="Ongoing">Ongoing</option>
-                    <option value="Completed">Completed</option>
-                  </select>
-                </div>
-
-                {/* Slots */}
-                <div className="form-field">
-                  <label htmlFor="form-slots">Available Slots</label>
+                  <label htmlFor="form-duration">Workshop Duration</label>
                   <input
-                    id="form-slots"
-                    name="slots"
-                    type="number"
-                    min="0"
-                    placeholder="20"
-                    value={form.slots}
+                    id="form-duration"
+                    name="duration"
+                    placeholder="e.g. 2.5 Hours Masterclass"
+                    value={form.duration || ''}
                     onChange={handleFormChange}
                   />
                 </div>
 
-                {/* Price / Fee */}
-                <div className="form-field">
-                  <label htmlFor="form-prize">Registration Fee / Pass</label>
-                  <input
-                    id="form-prize"
-                    name="prize"
-                    placeholder="e.g. ₹1,000"
-                    value={form.prize}
-                    onChange={handleFormChange}
-                  />
+                {/* SECTION 2: SCHEDULE, CAPACITY & PASS FEES */}
+                <div className="form-section-banner full-width">
+                  <span className="section-step-num">2</span>
+                  <div>
+                    <h4>Schedule, Capacity & Admission Fee</h4>
+                    <p>Date, time, remaining slots, and admission pass price</p>
+                  </div>
                 </div>
 
                 {/* Date */}
@@ -1622,68 +1663,199 @@ function AdminDashboard() {
                   />
                 </div>
 
-          
+                {/* Slots */}
+                <div className="form-field">
+                  <label htmlFor="form-slots">Available Slots / Capacity</label>
+                  <input
+                    id="form-slots"
+                    name="slots"
+                    type="number"
+                    min="0"
+                    placeholder="20"
+                    value={form.slots}
+                    onChange={handleFormChange}
+                  />
+                </div>
 
+                {/* Price / Fee */}
+                <div className="form-field">
+                  <label htmlFor="form-prize">Admission Pass Fee</label>
+                  <input
+                    id="form-prize"
+                    name="prize"
+                    placeholder="e.g. ₹1,000"
+                    value={form.prize}
+                    onChange={handleFormChange}
+                  />
+                </div>
 
+                {/* Status */}
+                <div className="form-field full-width">
+                  <label htmlFor="form-status">Workshop Status</label>
+                  <select
+                    id="form-status"
+                    name="status"
+                    value={form.status}
+                    onChange={handleFormChange}
+                  >
+                    <option value="Upcoming">Upcoming (Open for Bookings)</option>
+                    <option value="Ongoing">Ongoing (In Session)</option>
+                    <option value="Completed">Completed (Past Session)</option>
+                  </select>
+                </div>
 
+                {/* SECTION 3: CURRICULUM & SESSION FLOW */}
+                <div className="form-section-banner full-width">
+                  <span className="section-step-num">3</span>
+                  <div>
+                    <h4>Curriculum & Session Flow</h4>
+                    <p>Choose a quick dance topic template or write custom phase-by-phase agenda</p>
+                  </div>
+                </div>
 
-{/* WORKSHOP SESSION FLOW / AGENDA */}
-{/* WHO CAN PARTICIPATE */}
-<div className="form-field full-width">
-   
-  <label htmlFor="form-participants">👥 Who Can Participate?</label>
-  <textarea
-    id="form-participants"
-    name="participants"
-    rows="2"
-    placeholder="e.g. Kids, Adults, Beginners, All Age Groups..."
-    value={form.participants}
-    onChange={handleFormChange}
-  />
-</div>
+                {/* Quick Topic Template Dropdown */}
+                <div className="form-field full-width">
+                  <label>⚡ Quick Topic Curriculum Templates (Auto-fills Breakdown)</label>
+                  <div className="topic-template-chips">
+                    {Object.keys(TOPIC_CURRICULUM_TEMPLATES).map((topicKey) => (
+                      <button
+                        key={topicKey}
+                        type="button"
+                        className="template-chip-btn"
+                        onClick={() => handleTopicChange(topicKey)}
+                      >
+                        + {TOPIC_CURRICULUM_TEMPLATES[topicKey].name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-{/* GUEST NAME */}
-<div className="form-field full-width">
-  <label htmlFor="form-guestName">🎤 Guest Name</label>
-  <input
-    id="form-guestName"
-    name="guestName"
-    placeholder="Enter special guest name"
-    value={form.guestName}
-    onChange={handleFormChange}
-  />
-</div>
+                {/* Agenda Textarea */}
+                <div className="form-field full-width">
+                  <label htmlFor="form-agenda">What Happens in This Workshop (Curriculum Agenda)</label>
+                  <textarea
+                    id="form-agenda"
+                    name="agenda"
+                    rows="6"
+                    placeholder="1. Warm-up & isolations&#10;2. Footwork Breakdown&#10;3. High-energy Choreography&#10;4. 4K Cinematic Video Shoot&#10;5. Studio Certificate Award"
+                    value={form.agenda}
+                    onChange={handleFormChange}
+                  />
+                  <small className="field-hint">
+                    Each numbered line will render as an animated phase step on the user workshop page.
+                  </small>
+                </div>
 
-{/* SPECIAL ACTIVITIES */}
-<div className="form-field full-width">
-  <label htmlFor="form-specialActivities">🎬 Special Activities</label>
-  <textarea
-    id="form-specialActivities"
-    name="specialActivities"
-    rows="3"
-    placeholder="e.g. Live choreography, Dance battle, Group performance..."
-    value={form.specialActivities}
-    onChange={handleFormChange}
-  />
-</div>
+                {/* SECTION 4: EXTRA CONTENT & WORKSHOP PERKS */}
+                <div className="form-section-banner full-width">
+                  <span className="section-step-num">4</span>
+                  <div>
+                    <h4>Extra Content & Guidelines (Shows on Public Page)</h4>
+                    <p>Inclusions, dress code, participants eligibility, and special features</p>
+                  </div>
+                </div>
 
-{/* WORKSHOP HIGHLIGHTS */}
-<div className="form-field full-width">
-  <label htmlFor="form-highlights">🌟 Workshop Highlights</label>
-  <textarea
-    id="form-highlights"
-    name="highlights"
-    rows="3"
-    placeholder="Enter the special highlights of this workshop..."
-    value={form.highlights}
-    onChange={handleFormChange}
-  />
-</div>
+                {/* Description / About */}
+                <div className="form-field full-width">
+                  <label htmlFor="form-description">About The Workshop (Overview)</label>
+                  <textarea
+                    id="form-description"
+                    name="description"
+                    rows="3"
+                    placeholder="Enter comprehensive workshop overview and what makes this masterclass unique..."
+                    value={form.description}
+                    onChange={handleFormChange}
+                  />
+                </div>
+
+                {/* Inclusions */}
+                <div className="form-field full-width">
+                  <label htmlFor="form-inclusions">🎁 Pass Inclusions & Perks</label>
+                  <textarea
+                    id="form-inclusions"
+                    name="inclusions"
+                    rows="2"
+                    placeholder="e.g. 4K Cinematic Stage Video Shoot, Official Studio Certificate, Audio Track Access, Air-Conditioned Sprung Floor"
+                    value={form.inclusions}
+                    onChange={handleFormChange}
+                  />
+                </div>
+
+                {/* Requirements / Dress Code */}
+                <div className="form-field full-width">
+                  <label htmlFor="form-requirements">👟 Dress Code & Requirements</label>
+                  <textarea
+                    id="form-requirements"
+                    name="requirements"
+                    rows="2"
+                    placeholder="e.g. Comfortable dancewear or sweatpants, clean dance sneakers, personal water bottle"
+                    value={form.requirements}
+                    onChange={handleFormChange}
+                  />
+                </div>
+
+                {/* Who Can Participate */}
+                <div className="form-field full-width">
+                  <label htmlFor="form-participants">👥 Who Can Participate?</label>
+                  <input
+                    id="form-participants"
+                    name="participants"
+                    placeholder="e.g. Open to all age groups, beginners and intermediate dancers"
+                    value={form.participants}
+                    onChange={handleFormChange}
+                  />
+                </div>
+
+                {/* Guest Name */}
+                <div className="form-field">
+                  <label htmlFor="form-guestName">🎤 Guest Choreographer / Special Mention</label>
+                  <input
+                    id="form-guestName"
+                    name="guestName"
+                    placeholder="Enter special guest faculty name (if any)"
+                    value={form.guestName}
+                    onChange={handleFormChange}
+                  />
+                </div>
+
+                {/* Special Activities */}
+                <div className="form-field">
+                  <label htmlFor="form-specialActivities">🎬 Special Activities</label>
+                  <input
+                    id="form-specialActivities"
+                    name="specialActivities"
+                    placeholder="e.g. Freestyle Cypher, 1v1 Mock Battle, Q&A"
+                    value={form.specialActivities}
+                    onChange={handleFormChange}
+                  />
+                </div>
+
+                {/* Highlights */}
+                <div className="form-field full-width">
+                  <label htmlFor="form-highlights">🌟 Workshop Highlights & Key Takeaways</label>
+                  <textarea
+                    id="form-highlights"
+                    name="highlights"
+                    rows="2"
+                    placeholder="e.g. Stage lighting rehearsal, slow-motion choreography breakdown, high-energy community vibe"
+                    value={form.highlights}
+                    onChange={handleFormChange}
+                  />
+                </div>
+
+                {/* SECTION 5: POSTER IMAGE */}
+                <div className="form-section-banner full-width">
+                  <span className="section-step-num">5</span>
+                  <div>
+                    <h4>Workshop Poster / Flyer</h4>
+                    <p>Upload flyer image or provide an image URL</p>
+                  </div>
+                </div>
 
                 {/* Poster Image File */}
                 <div className="form-field full-width">
                   <label htmlFor="form-image-file">
-                    Workshop Poster Image (JPG, PNG, WEBP)
+                    Upload Poster Image (JPG, PNG, WEBP)
                   </label>
                   <input
                     id="form-image-file"
