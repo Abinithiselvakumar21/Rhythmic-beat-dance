@@ -214,6 +214,8 @@ function App() {
       <Routes>
         <Route path="/" element={<AppContent />} />
         <Route path="/workshop/:workshopId" element={<AppContent />} />
+        <Route path="/admin" element={<AppContent />} />
+        <Route path="/admin-dashboard" element={<AppContent />} />
       </Routes>
     </BrowserRouter>
   );
@@ -292,29 +294,22 @@ const [sortBy, setSortBy] = useState('soonest');
   }, []);
 
   // Sync hash routing with selected workshop
-  // Handle individual workshop URLs
+
+// Sync selected workshop with the individual workshop URL
 useEffect(() => {
-  function handleWorkshopRoute() {
-    const path = window.location.pathname;
-    const match = path.match(/^\/workshop\/([^/]+)$/);
-
-    if (match) {
-      const targetId = match[1];
-
-      const found = events.find(
-        (event) => String(event._id) === String(targetId)
-      );
-
-      if (found) {
-        setSelectedWorkshop(found);
-      }
-    } else {
-      setSelectedWorkshop(null);
-    }
+  if (!workshopId) {
+    setSelectedWorkshop(null);
+    return;
   }
 
-  handleWorkshopRoute();
-}, [events]);
+  const found = events.find(
+    (event) => String(event._id) === String(workshopId)
+  );
+
+  if (found) {
+    setSelectedWorkshop(found);
+  }
+}, [workshopId, events]);
 
   const pathname = window.location.pathname.replace(/\/+$/, '') || '/';
 
@@ -424,14 +419,13 @@ const handleOpenWorkshop = (ev) => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
-  const handleCloseWorkshop = () => {
-    setSelectedWorkshop(null);
-    setReserveSuccess(false);
-    setIsBookingModalOpen(false);
-    window.location.hash = 'workshops';
-    const el = document.getElementById('workshops');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
+const handleCloseWorkshop = () => {
+  setSelectedWorkshop(null);
+  setReserveSuccess(false);
+  setIsBookingModalOpen(false);
+  navigate('/');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
 
   const handleReserveSubmit = async (e) => {
     e.preventDefault();
@@ -538,7 +532,9 @@ const handleOpenWorkshop = (ev) => {
 
       <main>
         {/* BANNER / HERO SECTION */}
+        
         {/* NEW HERO BANNER */}
+        {!workshopId && (
 <section className="rb-hero" id="home">
   <div className="rb-hero-overlay"></div>
 
@@ -583,6 +579,7 @@ const handleOpenWorkshop = (ev) => {
     </a>
   </div>
 </section>
+)}
 
         {/* WORKSHOPS & MASTERCLASSES SECTION */}
         <section className="workshops-section" id="workshops">
@@ -1398,53 +1395,60 @@ RESERVE PASS <Ticket size={17} />
           )}
         </section>
 
-        {/* ABOUT US SECTION */}
-        <section className="why-us-section" id="about">
-          <div className="section-header-box centered">
-            <span className="section-kicker">THE RHYTHMIC BEAT STANDARD</span>
-            <h2>
-              ABOUT <span>US.</span>
-            </h2>
-            <p className="section-subtitle">
-              Built by dancers, for dancers. A creative court designed to elevate your craft across Chennai.
-            </p>
-          </div>
+{!workshopId && (
+  <>
+    {/* ABOUT US SECTION */}
 
-          <div className="features-grid">
-            <div className="feature-card">
-<span className="feature-icon"><Trophy size={26} /></span>      
-        <h3>Celebrity & Pro Mentors</h3>
-              <p>
-                Learn industry choreography, musicality, and stage confidence directly from top artists.
-              </p>
-            </div>
+    <section className="why-us-section" id="about">
+      <div className="section-header-box centered">
+        <span className="section-kicker">THE RHYTHMIC BEAT STANDARD</span>
+        <h2>
+          ABOUT <span>US.</span>
+        </h2>
+        <p className="section-subtitle">
+          Built by dancers, for dancers. A creative court designed to elevate your craft across Chennai.
+        </p>
+      </div>
 
-            <div className="feature-card">
-<span className="feature-icon"><Sparkles size={26} /></span>
-              <h3>Joint-Safe Wooden Floors</h3>
-              <p>
-                Professional cushioned sprung wooden floors designed to protect your joints during intensive routines.
-              </p>
-            </div>
+      <div className="features-grid">
+        <div className="feature-card">
+          <span className="feature-icon"><Trophy size={26} /></span>
+          <h3>Celebrity & Pro Mentors</h3>
+          <p>
+            Learn industry choreography, musicality, and stage confidence directly from top artists.
+          </p>
+        </div>
 
-            <div className="feature-card">
-<span className="feature-icon"><Flame size={26} /></span>
-              <h3>Stage & Battle Exposure</h3>
-              <p>
-                Direct opportunities for state competitions, studio showcase video shoots, and performance battles.
-              </p>
-            </div>
+        <div className="feature-card">
+          <span className="feature-icon"><Sparkles size={26} /></span>
+          <h3>Joint-Safe Wooden Floors</h3>
+          <p>
+            Professional cushioned sprung wooden floors designed to protect your joints during intensive routines.
+          </p>
+        </div>
 
-            <div className="feature-card">
-<span className="feature-icon"><Handshake size={26} /></span>
-              <h3>All Skill Levels Welcome</h3>
-              <p>
-                Whether you are stepping onto the floor for the first time or training for pro performances.
-              </p>
-            </div>
-          </div>
-        </section>
+        <div className="feature-card">
+          <span className="feature-icon"><Flame size={26} /></span>
+          <h3>Stage & Battle Exposure</h3>
+          <p>
+            Direct opportunities for state competitions, studio showcase video shoots, and performance battles.
+          </p>
+        </div>
 
+        <div className="feature-card">
+          <span className="feature-icon"><Handshake size={26} /></span>
+          <h3>All Skill Levels Welcome</h3>
+          <p>
+            Whether you are stepping onto the floor for the first time or training for pro performances.
+          </p>
+        </div>
+      </div>
+    </section>
+  </>
+)}
+   
+{!workshopId && (
+  <>
         {/* REVIEWS & DANCER TESTIMONIALS SECTION */}
         <section className="reviews-section" id="reviews">
           <div className="section-header-box centered">
@@ -1473,86 +1477,99 @@ RESERVE PASS <Ticket size={17} />
             ))}
           </div>
         </section>
+          </>
+)}
 
-        {/* OUR BRANCHES */}
-        <section className="branches-section" id="branches">
-          <div className="section-header-box centered">
-            <span className="section-kicker">CONVENIENT CHENNAI LOCATIONS</span>
-            <h2>
-              OUR <span>BRANCHES.</span>
-            </h2>
-            <p className="section-subtitle">
-              Fully air-conditioned facilities with sprung wooden floors and professional surround acoustics.
-            </p>
+
+
+{!workshopId && (
+  <>
+    {/* OUR BRANCHES */}
+    <section className="branches-section" id="branches">
+      <div className="section-header-box centered">
+        <span className="section-kicker">CONVENIENT CHENNAI LOCATIONS</span>
+        <h2>
+          OUR <span>BRANCHES.</span>
+        </h2>
+        <p className="section-subtitle">
+          Fully air-conditioned facilities with sprung wooden floors and professional surround acoustics.
+        </p>
+      </div>
+
+      <div className="branches-grid">
+        {branches.map((b) => (
+          <div className="branch-card" key={b._id}>
+            <div className="branch-badge">{b.tag || 'STUDIO VENUE'}</div>
+            <h3>{b.name}</h3>
+            <p className="branch-address">{b.address}</p>
+            <div className="branch-features">
+              {(Array.isArray(b.specs) ? b.specs : (b.specs || '').split(','))
+                .slice(0, 3)
+                .map((spec, i) => (
+                  <span key={i}>✓ {spec.trim()}</span>
+                ))}
+            </div>
+            <a
+              href={`https://wa.me/${(b.phone || WHATSAPP_PHONE).replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
+                `Hi RB Dance Court! I want to visit the ${b.name} branch.`
+              )}`}
+              target="_blank"
+              rel="noreferrer"
+              className="branch-btn"
+            >
+              Contact {b.name.split(' ')[0]} ↗
+            </a>
           </div>
+        ))}
+      </div>
+    </section>
+  </>
+)}
 
-          <div className="branches-grid">
-            {branches.map((b) => (
-              <div className="branch-card" key={b._id}>
-                <div className="branch-badge">{b.tag || 'STUDIO VENUE'}</div>
-                <h3>{b.name}</h3>
-                <p className="branch-address">{b.address}</p>
-                <div className="branch-features">
-                  {(Array.isArray(b.specs) ? b.specs : (b.specs || '').split(','))
-                    .slice(0, 3)
-                    .map((spec, i) => (
-                      <span key={i}>✓ {spec.trim()}</span>
-                    ))}
+
+ {!workshopId && (
+  <>
+    {/* FAQ SECTION */}
+    <section className="faq-section" id="faq">
+      <div className="section-header-box centered">
+        <span className="section-kicker">QUESTIONS & ANSWERS</span>
+        <h2>
+          FREQUENTLY ASKED <span>QUESTIONS.</span>
+        </h2>
+        <p className="section-subtitle">
+          Everything you need to know about registrations, studio rules, and workshop sessions.
+        </p>
+      </div>
+
+      <div className="faq-accordion-list">
+        {FAQS.map((faq, index) => {
+          const isOpen = openFaqIndex === index;
+          return (
+            <div
+              key={index}
+              className={`faq-item ${isOpen ? 'open' : ''}`}
+              onClick={() => setOpenFaqIndex(isOpen ? -1 : index)}
+            >
+              <button
+                type="button"
+                className="faq-question-btn"
+                aria-expanded={isOpen}
+              >
+                <span>{faq.q}</span>
+                <span className="faq-toggle-icon">{isOpen ? '−' : '+'}</span>
+              </button>
+              {isOpen && (
+                <div className="faq-answer">
+                  <p>{faq.a}</p>
                 </div>
-                <a
-                  href={`https://wa.me/${(b.phone || WHATSAPP_PHONE).replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
-                    `Hi RB Dance Court! I want to visit the ${b.name} branch.`
-                  )}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="branch-btn"
-                >
-                  Contact {b.name.split(' ')[0]} ↗
-                </a>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* FAQ SECTION */}
-        <section className="faq-section" id="faq">
-          <div className="section-header-box centered">
-            <span className="section-kicker">QUESTIONS & ANSWERS</span>
-            <h2>
-              FREQUENTLY ASKED <span>QUESTIONS.</span>
-            </h2>
-            <p className="section-subtitle">
-              Everything you need to know about registrations, studio rules, and workshop sessions.
-            </p>
-          </div>
-
-          <div className="faq-accordion-list">
-            {FAQS.map((faq, index) => {
-              const isOpen = openFaqIndex === index;
-              return (
-                <div
-                  key={index}
-                  className={`faq-item ${isOpen ? 'open' : ''}`}
-                  onClick={() => setOpenFaqIndex(isOpen ? -1 : index)}
-                >
-                  <button
-                    type="button"
-                    className="faq-question-btn"
-                    aria-expanded={isOpen}
-                  >
-                    <span>{faq.q}</span>
-                    <span className="faq-toggle-icon">{isOpen ? '−' : '+'}</span>
-                  </button>
-                  {isOpen && (
-                    <div className="faq-answer">
-                      <p>{faq.a}</p>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </section>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  </>
+)}
       </main>
 
       {/* FOOTER */}
