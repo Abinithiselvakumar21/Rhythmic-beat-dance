@@ -3677,20 +3677,54 @@ body {
 
 
 
-/* Workshop details - left and right layout */
+/* Compact workshop detail cards */
 .workshop-extra-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  margin-top: 20px;
+  gap: 12px;
+  margin-top: 18px;
 }
 
 .workshop-extra-grid .premium-agenda-block {
-  margin: 0;
-  min-width: 0;
+  margin: 0 !important;
+  padding: 14px 18px !important;
+  min-height: 105px;
+  border-radius: 14px;
 }
 
-/* Mobile view */
+.workshop-extra-grid .premium-agenda-block h3 {
+  font-size: 16px !important;
+  margin-bottom: 8px !important;
+}
+
+.workshop-extra-grid .premium-agenda-block p {
+  font-size: 14px !important;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Book Workshop button */
+.premium-book-btn {
+  display: block;
+  width: 100%;
+  margin-top: 18px;
+  padding: 15px 20px;
+  border: none !important;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ff8a00, #ff5e00) !important;
+  color: #fff !important;
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  cursor: pointer;
+  box-shadow: 0 5px 14px rgba(255, 100, 0, 0.22);
+  transition: 0.3s ease;
+}
+
+.premium-book-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(255, 100, 0, 0.3);
+}
+
 @media (max-width: 600px) {
   .workshop-extra-grid {
     grid-template-columns: 1fr;
