@@ -3674,3 +3674,25 @@ body {
     margin-top: 22px;
   }
 }
+
+
+
+/* Workshop details - left and right layout */
+.workshop-extra-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.workshop-extra-grid .premium-agenda-block {
+  margin: 0;
+  min-width: 0;
+}
+
+/* Mobile view */
+@media (max-width: 600px) {
+  .workshop-extra-grid {
+    grid-template-columns: 1fr;
+  }
+}

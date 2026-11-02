@@ -798,6 +798,9 @@ const resetAllFilters = () => {
     </div>
   )}
 
+ {/* ADMIN-ENTERED WORKSHOP DETAILS */}
+<div className="workshop-extra-grid">
+
   {selectedWorkshop.participants?.trim() && (
     <div className="premium-agenda-block">
       <h3><Users size={20} /> Who Can Participate?</h3>
@@ -825,6 +828,8 @@ const resetAllFilters = () => {
       <p>{selectedWorkshop.highlights}</p>
     </div>
   )}
+
+</div>
 
   {/* BOOK THE WORKSHOP BUTTON */}
   <button
