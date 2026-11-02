@@ -612,9 +612,7 @@ const handleCloseWorkshop = () => {
             </div>
           ) : selectedWorkshop ? (
             <>
-            /* =========================================
-               WORKSHOP DETAIL VIEW (REDESIGNED TO LOOK ULTRA-PREMIUM)
-               ========================================= */
+         
            <div className="premium-detail-container">
   <div className="detail-top-nav">
     <button
