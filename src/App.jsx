@@ -9,6 +9,7 @@ import {
   MapPin,
   Zap,
   UserRound,
+  UsersRound,
   MessageCircle,
   Menu,
   X,
@@ -610,248 +611,291 @@ const handleCloseWorkshop = () => {
               </button>
             </div>
           ) : selectedWorkshop ? (
+            <>
             /* =========================================
                WORKSHOP DETAIL VIEW (REDESIGNED TO LOOK ULTRA-PREMIUM)
                ========================================= */
-            <div className="premium-detail-container">
-              <div className="detail-top-nav">
-                <button
-                  type="button"
-                  className="premium-back-btn"
-                  onClick={handleCloseWorkshop}
-                >
-                  ← Back to All Workshops
-                </button>
-                <div className="detail-header-badges">
-                  <span className="detail-status-pill">
-                    ● {selectedWorkshop.status || 'OPEN FOR BOOKING'}
-                  </span>
-                 <span className="detail-branch-pill">
-  <MapPin size={16} />
-  {selectedWorkshop.location || 'Valasaravakkam Studio, Chennai'}
-</span>
-                </div>
-              </div>
+           <div className="premium-detail-container">
+  <div className="detail-top-nav">
+    <button
+      type="button"
+      className="premium-back-btn"
+      onClick={handleCloseWorkshop}
+    >
+      ← Back to All Workshops
+    </button>
 
-              <div className="premium-card-wrapper">
-                {/* LEFT: POSTER SHOWCASE CARD */}
-                <div className="premium-poster-box">
-                  <div className="poster-frame-card">
-                    {assetUrl(selectedWorkshop.image) && !failedImages[selectedWorkshop._id] ? (
-                      <>
-                        <img
-                          src={assetUrl(selectedWorkshop.image)}
-                          alt={selectedWorkshop.title}
-                          className="poster-bg-blur"
-                          aria-hidden="true"
-                        />
-                        <img
-                          src={assetUrl(selectedWorkshop.image)}
-                          alt={selectedWorkshop.title}
-                          className="poster-img"
-                          onError={() =>
-                            setFailedImages((prev) => ({
-                              ...prev,
-                              [selectedWorkshop._id]: true,
-                            }))
-                          }
-                        />
-                      </>
-                    ) : (
-                      <div className="poster-placeholder-brand">
-<span className="placeholder-icon"><Zap size={28} /></span>
-                        <strong>RHYTHMIC BEAT</strong>
-                        <small>DANCE COURT</small>
-                      </div>
-                    )}
-                    <div className="poster-badge-stamp">
-                      <span>OFFICIAL WORKSHOP PASS</span>
-                    </div>
-                  </div>
+    <div className="detail-header-badges">
+      <span className="detail-status-pill">
+        ● {selectedWorkshop.status || 'OPEN FOR BOOKING'}
+      </span>
 
-                  {/* Fast Inclusions Card below Poster */}
-                  <div className="poster-inclusions-box">
-                    <h4>Pass Inclusions & Perks:</h4>
-                    <ul>
-  <li><Video size={17} /> 4K Cinematic Stage Video Shoot</li>
-  <li><Trophy size={17} /> Verified Studio Certificate of Completion</li>
-  <li><Headphones size={17} /> Official Choreography Practice Audio Access</li>
-  <li><Droplets size={17} /> Fully Air-Conditioned Sprung Wooden Floor</li>
-  <li><Camera size={17} /> Professional Group & Solo Photoshoot</li>
-</ul>
-                  </div>
-                </div>
-
-                {/* RIGHT: WORKSHOP DETAILS & CURRICULUM */}
- <div className="premium-info-col">
-
-  {/* Genre Tag & Level */}
-  <div className="title-tags-row">
-    <span className="genre-tag-pill">
-      <Zap size={16} />
-      {selectedWorkshop.title.toLowerCase().includes('kuthu')
-        ? 'FOLK & KUTHU'
-        : selectedWorkshop.title.toLowerCase().includes('contemporary')
-        ? 'CONTEMPORARY'
-        : selectedWorkshop.title.toLowerCase().includes('battle')
-        ? 'DANCE BATTLE'
-        : 'CHOREOGRAPHY MASTERCLASS'}
-    </span>
-
-    <span className="level-tag-pill">
-      <Target size={16} />
-      {selectedWorkshop.level || 'Beginner & Intermediate Friendly'}
-    </span>
-  </div>
-
-  {/* Workshop Title */}
-  <h1 className="premium-title">{selectedWorkshop.title}</h1>
-
-  {/* Song Badge */}
-  <div className="premium-song-box">
-    <span className="song-badge-icon"><Music2 size={22} /></span>
-    <div>
-      <small>OFFICIAL CHOREOGRAPHY TRACK</small>
-      <strong>{formatSongName(selectedWorkshop.song)}</strong>
+      <span className="detail-branch-pill">
+        <MapPin size={16} />
+        {selectedWorkshop.location || 'Valasaravakkam Studio, Chennai'}
+      </span>
     </div>
   </div>
 
-  {/* Lead Faculty Card */}
-  <div className="premium-mentor-card">
-    <div className="mentor-avatar-badge"><Users size={22} /></div>
-    <div>
-      <small>LEAD FACULTY & CHOREOGRAPHER</small>
-      <strong>
-        {selectedWorkshop.instructor || 'Master Choreographer Rahul & RB Crew'}
-      </strong>
-    </div>
-  </div>
+  <div className="premium-card-wrapper">
 
-  {/* Event Details Grid */}
-  <div className="premium-specs-grid">
+    {/* LEFT: MAIN WORKSHOP POSTER */}
+    <div className="premium-poster-box">
+      <div className="poster-frame-card">
+        {assetUrl(selectedWorkshop.image) &&
+        !failedImages[selectedWorkshop._id] ? (
+          <>
+            <img
+              src={assetUrl(selectedWorkshop.image)}
+              alt={selectedWorkshop.title}
+              className="poster-bg-blur"
+              aria-hidden="true"
+            />
 
-    <div className="spec-card">
-      <span className="spec-icon"><CalendarDays size={22} /></span>
-      <div>
-        <small>EVENT DATE</small>
-        <strong>{selectedWorkshop.date || 'Scheduled Soon'}</strong>
-      </div>
-    </div>
+            <img
+              src={assetUrl(selectedWorkshop.image)}
+              alt={selectedWorkshop.title}
+              className="poster-img"
+              onError={() =>
+                setFailedImages((prev) => ({
+                  ...prev,
+                  [selectedWorkshop._id]: true
+                }))
+              }
+            />
+          </>
+        ) : (
+          <div className="poster-placeholder-brand">
+            <span className="placeholder-icon">
+              <Zap size={28} />
+            </span>
+            <strong>RHYTHMIC BEAT</strong>
+            <small>DANCE COURT</small>
+          </div>
+        )}
 
-    <div className="spec-card">
-      <span className="spec-icon"><Clock size={22} /></span>
-      <div>
-        <small>WORKSHOP TIMING</small>
-        <strong>{selectedWorkshop.time || 'Schedule TBA'}</strong>
-      </div>
-    </div>
-
-    <div className="spec-card">
-      <span className="spec-icon"><MapPin size={22} /></span>
-      <div>
-        <small>STUDIO VENUE</small>
-        <strong>
-          {selectedWorkshop.location || 'Valasaravakkam Studio, Chennai'}
-        </strong>
-      </div>
-    </div>
-
-    <div className="spec-card">
-      <span className="spec-icon"><Zap size={22} /></span>
-      <div>
-        <small>SLOTS REMAINING</small>
-        <strong className="slots-text-highlight">
-          {selectedWorkshop.slots > 0
-            ? `${selectedWorkshop.slots} Slots Left`
-            : 'Open Registration'}
-        </strong>
-      </div>
-    </div>
-
-  </div>
-
-  {/* Description */}
-  <div className="premium-desc-block">
-    <h3>About The Workshop</h3>
-    <p>
-      {selectedWorkshop.description ||
-        'Get ready to learn an explosive choreography piece with master techniques, musicality nuances, dynamic body control, and confidence on stage.'}
-    </p>
-  </div>
-
-  {/* Admin-entered Workshop Details */}
-
-  {selectedWorkshop.agenda?.trim() && (
-    <div className="premium-agenda-block">
-      <div className="agenda-block-header">
-        <div>
-          <span className="agenda-kicker-tag">SESSION FLOW & BREAKDOWN</span>
-          <h3>What Happens in This Workshop</h3>
+        <div className="poster-badge-stamp">
+          <span>OFFICIAL WORKSHOP PASS</span>
         </div>
       </div>
 
-      <div className="premium-timeline-list">
-        {selectedWorkshop.agenda
-          .split('\n')
-          .filter((line) => line.trim())
-          .map((line, idx) => (
-            <div key={idx} className="premium-timeline-card">
-              <div className="timeline-num-box">
-                <span className="timeline-icon"><Music2 size={20} /></span>
-                <small>Phase 0{idx + 1}</small>
-              </div>
-              <div className="timeline-body">
-                <p>{line}</p>
-              </div>
-            </div>
-          ))}
+      {/* PASS INCLUSIONS */}
+      <div className="poster-inclusions-box">
+        <h4>Pass Inclusions & Perks:</h4>
+        <ul>
+          <li><Video size={17} /> 4K Cinematic Stage Video Shoot</li>
+          <li><Trophy size={17} /> Verified Studio Certificate of Completion</li>
+          <li><Headphones size={17} /> Official Choreography Practice Audio Access</li>
+          <li><Droplets size={17} /> Fully Air-Conditioned Sprung Wooden Floor</li>
+          <li><Camera size={17} /> Professional Group & Solo Photoshoot</li>
+        </ul>
       </div>
     </div>
-  )}
 
- {/* ADMIN-ENTERED WORKSHOP DETAILS */}
-<div className="workshop-extra-grid">
+    {/* RIGHT: WORKSHOP DETAILS */}
+    <div className="premium-info-col">
 
-  {selectedWorkshop.participants?.trim() && (
-    <div className="premium-agenda-block">
-      <h3><Users size={20} /> Who Can Participate?</h3>
-      <p>{selectedWorkshop.participants}</p>
+      {/* GENRE AND LEVEL */}
+      <div className="title-tags-row">
+        <span className="genre-tag-pill">
+          <Zap size={16} />
+          {selectedWorkshop.title.toLowerCase().includes('kuthu')
+            ? 'FOLK & KUTHU'
+            : selectedWorkshop.title.toLowerCase().includes('contemporary')
+            ? 'CONTEMPORARY'
+            : selectedWorkshop.title.toLowerCase().includes('battle')
+            ? 'DANCE BATTLE'
+            : 'CHOREOGRAPHY MASTERCLASS'}
+        </span>
+
+        <span className="level-tag-pill">
+          <Target size={16} />
+          {selectedWorkshop.level || 'Beginner & Intermediate Friendly'}
+        </span>
+      </div>
+
+      {/* WORKSHOP TITLE */}
+      <h1 className="premium-title">
+        {selectedWorkshop.title}
+      </h1>
+
+      {/* SONG */}
+      <div className="premium-song-box">
+        <span className="song-badge-icon">
+          <Music2 size={22} />
+        </span>
+        <div>
+          <small>OFFICIAL CHOREOGRAPHY TRACK</small>
+          <strong>{formatSongName(selectedWorkshop.song)}</strong>
+        </div>
+      </div>
+
+      {/* LEAD FACULTY - ICON INSTEAD OF PHOTO */}
+      <div className="premium-mentor-card">
+        <div className="mentor-avatar-badge">
+          <UsersRound size={22} />
+        </div>
+        <div>
+          <small>LEAD FACULTY & CHOREOGRAPHER</small>
+          <strong>
+            {selectedWorkshop.instructor ||
+              'Master Choreographer Rahul & RB Crew'}
+          </strong>
+        </div>
+      </div>
+
+      {/* EVENT DETAILS */}
+      <div className="premium-specs-grid">
+
+        <div className="spec-card">
+          <span className="spec-icon">
+            <CalendarDays size={22} />
+          </span>
+          <div>
+            <small>EVENT DATE</small>
+            <strong>{selectedWorkshop.date || 'Scheduled Soon'}</strong>
+          </div>
+        </div>
+
+        <div className="spec-card">
+          <span className="spec-icon">
+            <Clock size={22} />
+          </span>
+          <div>
+            <small>WORKSHOP TIMING</small>
+            <strong>{selectedWorkshop.time || 'Schedule TBA'}</strong>
+          </div>
+        </div>
+
+        <div className="spec-card">
+          <span className="spec-icon">
+            <MapPin size={22} />
+          </span>
+          <div>
+            <small>STUDIO VENUE</small>
+            <strong>
+              {selectedWorkshop.location ||
+                'Valasaravakkam Studio, Chennai'}
+            </strong>
+          </div>
+        </div>
+
+        <div className="spec-card">
+          <span className="spec-icon">
+            <Zap size={22} />
+          </span>
+          <div>
+            <small>SLOTS REMAINING</small>
+            <strong className="slots-text-highlight">
+              {selectedWorkshop.slots > 0
+                ? `${selectedWorkshop.slots} Slots Left`
+                : 'Open Registration'}
+            </strong>
+          </div>
+        </div>
+
+      </div>
+
+      {/* DESCRIPTION */}
+      <div className="premium-desc-block">
+        <h3>About The Workshop</h3>
+        <p>
+          {selectedWorkshop.description ||
+            'Get ready to learn an explosive choreography piece with master techniques, musicality nuances, dynamic body control, and confidence on stage.'}
+        </p>
+      </div>
+
+      {/* SESSION FLOW */}
+      {selectedWorkshop.agenda?.trim() && (
+        <div className="premium-agenda-block">
+          <div className="agenda-block-header">
+            <div>
+              <span className="agenda-kicker-tag">
+                SESSION FLOW & BREAKDOWN
+              </span>
+              <h3>What Happens in This Workshop</h3>
+            </div>
+          </div>
+
+          <div className="premium-timeline-list">
+            {selectedWorkshop.agenda
+              .split('\n')
+              .filter((line) => line.trim())
+              .map((line, idx) => (
+                <div key={idx} className="premium-timeline-card">
+                  <div className="timeline-num-box">
+                    <span className="timeline-icon">
+                      <Music2 size={20} />
+                    </span>
+                    <small>Phase 0{idx + 1}</small>
+                  </div>
+
+                  <div className="timeline-body">
+                    <p>{line}</p>
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
+
+      {/* EXTRA WORKSHOP DETAILS */}
+      <div className="workshop-extra-grid">
+
+        {selectedWorkshop.participants?.trim() && (
+          <div className="premium-agenda-block">
+            <h3>
+              <UsersRound size={20} />
+              Who Can Participate?
+            </h3>
+            <p>{selectedWorkshop.participants}</p>
+          </div>
+        )}
+
+        {selectedWorkshop.guestName?.trim() && (
+          <div className="premium-agenda-block">
+            <h3>
+              <Music2 size={20} />
+              Guest Name
+            </h3>
+            <p>{selectedWorkshop.guestName}</p>
+          </div>
+        )}
+
+        {selectedWorkshop.specialActivities?.trim() && (
+          <div className="premium-agenda-block">
+            <h3>
+              <Zap size={20} />
+              Special Activities
+            </h3>
+            <p>{selectedWorkshop.specialActivities}</p>
+          </div>
+        )}
+
+        {selectedWorkshop.highlights?.trim() && (
+          <div className="premium-agenda-block">
+            <h3>
+              <Trophy size={20} />
+              Workshop Highlights
+            </h3>
+            <p>{selectedWorkshop.highlights}</p>
+          </div>
+        )}
+
+      </div>
+
+      {/* BOOKING BUTTON - EXISTING FLOW PRESERVED */}
+      <button
+        className="premium-book-btn"
+        onClick={() => setIsBookingModalOpen(true)}
+      >
+        Book the Workshop
+      </button>
+
     </div>
-  )}
-
-  {selectedWorkshop.guestName?.trim() && (
-    <div className="premium-agenda-block">
-      <h3><Music2 size={20} /> Guest Name</h3>
-      <p>{selectedWorkshop.guestName}</p>
-    </div>
-  )}
-
-  {selectedWorkshop.specialActivities?.trim() && (
-    <div className="premium-agenda-block">
-      <h3><Zap size={20} /> Special Activities</h3>
-      <p>{selectedWorkshop.specialActivities}</p>
-    </div>
-  )}
-
-  {selectedWorkshop.highlights?.trim() && (
-    <div className="premium-agenda-block">
-      <h3><Trophy size={20} /> Workshop Highlights</h3>
-      <p>{selectedWorkshop.highlights}</p>
-    </div>
-  )}
-
+  </div>
 </div>
 
-  {/* BOOK THE WORKSHOP BUTTON */}
-  <button
-    className="premium-book-btn"
-    onClick={() => setIsBookingModalOpen(true)}
-  >
-    Book the Workshop
-  </button>
-
-</div>
-</div>
 
               {/* BOOKING POPUP MODAL */}
               {isBookingModalOpen && (
@@ -1040,8 +1084,8 @@ CONFIRM & CLAIM TICKET <Ticket size={18} />                            </>
                     )}
                   </div>
                 </div>
-              )}
-            </div>
+                 )}
+            </>
           ) : (
             /* =========================================
                WORKSHOPS BROWSER VIEW (SPECIFIC WORKSHOP FILTERS)
