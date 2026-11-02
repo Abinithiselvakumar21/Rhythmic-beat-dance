@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import './App.css';
 import Admin from './Admin';
 import AdminDashboard from './AdminDashboard';
+import { BrowserRouter, Routes, Route, useParams, useNavigate } from 'react-router-dom';
 import {
   CalendarDays,
   Clock,
@@ -208,6 +209,21 @@ const SKILL_LEVELS = [
 ];
 
 function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<AppContent />} />
+        <Route path="/workshop/:workshopId" element={<AppContent />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+
+
+function AppContent() {
+  const { workshopId } = useParams();
+  const navigate = useNavigate();
   const [events, setEvents] = useState([]);
   const [branches, setBranches] = useState(DEFAULT_BRANCH_LIST);
   const [eventsLoading, setEventsLoading] = useState(true);
@@ -276,30 +292,29 @@ const [sortBy, setSortBy] = useState('soonest');
   }, []);
 
   // Sync hash routing with selected workshop
-  useEffect(() => {
-    function handleHash() {
-      const hash = window.location.hash;
-      if (hash && hash.startsWith('#ws-')) {
-        const targetId = hash.replace('#ws-', '');
-        const found = events.find(
-          (e) =>
-            e._id === targetId ||
-            e.title?.toLowerCase().replace(/[^a-z0-9]+/g, '-') === targetId
-        );
-        if (found) {
-          setSelectedWorkshop(found);
-          const el = document.getElementById('workshops');
-          if (el) el.scrollIntoView({ behavior: 'smooth' });
-        }
-      } else if (hash === '#workshops' || hash === '#events') {
-        setSelectedWorkshop(null);
-      }
-    }
+  // Handle individual workshop URLs
+useEffect(() => {
+  function handleWorkshopRoute() {
+    const path = window.location.pathname;
+    const match = path.match(/^\/workshop\/([^/]+)$/);
 
-    handleHash();
-    window.addEventListener('hashchange', handleHash);
-    return () => window.removeEventListener('hashchange', handleHash);
-  }, [events]);
+    if (match) {
+      const targetId = match[1];
+
+      const found = events.find(
+        (event) => String(event._id) === String(targetId)
+      );
+
+      if (found) {
+        setSelectedWorkshop(found);
+      }
+    } else {
+      setSelectedWorkshop(null);
+    }
+  }
+
+  handleWorkshopRoute();
+}, [events]);
 
   const pathname = window.location.pathname.replace(/\/+$/, '') || '/';
 
@@ -401,14 +416,13 @@ const resetAllFilters = () => {
   setSortBy('soonest');
 };
 
-  const handleOpenWorkshop = (ev) => {
-    setSelectedWorkshop(ev);
-    setReserveSuccess(false);
-    setIsBookingModalOpen(false);
-    window.location.hash = `ws-${ev._id}`;
-    const el = document.getElementById('workshops');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
+const handleOpenWorkshop = (ev) => {
+  setSelectedWorkshop(ev);
+  setReserveSuccess(false);
+  setIsBookingModalOpen(false);
+  navigate(`/workshop/${ev._id}`);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
 
   const handleCloseWorkshop = () => {
     setSelectedWorkshop(null);
