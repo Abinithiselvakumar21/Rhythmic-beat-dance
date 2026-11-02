@@ -33,6 +33,27 @@ const eventSchema = new mongoose.Schema(
       type: String,
       default: '', // Detailed workshop flow / what happens in session
     },
+      participants: {
+  type: String,
+  default: '',
+  trim: true,
+},
+guestName: {
+  type: String,
+  default: '',
+  trim: true,
+},
+specialActivities: {
+  type: String,
+  default: '',
+  trim: true,
+},
+highlights: {
+  type: String,
+  default: '',
+  trim: true,
+},
+
     status: {
       type: String,
       enum: ['Upcoming', 'Ongoing', 'Completed'],
