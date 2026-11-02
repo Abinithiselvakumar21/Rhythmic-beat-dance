@@ -3730,3 +3730,91 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* PREMIUM WORKSHOP DETAIL — FINAL RESPONSIVE POLISH */
+
+.premium-detail-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 34px 6%;
+}
+
+.premium-card-wrapper {
+  align-items: start;
+  gap: 40px;
+}
+
+.premium-poster-box {
+  position: sticky;
+  top: 110px;
+  align-self: start;
+}
+
+.premium-info-col {
+  min-width: 0;
+}
+
+.premium-title {
+  font-size: clamp(28px, 3.5vw, 44px);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.premium-desc-block p,
+.timeline-body p {
+  line-height: 1.75;
+}
+
+.premium-booking-bar {
+  position: sticky;
+  bottom: 14px;
+  z-index: 20;
+}
+
+@media (max-width: 900px) {
+  .premium-detail-container {
+    padding: 24px 4%;
+  }
+
+  .premium-poster-box {
+    position: static;
+    width: 100%;
+  }
+
+  .premium-card-wrapper {
+    gap: 26px;
+  }
+
+  .premium-booking-bar {
+    position: static;
+  }
+}
+
+@media (max-width: 600px) {
+  .premium-detail-container {
+    padding: 16px 14px;
+  }
+
+  .premium-card-wrapper {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .premium-title {
+    font-size: 27px;
+  }
+
+  .premium-specs-grid {
+    gap: 10px;
+  }
+
+  .premium-booking-bar {
+    padding: 18px;
+  }
+
+  .premium-claim-pass-btn,
+  .premium-book-btn {
+    width: 100%;
+  }
+}
