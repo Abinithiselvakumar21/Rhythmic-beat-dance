@@ -461,17 +461,17 @@ const handleCloseWorkshop = () => {
       setReserveSuccess(true);
     }
 
-    const message =
-      `*RHYTHMIC BEAT DANCE COURT — WORKSHOP ADMISSION REQUEST*\n\n` +
-      `🎟️ *Pass Code:* ${genId}\n` +
-      `🔥 *Workshop:* ${selectedWorkshop?.title}\n` +
-      `👤 *Dancer Name:* ${reserveForm.name}\n` +
-      `📞 *WhatsApp:* ${reserveForm.phone}\n` +
-      `📧 *Email:* ${reserveForm.email || 'N/A'}\n` +
-      `👥 *Passes Reserved:* ${reserveForm.slots}\n` +
-      `📅 *Date:* ${selectedWorkshop?.date || 'Scheduled Soon'}\n` +
-      `📍 *Location:* ${selectedWorkshop?.location || 'Valasaravakkam Studio, Chennai'}\n\n` +
-      `Please confirm my admission and share UPI / Payment details. Thank you!`;
+   const message =
+  `*RHYTHMIC BEAT DANCE COURT — WORKSHOP ADMISSION REQUEST*\n\n` +
+  `*PASS CODE:* ${genId}\n` +
+  `*WORKSHOP:* ${selectedWorkshop?.title}\n` +
+  `*DANCER NAME:* ${reserveForm.name}\n` +
+  `*WHATSAPP:* ${reserveForm.phone}\n` +
+  `*EMAIL:* ${reserveForm.email || 'N/A'}\n` +
+  `*PASSES RESERVED:* ${reserveForm.slots}\n` +
+  `*DATE:* ${selectedWorkshop?.date || 'Scheduled Soon'}\n` +
+  `*LOCATION:* ${selectedWorkshop?.location || 'Valasaravakkam Studio, Chennai'}\n\n` +
+  `Please confirm my admission and share UPI / Payment details. Thank you!`;
 
     const waUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(message)}`;
     window.open(waUrl, '_blank');
