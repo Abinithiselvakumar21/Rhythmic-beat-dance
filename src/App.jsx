@@ -672,163 +672,170 @@ const resetAllFilters = () => {
                 </div>
 
                 {/* RIGHT: WORKSHOP DETAILS & CURRICULUM */}
-                <div className="premium-info-col">                     
-                  {/* Genre Tag & Level */}
-                  <div className="title-tags-row">
-                    <span className="genre-tag-pill">
-                      <Zap size={16} /> {selectedWorkshop.title.toLowerCase().includes('kuthu') ? 'FOLK & KUTHU' : selectedWorkshop.title.toLowerCase().includes('contemporary') ? 'CONTEMPORARY' : selectedWorkshop.title.toLowerCase().includes('battle') ? 'DANCE BATTLE' : 'CHOREOGRAPHY MASTERCLASS'}
-                    </span>
-                    <span className="level-tag-pill">
-                      <Target size={16} />{selectedWorkshop.level || 'Beginner & Intermediate Friendly'}
-                    </span>
-                  </div>
+ <div className="premium-info-col">
 
-                  <h1 className="premium-title">{selectedWorkshop.title}</h1>
-
-                  {/* Song Badge */}
-                  <div className="premium-song-box">
-                           <span className="song-badge-icon"><Music2 size={22} /></span>                    <div>
-                      <small>OFFICIAL CHOREOGRAPHY TRACK</small>
-                      <strong>{formatSongName(selectedWorkshop.song)}</strong>
-                    </div>
-                  </div>
-
-                  {/* Lead Faculty Card */}
-                  <div className="premium-mentor-card">
-                            <div className="mentor-avatar-badge"><Users size={22} /></div>                    <div>
-                      <small>LEAD FACULTY & CHOREOGRAPHER</small>
-                      <strong>{selectedWorkshop.instructor || 'Master Choreographer Rahul & RB Crew'}</strong>
-                    </div>
-                  </div>
-
-                  {/* Key Highlights Grid (Clean soft cards) */}
-                   <div className="premium-specs-grid">
-
-                       {/* EVENT DATE */}
-                    <div className="spec-card">
-                       <span className="spec-icon">
-                            <CalendarDays size={22} />
-                    </span>
-                   <div>
-                          <small>EVENT DATE</small>
-                      <strong>{selectedWorkshop.date || 'Scheduled Soon'}</strong>
-                    </div>
-                </div>
-
-  {/* WORKSHOP TIMING */}
-  <div className="spec-card">
-    <span className="spec-icon">
-      <Clock size={22} />
+  {/* Genre Tag & Level */}
+  <div className="title-tags-row">
+    <span className="genre-tag-pill">
+      <Zap size={16} />
+      {selectedWorkshop.title.toLowerCase().includes('kuthu')
+        ? 'FOLK & KUTHU'
+        : selectedWorkshop.title.toLowerCase().includes('contemporary')
+        ? 'CONTEMPORARY'
+        : selectedWorkshop.title.toLowerCase().includes('battle')
+        ? 'DANCE BATTLE'
+        : 'CHOREOGRAPHY MASTERCLASS'}
     </span>
+
+    <span className="level-tag-pill">
+      <Target size={16} />
+      {selectedWorkshop.level || 'Beginner & Intermediate Friendly'}
+    </span>
+  </div>
+
+  {/* Workshop Title */}
+  <h1 className="premium-title">{selectedWorkshop.title}</h1>
+
+  {/* Song Badge */}
+  <div className="premium-song-box">
+    <span className="song-badge-icon"><Music2 size={22} /></span>
     <div>
-      <small>WORKSHOP TIMING</small>
-      <strong>{selectedWorkshop.time || 'Schedule TBA'}</strong>
+      <small>OFFICIAL CHOREOGRAPHY TRACK</small>
+      <strong>{formatSongName(selectedWorkshop.song)}</strong>
     </div>
   </div>
 
-  {/* STUDIO VENUE */}
-  <div className="spec-card">
-    <span className="spec-icon">
-      <MapPin size={22} />
-    </span>
+  {/* Lead Faculty Card */}
+  <div className="premium-mentor-card">
+    <div className="mentor-avatar-badge"><Users size={22} /></div>
     <div>
-      <small>STUDIO VENUE</small>
-      <strong>{selectedWorkshop.location || 'Valasaravakkam Studio, Chennai'}</strong>
-    </div>
-  </div>
-
-  {/* SLOTS REMAINING */}
-  <div className="spec-card">
-    <span className="spec-icon">
-      <Zap size={22} />
-    </span>
-    <div>
-      <small>SLOTS REMAINING</small>
-      <strong className="slots-text-highlight">
-        {selectedWorkshop.slots > 0 ? `${selectedWorkshop.slots} Slots Left` : 'Open Registration'}
+      <small>LEAD FACULTY & CHOREOGRAPHER</small>
+      <strong>
+        {selectedWorkshop.instructor || 'Master Choreographer Rahul & RB Crew'}
       </strong>
     </div>
   </div>
 
-</div>
-                  {/* Description */}
-                  <div className="premium-desc-block">
-                    <h3>About The Workshop</h3>
-                    <p>
-                      {selectedWorkshop.description ||
-                        'Get ready to learn an explosive choreography piece with master techniques, musicality nuances, dynamic body control, and confidence on stage.'}
-                    </p>
-                  </div>
+  {/* Event Details Grid */}
+  <div className="premium-specs-grid">
 
-                  {/* TOPIC-RELEVANT CURRICULUM TIMELINE */}
-{/* ADMIN-ENTERED WORKSHOP DETAILS */}
-
-{selectedWorkshop.agenda?.trim() && (
-  <div className="premium-agenda-block">
-    <div className="agenda-block-header">
+    <div className="spec-card">
+      <span className="spec-icon"><CalendarDays size={22} /></span>
       <div>
-        <span className="agenda-kicker-tag">SESSION FLOW & BREAKDOWN</span>
-        <h3>What Happens in This Workshop</h3>
+        <small>EVENT DATE</small>
+        <strong>{selectedWorkshop.date || 'Scheduled Soon'}</strong>
       </div>
     </div>
 
-    <div className="premium-timeline-list">
-      {selectedWorkshop.agenda
-        .split('\n')
-        .filter((line) => line.trim())
-        .map((line, idx) => (
-          <div key={idx} className="premium-timeline-card">
-            <div className="timeline-num-box">
-              <span className="timeline-icon">
-                <Music2 size={20} />
-              </span>
-              <small>Phase 0{idx + 1}</small>
-            </div>
-            <div className="timeline-body">
-              <p>{line}</p>
-            </div>
-          </div>
-        ))}
+    <div className="spec-card">
+      <span className="spec-icon"><Clock size={22} /></span>
+      <div>
+        <small>WORKSHOP TIMING</small>
+        <strong>{selectedWorkshop.time || 'Schedule TBA'}</strong>
+      </div>
     </div>
-  </div>
-)}
 
-{selectedWorkshop.participants?.trim() && (
-  <div className="premium-agenda-block">
-    <h3><Users size={20} /> Who Can Participate?</h3>
-    <p>{selectedWorkshop.participants}</p>
-  </div>
-)}
+    <div className="spec-card">
+      <span className="spec-icon"><MapPin size={22} /></span>
+      <div>
+        <small>STUDIO VENUE</small>
+        <strong>
+          {selectedWorkshop.location || 'Valasaravakkam Studio, Chennai'}
+        </strong>
+      </div>
+    </div>
 
-{selectedWorkshop.guestName?.trim() && (
-  <div className="premium-agenda-block">
-    <h3><Music2 size={20} /> Guest Name</h3>
-    <p>{selectedWorkshop.guestName}</p>
-  </div>
-)}
+    <div className="spec-card">
+      <span className="spec-icon"><Zap size={22} /></span>
+      <div>
+        <small>SLOTS REMAINING</small>
+        <strong className="slots-text-highlight">
+          {selectedWorkshop.slots > 0
+            ? `${selectedWorkshop.slots} Slots Left`
+            : 'Open Registration'}
+        </strong>
+      </div>
+    </div>
 
-{selectedWorkshop.specialActivities?.trim() && (
-  <div className="premium-agenda-block">
-    <h3><Zap size={20} /> Special Activities</h3>
-    <p>{selectedWorkshop.specialActivities}</p>
   </div>
-)}
 
-{selectedWorkshop.highlights?.trim() && (
-  <div className="premium-agenda-block">
-    <h3><Trophy size={20} /> Workshop Highlights</h3>
-    <p>{selectedWorkshop.highlights}</p>
+  {/* Description */}
+  <div className="premium-desc-block">
+    <h3>About The Workshop</h3>
+    <p>
+      {selectedWorkshop.description ||
+        'Get ready to learn an explosive choreography piece with master techniques, musicality nuances, dynamic body control, and confidence on stage.'}
+    </p>
   </div>
-)}
-{/* BOOK THE WORKSHOP BUTTON */}
-<button
-  className="premium-book-btn"
-  onClick={() => setIsBookingModalOpen(true)}
->
-  Book the Workshop
-</button>
-                </div>
+
+  {/* Admin-entered Workshop Details */}
+
+  {selectedWorkshop.agenda?.trim() && (
+    <div className="premium-agenda-block">
+      <div className="agenda-block-header">
+        <div>
+          <span className="agenda-kicker-tag">SESSION FLOW & BREAKDOWN</span>
+          <h3>What Happens in This Workshop</h3>
+        </div>
+      </div>
+
+      <div className="premium-timeline-list">
+        {selectedWorkshop.agenda
+          .split('\n')
+          .filter((line) => line.trim())
+          .map((line, idx) => (
+            <div key={idx} className="premium-timeline-card">
+              <div className="timeline-num-box">
+                <span className="timeline-icon"><Music2 size={20} /></span>
+                <small>Phase 0{idx + 1}</small>
               </div>
+              <div className="timeline-body">
+                <p>{line}</p>
+              </div>
+            </div>
+          ))}
+      </div>
+    </div>
+  )}
+
+  {selectedWorkshop.participants?.trim() && (
+    <div className="premium-agenda-block">
+      <h3><Users size={20} /> Who Can Participate?</h3>
+      <p>{selectedWorkshop.participants}</p>
+    </div>
+  )}
+
+  {selectedWorkshop.guestName?.trim() && (
+    <div className="premium-agenda-block">
+      <h3><Music2 size={20} /> Guest Name</h3>
+      <p>{selectedWorkshop.guestName}</p>
+    </div>
+  )}
+
+  {selectedWorkshop.specialActivities?.trim() && (
+    <div className="premium-agenda-block">
+      <h3><Zap size={20} /> Special Activities</h3>
+      <p>{selectedWorkshop.specialActivities}</p>
+    </div>
+  )}
+
+  {selectedWorkshop.highlights?.trim() && (
+    <div className="premium-agenda-block">
+      <h3><Trophy size={20} /> Workshop Highlights</h3>
+      <p>{selectedWorkshop.highlights}</p>
+    </div>
+  )}
+
+  {/* BOOK THE WORKSHOP BUTTON */}
+  <button
+    className="premium-book-btn"
+    onClick={() => setIsBookingModalOpen(true)}
+  >
+    Book the Workshop
+  </button>
+
+</div>
+</div>
 
               {/* BOOKING POPUP MODAL */}
               {isBookingModalOpen && (
