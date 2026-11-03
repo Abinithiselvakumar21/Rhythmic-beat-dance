@@ -633,6 +633,35 @@ const handleCloseWorkshop = () => {
                 </div>
               </div>
 
+              <section
+                className="workshop-detail-hero-banner"
+                style={{
+                  position: "relative", isolation: "isolate", overflow: "hidden",
+                  minHeight: "250px", margin: "0 0 28px",
+                  padding: "clamp(28px, 5vw, 58px)", borderRadius: "24px",
+                  display: "flex", alignItems: "flex-end",
+                  background: `linear-gradient(100deg, rgba(7,20,39,.96), rgba(7,20,39,.78) 58%, rgba(7,20,39,.28)), url("${assetUrl(selectedWorkshop.image) || ""}") center 38% / cover`,
+                  boxShadow: "0 18px 45px rgba(7,20,39,.18)"
+                }}
+              >
+                <div style={{ position: "relative", zIndex: 1, maxWidth: "760px", color: "#fff" }}>
+                  <span style={{ display: "inline-block", padding: "7px 13px", marginBottom: "14px", borderRadius: "999px", background: "#ff7a1a", color: "#fff", fontSize: "11px", fontWeight: 900, letterSpacing: "1.4px" }}>
+                    RHYTHMIC BEAT • WORKSHOP EXPERIENCE
+                  </span>
+                  <h1 style={{ margin: "0 0 12px", color: "#fff", fontSize: "clamp(30px, 5vw, 54px)", lineHeight: 1.05, fontWeight: 900 }}>
+                    {selectedWorkshop.title}
+                  </h1>
+                  <p style={{ margin: 0, color: "rgba(255,255,255,.88)", fontSize: "15px", lineHeight: 1.7 }}>
+                    Move with the music. Build your style. Own the stage.
+                  </p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "10px 22px", marginTop: "20px", fontSize: "13px", fontWeight: 700 }}>
+                    <span><CalendarDays size={15} style={{ verticalAlign: "middle", marginRight: 6 }} />{selectedWorkshop.date || "Date to be announced"}</span>
+                    <span><Clock size={15} style={{ verticalAlign: "middle", marginRight: 6 }} />{selectedWorkshop.time || "Time to be announced"}</span>
+                    <span><MapPin size={15} style={{ verticalAlign: "middle", marginRight: 6 }} />{selectedWorkshop.location || "Chennai"}</span>
+                  </div>
+                </div>
+              </section>
+
               <div className="premium-card-wrapper">
                 {/* LEFT: POSTER SHOWCASE CARD */}
                 <div className="premium-poster-box">
@@ -808,6 +837,40 @@ const handleCloseWorkshop = () => {
       </div>
     </div>
   )}
+
+ {/* WHAT YOU'LL LEARN */}
+  <section className="premium-agenda-block" style={{ marginTop: "22px", padding: "24px", border: "1px solid #e7edf5", borderRadius: "18px", background: "linear-gradient(135deg, #fff, #f5f8fc)" }}>
+    <span className="agenda-kicker-tag">YOUR TAKEAWAYS</span>
+    <h3 style={{ marginTop: "8px" }}>What You’ll Learn</h3>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: "12px", marginTop: "16px" }}>
+      {(selectedWorkshop.agenda?.split("\\n").filter((line) => line.trim()).length
+        ? selectedWorkshop.agenda.split("\\n").filter((line) => line.trim()).slice(0, 4)
+        : [
+            "Build confidence and control through guided movement practice.",
+            "Improve musicality, rhythm awareness and movement quality.",
+            "Learn choreography step by step with the instructor.",
+            "Develop performance presence and express yourself through dance."
+          ]).map((item, idx) => (
+        <div key={idx} style={{ display: "flex", alignItems: "flex-start", gap: "11px", padding: "14px", background: "#fff", border: "1px solid #e8edf4", borderRadius: "13px" }}>
+          <span style={{ flex: "0 0 28px", width: "28px", height: "28px", display: "grid", placeItems: "center", borderRadius: "9px", background: "#fff0e5", color: "#f47721", fontWeight: 900 }}>✓</span>
+          <p style={{ margin: 0, color: "#24364b", fontSize: "14px", lineHeight: 1.55 }}>{item.replace(/^\\d+\\.\\s*/, "")}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  {/* TERMS & CONDITIONS */}
+  <section className="premium-agenda-block" style={{ marginTop: "18px", padding: "24px", border: "1px solid #e7edf5", borderRadius: "18px", background: "#fff" }}>
+    <span className="agenda-kicker-tag">PLEASE READ BEFORE BOOKING</span>
+    <h3 style={{ marginTop: "8px" }}>Terms &amp; Conditions</h3>
+    <ul style={{ margin: "14px 0 0", paddingLeft: "20px", color: "#526174", lineHeight: 1.8, fontSize: "14px" }}>
+      <li>Please arrive a little early so the workshop can begin on time.</li>
+      <li>Wear comfortable dance-friendly clothing and suitable footwear.</li>
+      <li>Follow the instructor’s guidance and respect fellow participants and the studio space.</li>
+      <li>Workshop participation is subject to seat availability.</li>
+      <li>For payment, cancellation, refund or pass-transfer questions, contact the studio team before booking.</li>
+    </ul>
+  </section>
 
  {/* ADMIN-ENTERED WORKSHOP DETAILS */}
 <div className="workshop-extra-grid">
