@@ -637,29 +637,47 @@ const handleCloseWorkshop = () => {
                 className="workshop-detail-hero-banner"
                 style={{
                   position: "relative", isolation: "isolate", overflow: "hidden",
-                  minHeight: "250px", margin: "0 0 28px",
-                  padding: "clamp(28px, 5vw, 58px)", borderRadius: "24px",
-                  display: "flex", alignItems: "flex-end",
-                  background: `linear-gradient(100deg, rgba(7,20,39,.96), rgba(7,20,39,.78) 58%, rgba(7,20,39,.28)), url("${assetUrl(selectedWorkshop.image) || ""}") center 38% / cover`,
-                  boxShadow: "0 18px 45px rgba(7,20,39,.18)"
+                  minHeight: "clamp(330px, 42vw, 470px)", margin: "0 0 32px",
+                  padding: "clamp(28px, 5vw, 64px)", borderRadius: "26px",
+                  display: "grid", gridTemplateColumns: "minmax(0, 1.15fr) minmax(240px, .85fr)",
+                  alignItems: "center", gap: "28px", color: "#fff",
+                  background: "radial-gradient(circle at 82% 22%, rgba(255,122,26,.28), transparent 26%), radial-gradient(circle at 12% 80%, rgba(65,139,230,.24), transparent 32%), linear-gradient(118deg, #073d83 0%, #0b3470 52%, #071f49 100%)",
+                  boxShadow: "0 22px 55px rgba(5,35,78,.22)"
                 }}
               >
-                <div style={{ position: "relative", zIndex: 1, maxWidth: "760px", color: "#fff" }}>
-                  <span style={{ display: "inline-block", padding: "7px 13px", marginBottom: "14px", borderRadius: "999px", background: "#ff7a1a", color: "#fff", fontSize: "11px", fontWeight: 900, letterSpacing: "1.4px" }}>
-                    RHYTHMIC BEAT • WORKSHOP EXPERIENCE
-                  </span>
-                  <h1 style={{ margin: "0 0 12px", color: "#fff", fontSize: "clamp(30px, 5vw, 54px)", lineHeight: 1.05, fontWeight: 900 }}>
+                <div aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: -1, opacity: .22, backgroundImage: "radial-gradient(rgba(255,255,255,.55) 1.2px, transparent 1.2px)", backgroundSize: "22px 22px" }} />
+                <div style={{ position: "relative", zIndex: 1, minWidth: 0 }}>
+                  <div style={{ display: "inline-flex", alignItems: "center", gap: "9px", marginBottom: "18px", color: "#ff9a45", fontSize: "12px", fontWeight: 900, letterSpacing: "2px", textTransform: "uppercase" }}>
+                    <span style={{ width: "28px", height: "3px", borderRadius: "9px", background: "#ff861f" }} />
+                    RHYTHMIC BEAT • EXCLUSIVE SESSION
+                  </div>
+                  <h1 style={{ margin: 0, maxWidth: "760px", color: "#fff", fontSize: "clamp(34px, 5.4vw, 68px)", lineHeight: .99, fontWeight: 950, letterSpacing: "-2px", textTransform: "uppercase", overflowWrap: "anywhere" }}>
                     {selectedWorkshop.title}
                   </h1>
-                  <p style={{ margin: 0, color: "rgba(255,255,255,.88)", fontSize: "15px", lineHeight: 1.7 }}>
-                    Move with the music. Build your style. Own the stage.
+                  <p style={{ margin: "18px 0 0", maxWidth: "540px", color: "rgba(255,255,255,.84)", fontSize: "clamp(14px, 1.4vw, 17px)", lineHeight: 1.7 }}>
+                    Step into the rhythm, learn from the experts and bring your performance to life.
                   </p>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "10px 22px", marginTop: "20px", fontSize: "13px", fontWeight: 700 }}>
-                    <span><CalendarDays size={15} style={{ verticalAlign: "middle", marginRight: 6 }} />{selectedWorkshop.date || "Date to be announced"}</span>
-                    <span><Clock size={15} style={{ verticalAlign: "middle", marginRight: 6 }} />{selectedWorkshop.time || "Time to be announced"}</span>
-                    <span><MapPin size={15} style={{ verticalAlign: "middle", marginRight: 6 }} />{selectedWorkshop.location || "Chennai"}</span>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "26px" }}>
+                    {[
+                      { icon: <CalendarDays size={17} />, label: selectedWorkshop.date || "Date to be announced" },
+                      { icon: <Clock size={17} />, label: selectedWorkshop.time || "Time to be announced" },
+                      { icon: <MapPin size={17} />, label: selectedWorkshop.location || "Chennai" }
+                    ].map((item, index) => (
+                      <span key={index} style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "11px 14px", borderRadius: "12px", background: "rgba(255,255,255,.11)", border: "1px solid rgba(255,255,255,.19)", color: "#fff", fontSize: "12px", fontWeight: 750, backdropFilter: "blur(8px)" }}>
+                        <span style={{ color: "#ff9a45", display: "inline-flex" }}>{item.icon}</span>{item.label}
+                      </span>
+                    ))}
                   </div>
                 </div>
+                <div style={{ position: "relative", zIndex: 1, justifySelf: "center", width: "min(100%, 390px)", height: "clamp(220px, 29vw, 330px)", padding: "10px", borderRadius: "24px", background: "rgba(255,255,255,.13)", border: "1px solid rgba(255,255,255,.25)", boxShadow: "0 24px 50px rgba(0,0,0,.28)", transform: "rotate(2deg)" }}>
+                  {assetUrl(selectedWorkshop.image) && !failedImages[selectedWorkshop._id] ? (
+                    <img src={assetUrl(selectedWorkshop.image)} alt={selectedWorkshop.title} style={{ width: "100%", height: "100%", display: "block", objectFit: "cover", borderRadius: "17px" }} />
+                  ) : (
+                    <div style={{ width: "100%", height: "100%", borderRadius: "17px", display: "grid", placeItems: "center", background: "linear-gradient(135deg, #164f98, #071b3e)", color: "#ff9a45" }}><Music2 size={76} /></div>
+                  )}
+                  <span style={{ position: "absolute", left: "-18px", bottom: "22px", padding: "12px 17px", borderRadius: "12px", background: "#ff7a1a", color: "#fff", fontSize: "11px", fontWeight: 950, letterSpacing: "1px", boxShadow: "0 10px 25px rgba(0,0,0,.22)" }}>FEEL THE BEAT</span>
+                </div>
+                <style>{`@media (max-width: 700px) { .workshop-detail-hero-banner { grid-template-columns: 1fr !important; } .workshop-detail-hero-banner > div:last-of-type { width: min(100%, 340px) !important; height: 220px !important; } }`}</style>
               </section>
 
               <div className="premium-card-wrapper">
